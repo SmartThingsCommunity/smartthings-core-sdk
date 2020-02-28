@@ -1,0 +1,37 @@
+{
+	"tags":
+	{
+		"allowUnknownTags" : true
+	},
+	"plugins":[
+		 "plugins/markdown"
+		,"/home/jody/.npm/_npx/1266/lib/node_modules/tsdoc/template/plugins/TSDoc.js"
+	],
+	"opts":
+	{
+		"template"	:"/home/jody/.npm/_npx/1266/lib/node_modules/tsdoc/template",
+		"recurse"	:"true"
+	},
+	"templates" : {
+		"cleverLinks"     : false,
+		"monospaceLinks"  : false
+	},
+	"source":
+	{
+		"includePattern": "(\\.d)?\\.ts$"
+	},
+	"markdown"  : {
+		"parser"   : "gfm",
+		"hardwrap" : true
+	},
+	"tsdoc":{
+		"source"		:"/mnt/c/Users/jody/projects/rest-client-node/src/",
+		"destination"	:"/mnt/c/Users/jody/projects/rest-client-node/docs",
+		"tutorials"		:"",
+		"systemName"	: "smartthings-core",
+		"footer"		: "",
+		"copyright"		: "SmartThingsCore Copyright © 2019 SmartThings, Inc.",
+		"outputSourceFiles" : true,
+		"commentsOnly": true
+	}
+}
