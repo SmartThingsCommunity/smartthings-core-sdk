@@ -17,7 +17,7 @@ import { SchedulesEndpoint } from './endpoint//schedules'
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
 
 
-export class SmartThingsRESTClient extends RESTClient {
+export class SmartThingsClient extends RESTClient {
 	public readonly apps: AppsEndpoint
 	public readonly deviceprofiles: DeviceProfilesEndpoint
 	public readonly devices: DevicesEndpoint
@@ -48,7 +48,7 @@ export class SmartThingsRESTClient extends RESTClient {
 		this.schedules = new SchedulesEndpoint(this.config)
 	}
 
-	public setLocation(id: string): SmartThingsRESTClient {
+	public setLocation(id: string): SmartThingsClient {
 		this.config.locationId = id
 		return this
 	}

@@ -1,7 +1,7 @@
 import axios from '../../__mocks__/axios'
 
 import { NoOpAuthenticator } from '../../src/authenticator'
-import { SmartThingsRESTClient } from '../../src/st-rest-client'
+import { SmartThingsClient } from '../../src/st-client'
 import { Device } from '../../src/endpoint/devices'
 import deviceList from './data/devices/list'
 import deviceList1 from './data/devices/list1'
@@ -13,8 +13,8 @@ const authenticator = new NoOpAuthenticator()
 const locationId = '2fb889a9-e163-40dd-90d7-5bf2c145af16'
 const installedAppId = '0cdf204b-8a9e-4a59-b6f6-bdeb183a619f'
 const config = { locationId, installedAppId }
-const isaClient = new SmartThingsRESTClient(authenticator, config)
-const client = new SmartThingsRESTClient(authenticator, {})
+const isaClient = new SmartThingsClient(authenticator, config)
+const client = new SmartThingsClient(authenticator, {})
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
