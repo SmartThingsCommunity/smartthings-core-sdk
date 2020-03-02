@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
-import { Links, Status, SuccessStatusValue } from '../types'
+import { Status, SuccessStatusValue } from '../types'
 import { ConfigEntry } from './installedapps'
 import { Location } from './locations'
 
@@ -51,11 +51,6 @@ export interface Schedule {
 	once?: OnceSchedule
 }
 
-export interface SchedulePagedResult {
-	items: Schedule[]
-	_links: Links
-}
-
 function parseDate(value: string): string {
 	// 2020-02-08T16:35:00.000-0800
 	try {
@@ -73,9 +68,8 @@ export class SchedulesEndpoint extends Endpoint {
 		super(new EndpointClient('installedapps', config))
 	}
 
-	public async list(installedAppId?: string): Promise<Schedule[]> {
-		const result = await this.client.get<SchedulePagedResult>(`${this.installedAppId(installedAppId)}/schedules`)
-		return result.items ? result.items : []
+	public list(installedAppId?: string): Promise<Schedule[]> {
+		return this.client.getPagedItems<Schedule>(`${this.installedAppId(installedAppId)}/schedules`)
 	}
 
 	public get(name: string, installedAppId?: string): Promise<Schedule> {

@@ -1,4 +1,14 @@
-const data = {
+const request = {
+	'url': 'https://api.smartthings.com/devices',
+	'method': 'get',
+	'headers': {
+		'Content-Type': 'application/json;charset=utf-8',
+		'Accept': 'application/json',
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+	},
+	'params': {},
+}
+const response = {
 	items: [
 		{
 			'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
@@ -31,7 +41,10 @@ const data = {
 			'type': 'VIPER',
 		},
 	],
-	'_links': {},
+	'_links': {
+		'next': {
+			'href': 'https://api.smartthings.com/devices?page=1&max=200',
+		},
+	},
 }
-
-export default data
+export default {request, response}

@@ -7,7 +7,7 @@ import {
 	RefreshTokenAuthenticator,
 	RefreshTokenStore,
 	SequentialRefreshTokenAuthenticator,
-} from '../../src/authenticator'
+} from '../../src'
 import EndpointClient, { defaultSmartThingsURLProvider } from '../../src/endpoint-client'
 
 

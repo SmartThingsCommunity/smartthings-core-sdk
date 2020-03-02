@@ -6,20 +6,17 @@ import { Device } from './devices'
 
 export class RoomRequest {
 	/**
-	 * The ID of the parent location.
-	 */
-	locationId?: string
-	/**
 	 * A name given for the room (eg. Living Room)
 	 */
 	name?: string
-	/**
-	 * Not currently in use.
-	 */
-	backgroundImage?: string
 }
 
 export class Room extends RoomRequest {
+	/**
+	 * The ID of the parent location.
+	 */
+	locationId?: string
+
 	/**
 	 * The ID of the room.
 	 */
@@ -31,8 +28,12 @@ export class RoomsEndpoint extends Endpoint {
 		super(new EndpointClient('locations', config))
 	}
 
-	public get(id: string, locationId?: string): Promise<Room[]>{
-		return this.client.get<Room[]>(`${this.locationId(locationId)}/rooms/${id}`)
+	public list(locationId?: string): Promise<Room[]>{
+		return this.client.getPagedItems<Room>(`${this.locationId(locationId)}/rooms`)
+	}
+
+	public get(id: string, locationId?: string): Promise<Room>{
+		return this.client.get<Room>(`${this.locationId(locationId)}/rooms/${id}`)
 	}
 
 	public create(data: RoomRequest, locationId?: string): Promise<Room> {
@@ -49,6 +50,6 @@ export class RoomsEndpoint extends Endpoint {
 	}
 
 	public listDevices(id: string, locationId?: string): Promise<Device[]> {
-		return this.client.get(`${this.locationId(locationId)}/rooms/${id}/devices`)
+		return this.client.getPagedItems<Device>(`${this.locationId(locationId)}/rooms/${id}/devices`)
 	}
 }

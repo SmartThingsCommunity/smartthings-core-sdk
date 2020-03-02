@@ -3,23 +3,23 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { Authenticator } from './authenticator'
 import { RESTClient, RESTClientConfig } from './rest-client'
 import { AppsEndpoint } from './endpoint/apps'
-import { DeviceProfilesEndpoint } from './endpoint//deviceprofiles'
-import { DevicesEndpoint } from './endpoint//devices'
-import { InstalledAppsEndpoint } from './endpoint//installedapps'
-import { ModesEndpoint } from './endpoint//modes'
-import { NotificationsEndpoint } from './endpoint//notifications'
-import { LocationsEndpoint } from './endpoint//locations'
-import { RoomsEndpoint } from './endpoint//rooms'
-import { RulesEndpoint } from './endpoint//rules'
-import { ScenesEndpoint } from './endpoint//scenes'
-import { SubscriptionsEndpoint } from './endpoint//subscriptions'
-import { SchedulesEndpoint } from './endpoint//schedules'
+import { DeviceProfilesEndpoint } from './endpoint/deviceprofiles'
+import { DevicesEndpoint } from './endpoint/devices'
+import { InstalledAppsEndpoint } from './endpoint/installedapps'
+import { ModesEndpoint } from './endpoint/modes'
+import { NotificationsEndpoint } from './endpoint/notifications'
+import { LocationsEndpoint } from './endpoint/locations'
+import { RoomsEndpoint } from './endpoint/rooms'
+import { RulesEndpoint } from './endpoint/rules'
+import { ScenesEndpoint } from './endpoint/scenes'
+import { SubscriptionsEndpoint } from './endpoint/subscriptions'
+import { SchedulesEndpoint } from './endpoint/schedules'
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
 
 
 export class SmartThingsClient extends RESTClient {
 	public readonly apps: AppsEndpoint
-	public readonly deviceprofiles: DeviceProfilesEndpoint
+	public readonly deviceProfiles: DeviceProfilesEndpoint
 	public readonly devices: DevicesEndpoint
 	public readonly installedApps: InstalledAppsEndpoint
 	public readonly modes: ModesEndpoint
@@ -35,7 +35,7 @@ export class SmartThingsClient extends RESTClient {
 		super(authenticator, config)
 
 		this.apps = new AppsEndpoint(this.config)
-		this.deviceprofiles = new DeviceProfilesEndpoint(this.config)
+		this.deviceProfiles = new DeviceProfilesEndpoint(this.config)
 		this.devices = new DevicesEndpoint(this.config)
 		this.installedApps = new InstalledAppsEndpoint(this.config)
 		this.modes = new ModesEndpoint(this.config)

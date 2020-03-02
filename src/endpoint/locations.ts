@@ -8,9 +8,6 @@ export interface PagedLocation {
 	name: string
 }
 
-export interface LocationList {
-	items: PagedLocation[]
-}
 
 // Location information that can be sent with a location update.
 export interface LocationUpdate {
@@ -39,8 +36,7 @@ export class LocationsEndpoint extends Endpoint {
 	}
 
 	public async list(): Promise<PagedLocation[]> {
-		const list = await this.client.get<LocationList>()
-		return list.items ? list.items : []
+		return this.client.getPagedItems<PagedLocation>()
 	}
 
 	public get(id?: string): Promise<Location> {

@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
-import { Count, Status } from '../types'
+import { SuccessStatusValue, Status } from '../types'
 
 
 export enum ConditionAggregationMode {
@@ -278,26 +278,28 @@ export class RulesEndpoint extends Endpoint {
 	}
 
 	public list(locationId?: string): Promise<Rule[]> {
-		return this.client.get(undefined, { locationId: this.locationId(locationId) })
+		return this.client.getPagedItems<Rule>(undefined, {locationId: this.locationId(locationId)})
 	}
 
-	public get(id: string): Promise<Rule> {
-		return this.client.get<Rule>(id)
+	public get(id: string, locationId?: string): Promise<Rule> {
+		return this.client.get<Rule>(id, {locationId: this.locationId(locationId)})
 	}
 
-	public delete(id: string, locationId?: string): Promise<Count> { // TODO count??
-		return this.client.delete(id, { locationId: this.locationId(locationId) })
+	public async delete(id: string, locationId?: string): Promise<Status> {
+		await this.client.delete(id, {locationId: this.locationId(locationId)})
+		return SuccessStatusValue
 	}
 
 	public create(data: RuleRequest, locationId?: string): Promise<Rule> {
-		return this.client.post(undefined, data, { locationId: this.locationId(locationId) })
+		return this.client.post(undefined, data, {locationId: this.locationId(locationId)})
 	}
 
 	public update(id: string, data: RuleRequest, locationId?: string): Promise<Rule> {
-		return this.client.put(id, data, { locationId: this.locationId(locationId) })
+		return this.client.put(id, data, {locationId: this.locationId(locationId)})
 	}
 
-	public execute(id: string, locationId?: string): Promise<Status> {
-		return this.client.post(`execute/${id}`, undefined, { locationId: this.locationId(locationId) })
+	public async execute(id: string, locationId?: string): Promise<Status> {
+		await this.client.post(`execute/${id}`, undefined, {locationId: this.locationId(locationId)})
+		return SuccessStatusValue
 	}
 }

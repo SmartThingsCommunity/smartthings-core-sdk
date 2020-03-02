@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
-import { Count, Links } from '../types'
+import { Count } from '../types'
 import { ConfigEntry } from './installedapps'
 
 
@@ -196,11 +196,6 @@ export interface SubscriptionRequest {
 	sceneLifecycle?: SceneLifecycleDetail
 }
 
-export interface SubscriptionList {
-	items: Subscription[]
-	_links: Links
-}
-
 export interface DeviceSubscriptionOptions {
 	stateChangeOnly?: boolean
 	modes?: Array<string>
@@ -211,8 +206,8 @@ export class SubscriptionsEndpoint extends Endpoint {
 		super(new EndpointClient('installedapps', config))
 	}
 
-	public list(installedAppId?: string): Promise<SubscriptionList> {
-		return this.client.get<SubscriptionList>(`${this.installedAppId(installedAppId)}/subscriptions`)
+	public list(installedAppId?: string): Promise<Subscription[]> {
+		return this.client.getPagedItems<Subscription>(`${this.installedAppId(installedAppId)}/subscriptions`)
 	}
 
 	public get(name: string, installedAppId?: string): Promise<Subscription> {
@@ -320,6 +315,21 @@ export class SubscriptionsEndpoint extends Endpoint {
 			const body = {
 				sourceType: SubscriptionSource.DEVICE_LIFECYCLE,
 				deviceLifecycle: {
+					locationId: this.client.config.locationId,
+					subscriptionName,
+				},
+			}
+			return this.client.post(path, body)
+		}
+		return Promise.reject(Error('Location ID and/or installedAppId are undefined'))
+	}
+
+	public subscribeToDeviceHealth(subscriptionName: string): Promise<Subscription> {
+		if (this.client.config.installedAppId && this.client.config.locationId) {
+			const path = `installedapps/${this.client.config.installedAppId}/subscriptions`
+			const body = {
+				sourceType: SubscriptionSource.DEVICE_HEALTH,
+				deviceHealth: {
 					locationId: this.client.config.locationId,
 					subscriptionName,
 				},
