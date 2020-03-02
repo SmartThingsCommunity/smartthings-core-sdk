@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import EndpointClient, { EndpointClientConfig, HttpClientParams } from '../endpoint-client'
-import { Links, Status } from '../types'
+import { Status } from '../types'
 
 
 export interface SceneSummary {
@@ -41,17 +41,10 @@ export interface SceneSummary {
 	 */
 	lastExecutedDate?: Date
 	/**
-	 * Whether or not this scene can be edited by the logged in user using the
-	 * version of the app that made the request
+	 * Whether or not this scene can be edited by the logged in user using the version of the app that made the request
 	 */
 	editable?: boolean
 	apiVersion?: string
-}
-
-
-export interface ScenePagedResult {
-	items: SceneSummary[]
-	_links: Links
 }
 
 export interface SceneListOptions {
@@ -65,21 +58,20 @@ export class ScenesEndpoint extends Endpoint {
 		super(new EndpointClient('scenes', config))
 	}
 
-	public async list(options: SceneListOptions = {}): Promise<SceneSummary[]> {
+	public list(options: SceneListOptions = {}): Promise<SceneSummary[]> {
 		const params: HttpClientParams = {}
 		if ('locationId' in options && options.locationId) {
 			params.locationId = options.locationId
 		} else if (this.client.config.locationId) {
 			params.locationId = this.client.config.locationId
 		}
-		const list = await this.client.get<ScenePagedResult>(undefined, params)
-		return list.items ? list.items : []
+		return this.client.getPagedItems<SceneSummary>(undefined, params)
 	}
 
 	public async get(id: string): Promise<SceneSummary> {
-		const list = await this.client.get<ScenePagedResult>()
-		if (list.items) {
-			const item = list.items.find(it => it.sceneId === id)
+		const list: SceneSummary[] = await this.client.getPagedItems<SceneSummary>()
+		if (list) {
+			const item = list.find(it => it.sceneId === id)
 			if (item) {
 				return item
 			}

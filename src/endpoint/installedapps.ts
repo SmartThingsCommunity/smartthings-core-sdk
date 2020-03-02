@@ -191,7 +191,7 @@ export interface ConfigurationRequest {
 	locationId: string
 	installedAppType: InstalledAppType
 	configurationStatus: InstallConfigurationStatus
-	config: { [name: string]: ConfigEntry }
+	config: {[name: string]: ConfigEntry}
 }
 
 export interface InstalledAppConfiguration {
@@ -200,7 +200,7 @@ export interface InstalledAppConfiguration {
 	configurationStatus: InstallConfigurationStatus
 	createdDate: string
 	lastUpdatedDate: string
-	config: { [name: string]: ConfigEntry }
+	config: {[name: string]: ConfigEntry}
 }
 
 export interface InstalledAppConfigItem {
@@ -232,7 +232,7 @@ export interface ConfigurationUpdateRequest {
 
 export interface ConfigurationPatchRequest {
 	removals: string[]
-	upserts: { [name: string]: ConfigEntry }
+	upserts: {[name: string]: ConfigEntry}
 }
 
 export interface ConfigurationItemsList {
@@ -256,7 +256,7 @@ export enum DashboardLifecycleEventType {
 export interface InstalledAppEvents {
 	smartAppEvents?: {
 		name: string
-		attributes: { [name: string]: string }
+		attributes: {[name: string]: string}
 	}
 	smartAppDashboardEvents?: {
 		cardId: string
@@ -271,28 +271,28 @@ export enum InstalledAppMessageType {
 
 export interface PredefinedMessage {
 	messageTemplateKey: string
-	defaultVariables: { [name: string]: string }
+	defaultVariables: {[name: string]: string}
 	localeVariables: [
 		{
 			localeTag: string
-			variables: { [name: string]: string }
+			variables: {[name: string]: string}
 		}
 	]
 }
 
 export interface AdhocMessage {
 	fallbackLocale: string
-	defaultVariables: { [name: string]: string }
+	defaultVariables: {[name: string]: string}
 	templates: [
 		{
 			localeTag: string
 			template: string
-			variables: { [name: string]: string }
+			variables: {[name: string]: string}
 		}
 	]
 }
 
-export interface InstalledAppMessage {
+export interface  InstalledAppMessage {
 	messageGroupKey: string
 	messageType: InstalledAppMessageType
 	predefinedMessage?: PredefinedMessage
@@ -311,7 +311,13 @@ export interface InstalledAppListOptions {
 	page?: number
 }
 
-export class InstalledAppsEndpoint extends Endpoint {
+export interface ConfigurationListOptions {
+	configurationStatus?: InstallConfigurationStatus
+	max?: number
+	page?: number
+}
+
+export class InstalledAppsEndpoint extends Endpoint{
 	constructor(config: EndpointClientConfig) {
 		super(new EndpointClient('installedapps', config))
 	}
@@ -356,65 +362,86 @@ export class InstalledAppsEndpoint extends Endpoint {
 		return this.client.post<InstalledAppResponse>(undefined, data)
 	}
 
-	// TODO -- make ID mandatory since not commonly (ever) called from ISA?
-	public update(data: InstalledAppUpdateRequest, id?: string): Promise<InstalledApp> {
-		return this.client.post<InstalledApp>(this.installedAppId(id), data)
+	public update(id: string, data: InstalledAppUpdateRequest): Promise<InstalledApp> {
+		return this.client.put<InstalledApp>(id, data)
 	}
 
-	// TODO -- make ID mandatory since not commonly (ever) called from ISA?
-	public listConfigurations(id?: string): Promise<InstalledAppConfigItem[]> {
-		return this.client.getPagedItems<InstalledAppConfigItem>(`${this.installedAppId(this.installedAppId(id))}/configs`)
-	}
-
-	// TODO -- make ID mandatory since not commonly (ever) called from ISA?
-	public getConfiguration(configurationId: string, id?: string): Promise<InstalledAppConfiguration> {
-		return this.client.get<InstalledAppConfiguration>(`${this.installedAppId(this.installedAppId(id))}/configs/${configurationId}`)
-	}
-
-	// TODO -- make ID mandatory since not commonly (ever) called from ISA?
-	/**
-	 * Returns the most recent authorized configuration, or the most recent
-	 * configuration if none are authorized
-	 *
-	 * @param id UUID of the installed app
-	 */
-	public async getLastAuthorizedConfiguration(id?: string): Promise<InstalledAppConfiguration> {
-		const data = await this.client.get<ConfigurationItemsList>(`${this.installedAppId(this.installedAppId(id))}/configs`)
-		const items = data.items.sort((a, b) => {
-			return a.lastUpdatedDate === b.lastUpdatedDate ? 0 : a.lastUpdatedDate < b.lastUpdatedDate ? 1 : -1
-		})
-
-		let item = items.find((it) => {
-			return it.configurationStatus === 'AUTHORIZED'
-		})
-
-		if (!item) {
-			item = items[0]
+	public listConfigurations(id: string, options: ConfigurationListOptions = {}): Promise<InstalledAppConfigItem[]> {
+		const params: HttpClientParams = {}
+		if ('configurationStatus' in options && options.configurationStatus) {
+			params.deviceId = options.configurationStatus
 		}
-
-		return this.getConfiguration(item.configurationId, item.installedAppId)
+		if ('max' in options && options.max) {
+			params.max = options.max
+		}
+		if ('page' in options && options.page) {
+			params.page = options.page
+		}
+		return this.client.getPagedItems<InstalledAppConfigItem>(`${id}/configs`, params)
 	}
 
-	// TODO -- make ID mandatory since not commonly (ever) called from ISA?
-	public updateConfiguration(data: ConfigurationUpdateRequest, id?: string): Promise<InstalledAppConfiguration> {
-		return this.client.put<InstalledAppConfiguration>(`${this.installedAppId(this.installedAppId(id))}/configs`, data)
+	public getConfiguration(id: string, configurationId: string): Promise<InstalledAppConfiguration> {
+		return this.client.get<InstalledAppConfiguration>(`${id}/configs/${configurationId}`)
 	}
 
-	public patchConfiguration(configurationId: string, data: ConfigurationPatchRequest, id?: string): Promise<InstalledAppConfiguration> {
-		return this.client.put<InstalledAppConfiguration>(`${this.installedAppId(this.installedAppId(id))}/configs/${configurationId}`, data)
+	/**
+	 * Returns the most recent configuration, authorized or not
+	 * @param id The installedAppId
+	 */
+	public async getLatestConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
+		const items = await this.listConfigurations(id)
+		if (items) {
+			const item = items[0]
+			return this.getConfiguration(item.configurationId, item.installedAppId)
+		}
+		return undefined
 	}
 
-	public delete(id?: string): Promise<Count> {
-		return this.client.delete<Count>(this.installedAppId(id))
+	/**
+	 * Returns the current authorized configuration, or undefined if there is no authorized configuration
+	 * @param id The installedAppId
+	 */
+	public async getAuthorizedConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
+		const items = await this.listConfigurations(id, {configurationStatus: InstallConfigurationStatus.AUTHORIZED})
+		if (items) {
+			const item = items[0]
+			return this.getConfiguration(item.configurationId, item.installedAppId)
+		}
+		return undefined
+	}
+
+	/**
+	 * Returns the current authorized configuration, or the latest configuration of any status if none are authorized
+	 * @param id
+	 */
+	public async getCurrentConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
+		let item = await this.getAuthorizedConfiguration(id)
+		if (!item) {
+			item = await this.getCurrentConfiguration(id)
+		}
+		return item
+	}
+
+	public updateConfiguration(id: string, data: ConfigurationUpdateRequest): Promise<InstalledAppConfiguration> {
+		return this.client.put<InstalledAppConfiguration>(`${id}/configs`, data)
+	}
+
+	public patchConfiguration(id: string, configurationId: string, data: ConfigurationPatchRequest): Promise<InstalledAppConfiguration> {
+		return this.client.put<InstalledAppConfiguration>(`${id}/configs/${configurationId}`, data)
+	}
+
+	public async delete(id: string): Promise<Status> {
+		await this.client.delete<Count>(id)
+		return SuccessStatusValue
 	}
 
 	public async createEvent(data: InstalledAppEvents, id?: string): Promise<Status> {
-		await this.client.post<Status>(`${this.installedAppId(this.installedAppId(id))}/events`, data)
+		await this.client.post<Status>(`${this.installedAppId(id)}/events`, data)
 		return SuccessStatusValue
 	}
 
 	public async sendMessage(data: InstalledAppMessage, id?: string): Promise<Status> {
-		await this.client.post<Status>(`${this.installedAppId(this.installedAppId(id))}/send-message`, data)
+		await this.client.post<Status>(`${this.installedAppId(id)}/send-message`, data)
 		return SuccessStatusValue
 	}
 }

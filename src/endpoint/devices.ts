@@ -25,20 +25,18 @@ export interface AppDeviceDetails {
 	profile?: DeviceProfileReference
 }
 
-// TODO: maybe just a type with a specific list of strings maybe DeviceIntegrationType should be an enum
-// if this stays an enum, the values should be strings
 export enum DeviceNetworkSecurityLevel {
-	'UNKNOWN',
-	'ZWAVE_LEGACY_NON_SECURE',
-	'ZWAVE_S0_LEGACY',
-	'ZWAVE_S0_FALLBACK',
-	'ZWAVE_S2_UNAUTHENTICATED',
-	'ZWAVE_S2_AUTHENTICATED',
-	'ZWAVE_S2_ACCESS_CONTROL',
-	'ZWAVE_S2_FAILED',
-	'ZWAVE_S0_FAILED',
-	'ZWAVE_S2_DOWNGRADE',
-	'ZWAVE_S0_DOWNGRADE'
+	UNKNOWN = 'UNKNOWN',
+	ZWAVE_LEGACY_NON_SECURE = 'ZWAVE_LEGACY_NON_SECURE',
+	ZWAVE_S0_LEGACY = 'ZWAVE_S0_LEGACY',
+	ZWAVE_S0_FALLBACK = 'ZWAVE_S0_FALLBACK',
+	ZWAVE_S2_UNAUTHENTICATED = 'ZWAVE_S2_UNAUTHENTICATED',
+	ZWAVE_S2_AUTHENTICATED = 'ZWAVE_S2_AUTHENTICATED',
+	ZWAVE_S2_ACCESS_CONTROL = 'ZWAVE_S2_ACCESS_CONTROL',
+	ZWAVE_S2_FAILED = 'ZWAVE_S2_FAILED',
+	ZWAVE_S0_FAILED = 'ZWAVE_S0_FAILED',
+	ZWAVE_S2_DOWNGRADE = 'ZWAVE_S2_DOWNGRADE',
+	ZWAVE_S0_DOWNGRADE = 'ZWAVE_S0_DOWNGRADE'
 }
 
 export interface DthDeviceDetails {
@@ -121,6 +119,19 @@ export interface DeviceStatus {
 	components?: { [componentId: string]: ComponentStatus }
 }
 
+export interface DeviceEvent {
+	component: string
+	capability: string
+	attribute: string
+	value: unknown
+	unit?: string
+	data?: { [name: string]: object }
+}
+
+export interface DeviceEventList {
+	deviceEvents: DeviceEvent[]
+}
+
 export enum DeviceHealthState {
 	ONLINE = 'ONLINE',
 	OFFLINE = 'OFFLINE',
@@ -151,12 +162,17 @@ export interface CommandList {
 }
 
 export interface DeviceListOptions {
-	capability?: string[]
+	capability?: string | string[]
 	capabilitiesMode?: 'and' | 'or'
-	locationId?: string[]
-	deviceId?: string[]
+	locationId?: string | string[]
+	deviceId?: string | string[]
 	max?: number
 	page?: number
+}
+
+export interface HueSaturation {
+	hue: number
+	saturation: number
 }
 
 export class DevicesEndpoint extends Endpoint {
@@ -194,18 +210,24 @@ export class DevicesEndpoint extends Endpoint {
 	// listAll
 	public listInLocation(): Promise<Device[]> {
 		if (this.client.config.locationId) {
-			return this.list({ locationId: [this.client.config.locationId] })
+			return this.list({locationId: this.client.config.locationId})
 		}
 		return Promise.reject(Error('Location ID not defined'))
 	}
 
+	/**
+	 * @deprecated use list() instead
+	 */
 	public listAll(): Promise<Device[]> {
 		return this.list()
 	}
 
+	/**
+	 * @deprecated use list({capability: 'switch'} instead
+	 */
 	public findByCapability(capability: string): Promise<Device[]> {
 		if (this.client.config.locationId) {
-			return this.list({ locationId: [this.locationId()], capability: [capability] })
+			return this.list({locationId: this.locationId(), capability: capability})
 		}
 		return Promise.reject(Error('Location ID not defined'))
 	}
@@ -285,14 +307,19 @@ export class DevicesEndpoint extends Endpoint {
 		return SuccessStatusValue
 	}
 
-	public async postCommands(id: string, commands: Command[]): Promise<Status> {
-		this.client.post(`${id}/commands`, { commands })
+	/**
+	 * @deprecated use executeCommands instead
+	 * @param id
+	 * @param commands
+	 */
+	public async postCommands(id: string, commands: CommandList): Promise<Status> {
+		this.client.post(`${id}/commands`, commands)
 		return SuccessStatusValue
 	}
 
 	public async sendCommand(item: ConfigEntry, capabilityNameOrCmdList: string | CommandRequest[], command: string, args: (object | string | number)[]): Promise<Status> {
 		let commands
-		const { deviceConfig } = item
+		const {deviceConfig} = item
 		if (deviceConfig) {
 			if (Array.isArray(capabilityNameOrCmdList)) {
 				commands = capabilityNameOrCmdList.map(it => {
@@ -314,7 +341,7 @@ export class DevicesEndpoint extends Endpoint {
 				]
 			}
 
-			const body = { commands }
+			const body = {commands}
 			await this.client.post(`${deviceConfig.deviceId}/commands`, body)
 			return SuccessStatusValue
 		}
@@ -331,16 +358,55 @@ export class DevicesEndpoint extends Endpoint {
 
 		return Promise.all(results)
 	}
-	// From current SA SDK -- deprecate?
-	// postCommands
-	// sendCommand (item, capabilityNameOrCmdList, command, args)
-	// sendCommands (items, capabilityNameOrCmdList, command, args)
 
-	public createEvents(id: string, events: Command[]): void {
+	public createEvents(id: string, events: DeviceEvent[]): void {
 		this.client.post(`${id}/events`, { events })
 	}
 
-	// From current SA SDK -- deprecate?
-	// Send events
-	// namedColor
+	/**
+	 * @deprecated use createEvents instead
+	 * @param id
+	 * @param events
+	 */
+	public sendEvents(id: string, events: DeviceEventList): void {
+		this.client.post(`${id}/events`, events)
+	}
+
+	/**
+	 * Returns hue and saturation of the nameed color
+	 * @param color
+	 * @param sat
+	 * @deprecated
+	 */
+	public namedColor(color: string, sat = 100): HueSaturation {
+		let hueColor = 0
+		const saturation = sat
+		switch (color) {
+		case 'Blue':
+			hueColor = 70
+			break
+		case 'Green':
+			hueColor = 39
+			break
+		case 'Yellow':
+			hueColor = 25
+			break
+		case 'Orange':
+			hueColor = 10
+			break
+		case 'Purple':
+			hueColor = 75
+			break
+		case 'Pink':
+			hueColor = 83
+			break
+		case 'Red':
+			hueColor = 100
+			break
+		default:
+			hueColor = 0
+		}
+
+		return {hue: hueColor, saturation}
+	}
 }
