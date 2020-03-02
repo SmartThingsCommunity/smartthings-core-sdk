@@ -2,7 +2,7 @@ export * from './authenticator'
 export * from './endpoint-client'
 export * from './endpoint'
 export * from './logger'
-export * from './st-rest-client'
+export * from './st-client'
 export * from './rest-client'
 export * from './types'
 
