@@ -3,7 +3,7 @@ import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
 import { Status, SuccessStatusValue } from '../types'
 
 
-export interface PagedLocation {
+export interface LocationItem {
 	locationId: string
 	name: string
 }
@@ -17,7 +17,7 @@ export interface LocationUpdate {
 	regionRadius?: number // integer, in meters, minimum value is 20
 	temperatureScale: 'F'|'C'
 	locale?: string
-	additionalProperties: { [name: string]: string } // TODO: verify type of this
+	additionalProperties?: { [name: string]: string } // TODO: verify type of this
 }
 
 export interface LocationCreate extends LocationUpdate {
@@ -35,8 +35,8 @@ export class LocationsEndpoint extends Endpoint {
 		super(new EndpointClient('locations', config))
 	}
 
-	public async list(): Promise<PagedLocation[]> {
-		return this.client.getPagedItems<PagedLocation>()
+	public async list(): Promise<LocationItem[]> {
+		return this.client.getPagedItems<LocationItem>()
 	}
 
 	public get(id?: string): Promise<Location> {

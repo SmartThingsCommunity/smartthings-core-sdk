@@ -142,6 +142,10 @@ export default class EndpointClient {
 					return response.data
 				}
 			}
+			// Annotate message with SmartThings API error data
+			if (error.response && error.response.data) {
+				error.message = error.message + ': ' + JSON.stringify(error.response.data)
+			}
 			throw error
 		}
 	}
