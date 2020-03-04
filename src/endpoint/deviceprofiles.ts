@@ -15,6 +15,7 @@ export interface DeviceComponent {
 	 */
 	label?: string
 	capabilities?: Array<CapabilityReference>
+	categories?: Array<string>
 }
 
 export enum DeviceProfileStatus {

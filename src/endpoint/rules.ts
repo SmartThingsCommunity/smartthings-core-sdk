@@ -245,7 +245,7 @@ export interface LocationAction {
 }
 
 export interface Action {
-	'_if'?: IfAction
+	'if'?: IfAction
 	sleep?: SleepAction
 	command?: CommandAction
 	every?: EveryAction

@@ -40,7 +40,7 @@ export class ModesEndpoint extends Endpoint {
 				return item
 			}
 		}
-		throw Error(`Scene ${id} not found`)
+		throw Error(`Mode ${id} not found`)
 	}
 
 	public getCurrent(locationId?: string): Promise<Mode> {

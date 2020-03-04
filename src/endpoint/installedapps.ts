@@ -61,7 +61,7 @@ export interface ConfigEntry {
 	/**
 	 * The value type.
 	 */
-	valueType?: ConfigValueType
+	valueType: ConfigValueType
 	/**
 	 * The config if valueType is STRING, meaningless otherwise
 	 */
@@ -90,8 +90,8 @@ export interface ConfigEntry {
 }
 
 export enum InstalledAppType {
-	LAMBDA_SMARTAPP = 'LAMBDA_SMARTAPP',
-	WEBHOOK_SMARTAPP = 'WEBHOOK_SMARTAPP',
+	LAMBDA_SMART_APP = 'LAMBDA_SMART_APP',
+	WEBHOOK_SMART_APP = 'WEBHOOK_SMART_APP',
 	API_ONLY = 'API_ONLY',
 	BEHAVIOR = 'BEHAVIOR',
 }
@@ -191,7 +191,7 @@ export interface ConfigurationRequest {
 	locationId: string
 	installedAppType: InstalledAppType
 	configurationStatus: InstallConfigurationStatus
-	config: {[name: string]: ConfigEntry}
+	config: {[name: string]: Array<ConfigEntry>}
 }
 
 export interface InstalledAppConfiguration {
@@ -227,12 +227,12 @@ export interface InstalledAppUpdateRequest {
 }
 
 export interface ConfigurationUpdateRequest {
-	[name: string]: ConfigEntry
+	config: {[name: string]: Array<ConfigEntry>}
 }
 
 export interface ConfigurationPatchRequest {
 	removals: string[]
-	upserts: {[name: string]: ConfigEntry}
+	upserts: {[name: string]: Array<ConfigEntry>}
 }
 
 export interface ConfigurationItemsList {
@@ -369,7 +369,7 @@ export class InstalledAppsEndpoint extends Endpoint{
 	public listConfigurations(id: string, options: ConfigurationListOptions = {}): Promise<InstalledAppConfigItem[]> {
 		const params: HttpClientParams = {}
 		if ('configurationStatus' in options && options.configurationStatus) {
-			params.deviceId = options.configurationStatus
+			params.configurationStatus = options.configurationStatus
 		}
 		if ('max' in options && options.max) {
 			params.max = options.max
@@ -389,10 +389,12 @@ export class InstalledAppsEndpoint extends Endpoint{
 	 * @param id The installedAppId
 	 */
 	public async getLatestConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
-		const items = await this.listConfigurations(id)
-		if (items) {
+		const items = (await this.listConfigurations(id)).sort((a, b) => {
+			return a.lastUpdatedDate === b.lastUpdatedDate ? 0 : a.lastUpdatedDate < b.lastUpdatedDate ? 1 : -1
+		})
+		if (items.length > 0) {
 			const item = items[0]
-			return this.getConfiguration(item.configurationId, item.installedAppId)
+			return this.getConfiguration(item.installedAppId, item.configurationId)
 		}
 		return undefined
 	}
@@ -403,9 +405,9 @@ export class InstalledAppsEndpoint extends Endpoint{
 	 */
 	public async getAuthorizedConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
 		const items = await this.listConfigurations(id, {configurationStatus: InstallConfigurationStatus.AUTHORIZED})
-		if (items) {
+		if (items.length > 0) {
 			const item = items[0]
-			return this.getConfiguration(item.configurationId, item.installedAppId)
+			return this.getConfiguration(item.installedAppId, item.configurationId)
 		}
 		return undefined
 	}
@@ -417,7 +419,7 @@ export class InstalledAppsEndpoint extends Endpoint{
 	public async getCurrentConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
 		let item = await this.getAuthorizedConfiguration(id)
 		if (!item) {
-			item = await this.getCurrentConfiguration(id)
+			item = await this.getLatestConfiguration(id)
 		}
 		return item
 	}
