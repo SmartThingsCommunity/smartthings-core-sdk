@@ -145,7 +145,7 @@ describe('Installed Apps',  () => {
 						'componentId': 'main',
 						'permissions': [
 							'r:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
-							'x:devices:8cfb5b5f-1683-4459-932c-9493c63da626'
+							'x:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
 						],
 					},
 				},
@@ -156,7 +156,7 @@ describe('Installed Apps',  () => {
 						'componentId': 'main',
 						'permissions': [
 							'r:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-							'x:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8'
+							'x:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
 						],
 					},
 				},

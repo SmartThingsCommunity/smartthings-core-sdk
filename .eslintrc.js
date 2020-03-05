@@ -26,16 +26,8 @@ module.exports = {
 		ecmaVersion: 2018,
 	},
 	rules: {
-		indent: [
-			'error',
-			'tab',
-			{
-				'FunctionExpression': {
-					'body': 1,
-					'parameters': 2,
-				},
-			},
-		],
+		indent: 'off',
+		'@typescript-eslint/indent': ['error', 'tab'],
 		'linebreak-style': ['error',  'unix'],
 		quotes: ['error', 'single'],
 		curly: ['error', 'all'],

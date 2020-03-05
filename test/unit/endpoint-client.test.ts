@@ -31,7 +31,7 @@ const config = {
 	'authURL': 'https://auth.smartthings.com',
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
-		'Accept': 'application/json'
+		'Accept': 'application/json',
 	},
 	'loggingId': 'AAABBBCCC',
 }
@@ -241,7 +241,7 @@ describe('Endpoint Client',  () => {
 			.mockImplementationOnce(() => Promise.reject(
 				{ status: 401, data: 'Unauthorized' }))
 			.mockImplementationOnce(() => Promise.resolve(
-				{ status: 200, data: { access_token: 'abcdefghijk', refresh_token: 'lmnopqrstuv' } }))
+				{ status: 200, data: { 'access_token': 'abcdefghijk', 'refresh_token': 'lmnopqrstuv' } }))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { status: 'ok' } }))
 
@@ -270,7 +270,7 @@ describe('Endpoint Client',  () => {
 			.mockImplementationOnce(() => Promise.reject(
 				{ status: 401, data: 'Unauthorized' }))
 			.mockImplementationOnce(() => Promise.resolve(
-				{ status: 200, data: { access_token: 'abcdefghijk', refresh_token: 'lmnopqrstuv' } }))
+				{ status: 200, data: { 'access_token': 'abcdefghijk', 'refresh_token': 'lmnopqrstuv' } }))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { status: 'ok' } }))
 
