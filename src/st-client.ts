@@ -14,6 +14,7 @@ import { RulesEndpoint } from './endpoint/rules'
 import { ScenesEndpoint } from './endpoint/scenes'
 import { SubscriptionsEndpoint } from './endpoint/subscriptions'
 import { SchedulesEndpoint } from './endpoint/schedules'
+import { SchemaEndpoint } from './endpoint/schema'
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
 
 
@@ -30,6 +31,7 @@ export class SmartThingsClient extends RESTClient {
 	public readonly scenes: ScenesEndpoint
 	public readonly subscriptions: SubscriptionsEndpoint
 	public readonly schedules: SchedulesEndpoint
+	public readonly schema: SchemaEndpoint
 
 	constructor(authenticator: Authenticator, config?: RESTClientConfig) {
 		super(authenticator, config)
@@ -46,6 +48,7 @@ export class SmartThingsClient extends RESTClient {
 		this.scenes = new ScenesEndpoint(this.config)
 		this.subscriptions = new SubscriptionsEndpoint(this.config)
 		this.schedules = new SchedulesEndpoint(this.config)
+		this.schema = new SchemaEndpoint(this.config)
 	}
 
 	public setLocation(id: string): SmartThingsClient {
