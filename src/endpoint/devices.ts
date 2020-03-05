@@ -382,29 +382,29 @@ export class DevicesEndpoint extends Endpoint {
 		let hueColor = 0
 		const saturation = sat
 		switch (color) {
-		case 'Blue':
-			hueColor = 70
-			break
-		case 'Green':
-			hueColor = 39
-			break
-		case 'Yellow':
-			hueColor = 25
-			break
-		case 'Orange':
-			hueColor = 10
-			break
-		case 'Purple':
-			hueColor = 75
-			break
-		case 'Pink':
-			hueColor = 83
-			break
-		case 'Red':
-			hueColor = 100
-			break
-		default:
-			hueColor = 0
+			case 'Blue':
+				hueColor = 70
+				break
+			case 'Green':
+				hueColor = 39
+				break
+			case 'Yellow':
+				hueColor = 25
+				break
+			case 'Orange':
+				hueColor = 10
+				break
+			case 'Purple':
+				hueColor = 75
+				break
+			case 'Pink':
+				hueColor = 83
+				break
+			case 'Red':
+				hueColor = 100
+				break
+			default:
+				hueColor = 0
 		}
 
 		return {hue: hueColor, saturation}

@@ -175,8 +175,8 @@ describe('Devices',  () => {
 				'permissions': [
 					'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
 					'x:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-				]
-			}
+				],
+			},
 		}
 		const response: Status[] = await client.devices.sendCommands([configEntry], 'switch', 'on', [])
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
@@ -194,8 +194,8 @@ describe('Devices',  () => {
 				'permissions': [
 					'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
 					'x:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-				]
-			}
+				],
+			},
 		}
 		const response: Status = await client.devices.sendCommand(configEntry, 'switch', 'on', [])
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))

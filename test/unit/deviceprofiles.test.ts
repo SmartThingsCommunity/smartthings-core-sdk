@@ -88,7 +88,7 @@ describe('Device Profiles',  () => {
 						},
 					],
 					'categories': [],
-				}
+				},
 			],
 			'metadata': {
 				'vid': 'simple-dimmer',
