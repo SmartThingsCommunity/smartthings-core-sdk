@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { Authenticator } from './authenticator'
 import { RESTClient, RESTClientConfig } from './rest-client'
 import { AppsEndpoint } from './endpoint/apps'
+import { CapabilitiesEndpoint } from './endpoint/capabilities'
 import { DeviceProfilesEndpoint } from './endpoint/deviceprofiles'
 import { DevicesEndpoint } from './endpoint/devices'
 import { InstalledAppsEndpoint } from './endpoint/installedapps'
@@ -19,6 +20,7 @@ import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoin
 
 export class SmartThingsClient extends RESTClient {
 	public readonly apps: AppsEndpoint
+	public readonly capabilities: CapabilitiesEndpoint
 	public readonly deviceProfiles: DeviceProfilesEndpoint
 	public readonly devices: DevicesEndpoint
 	public readonly installedApps: InstalledAppsEndpoint
@@ -35,6 +37,7 @@ export class SmartThingsClient extends RESTClient {
 		super(authenticator, config)
 
 		this.apps = new AppsEndpoint(this.config)
+		this.capabilities = new CapabilitiesEndpoint(this.config)
 		this.deviceProfiles = new DeviceProfilesEndpoint(this.config)
 		this.devices = new DevicesEndpoint(this.config)
 		this.installedApps = new InstalledAppsEndpoint(this.config)
