@@ -107,9 +107,7 @@ describe('Device Profiles',  () => {
 
 	it('update status', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateStatus.response }))
-		const response: DeviceProfile = await client.deviceProfiles.updateStatus('149476cd-3ca9-4e62-ba40-a399e558b2bf', {
-			deviceProfileStatus: DeviceProfileStatus.PUBLISHED,
-		})
+		const response: DeviceProfile = await client.deviceProfiles.updateStatus('149476cd-3ca9-4e62-ba40-a399e558b2bf', DeviceProfileStatus.PUBLISHED)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateStatus.request))
 		expect(response).toBe(updateStatus.response)
 	})

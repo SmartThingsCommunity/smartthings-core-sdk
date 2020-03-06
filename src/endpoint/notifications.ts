@@ -33,6 +33,7 @@ export interface DeepLink {
 	type: DeepLinkType
 	id: string
 }
+
 export interface NotificationRequest {
 	/**
 	 * The target location of sending push message.
@@ -84,6 +85,11 @@ export class NotificationsEndpoint extends Endpoint {
 		super(new EndpointClient('notification', config))
 	}
 
+	/**
+	 * Sends a push notification to mobile apps belonging to the location
+	 * @param data the notification request. If the client has been configured with a location ID it can be omitted
+	 * from this request.
+	 */
 	public async create(data: NotificationRequest): Promise<NotificationResponse> {
 		data.locationId = this.locationId(data.locationId)
 		return this.client.post(undefined, data)

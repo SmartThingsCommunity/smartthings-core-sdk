@@ -191,8 +191,22 @@ export enum SchemaPageType {
 }
 
 export interface SchemaPage {
+	/**
+	 * The type of the page being returned, which is determined by the authentication state of the connector instance,
+	 * i.e. 'requiresLogin' or 'loggedIn'
+	 */
 	pageType: SchemaPageType
+}
+
+export interface UnauthorizedSchemaPage {
+	/**
+	 * An href to the OAuth page for this connector that allows authentication and connection to the SmartThings
+	 * patform.
+	 */
 	oAuthLink?: string
+}
+
+export interface AuthorizedSchemaPage extends SchemaPage {
 	isaId?: string
 	locationId?: string
 	devices?: Array<DeviceResult>
@@ -208,42 +222,81 @@ export class SchemaEndpoint extends Endpoint {
 		super(new EndpointClient('schema', config))
 	}
 
+	/**
+	 * Returns a list of all ST Schema C2C connectors belonging to the principal (i.e. the user)
+	 */
 	public async list(): Promise<SchemaApp[]> {
 		const response = await this.client.get<SchemaAppList>('apps')
 		return response.endpointApps
 	}
 
+	/**
+	 * Returns a specific ST Schema connector
+	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
+	 */
 	public get(id: string): Promise<SchemaApp> {
 		return this.client.get<SchemaApp>(`apps/${id}`)
 	}
 
+	/**
+	 * Create an ST Schema connector
+	 * @param data definition of the connector
+	 */
 	public create(data: SchemaAppRequest): Promise<SchemaCreateReponse> {
 		return this.client.post<SchemaCreateReponse>('apps', data)
 	}
 
+	/**
+	 * Update an ST Schema connector
+	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
+	 * @param data new definition of the connector
+	 */
 	public async update(id: string, data: SchemaAppRequest): Promise<Status> {
 		await this.client.put<SchemaApp>(`apps/${id}`, data)
 		return SuccessStatusValue
 	}
 
+	/**
+	 * Delete an ST Schema connector
+	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
+	 */
 	public async delete(id: string): Promise<Status> {
 		await this.client.delete<SchemaApp>(`apps/${id}`)
 		return SuccessStatusValue
 	}
 
-	public getPage(id: string, locationId: string): Promise<SchemaPage> {
+	/**
+	 * Get the page definition of an ST Schema installed instance in the specified location.
+	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
+	 * @param locationId UUID of the location in which the connector is or is to be installed.
+	 */
+	public getPage(id: string, locationId: string): Promise<AuthorizedSchemaPage | UnauthorizedSchemaPage> {
 		return this.client.get<SchemaPage>(`install/${id}?locationId=${locationId}&type=oauthLink`)
 	}
 
-	public async installedApps(locationId: string): Promise<InstalledSchemaApp[]> {
-		const response = await this.client.get<InstalledSchemaAppList>(`installedapps/location/${locationId}`)
+	/**
+	 * Returns a list of the installed ST Schema connector instances in the specified location
+	 * @param locationId UUID of the location
+	 */
+	public async installedApps(locationId?: string): Promise<InstalledSchemaApp[]> {
+		const response = await this.client.get<InstalledSchemaAppList>(`installedapps/location/${this.locationId(locationId)}`)
 		return response === undefined ? [] : response.installedSmartApps
 	}
 
+	/**
+	 * Returns a specific installed instance of an ST Schema connector. The returned object includes a list of the
+	 * devices created by the instance.
+	 * @param id UUID of the installed app instance
+	 */
 	public getInstalledApp(id: string): Promise<InstalledSchemaApp> {
 		return this.client.get(`installedapps/${id}`)
 	}
 
+	/**
+	 * Deletes a specific installed instance of an ST Schema connector. This operation will also delete all
+	 * devices created by this instance
+	 * @param id
+	 */
 	public async deleteInstalledApp(id: string): Promise<Status> {
 		await this.client.delete(`installedapps/${id}`)
 		return SuccessStatusValue

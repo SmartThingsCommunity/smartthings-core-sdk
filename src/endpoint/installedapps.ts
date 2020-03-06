@@ -253,15 +253,19 @@ export enum DashboardLifecycleEventType {
 	DELETE = 'DELETE'
 }
 
+export interface SmartAppEvent {
+	name: string
+	attributes: {[name: string]: string}
+}
+
+export interface SmartAppDashboardEvent {
+	cardId: string
+	lifecycle: DashboardLifecycleEventType
+}
+
 export interface InstalledAppEvents {
-	smartAppEvents?: {
-		name: string
-		attributes: {[name: string]: string}
-	}
-	smartAppDashboardEvents?: {
-		cardId: string
-		lifecycle: DashboardLifecycleEventType
-	}
+	smartAppEvents?: Array<SmartAppEvent>
+	smartAppDashboardEvents?: Array<SmartAppDashboardEvent>
 }
 
 export enum InstalledAppMessageType {
@@ -322,6 +326,13 @@ export class InstalledAppsEndpoint extends Endpoint{
 		super(new EndpointClient('installedapps', config))
 	}
 
+	/**
+	 * Returns a list of installed app instances matching the query options or all instances accessible by the principal
+	 * (i.e. user) if no options are specified.
+	 *
+	 * @param options query options, locationId, installedAppStatus, installedAppType, deviceId. These can
+	 * be single values or arrays.
+	 */
 	public async list(options: InstalledAppListOptions = {}): Promise<InstalledApp[]> {
 		const params: HttpClientParams = {}
 		if ('locationId' in options && options.locationId) {
@@ -338,6 +349,12 @@ export class InstalledAppsEndpoint extends Endpoint{
 		if ('deviceId' in options && options.deviceId) {
 			params.deviceId = options.deviceId
 		}
+		if ('appId' in options && options.appId) {
+			params.appId = options.appId
+		}
+		if ('modeId' in options && options.modeId) {
+			params.modeId = options.modeId
+		}
 		if ('max' in options && options.max) {
 			params.max = options.max
 		}
@@ -347,25 +364,43 @@ export class InstalledAppsEndpoint extends Endpoint{
 		return this.client.getPagedItems<InstalledApp>(undefined, params)
 	}
 
+	/**
+	 * Returns the specified installed app definition
+	 * @param id UUID of the installed app
+	 */
 	public get(id?: string): Promise<InstalledApp> {
 		return this.client.get<InstalledApp>(this.installedAppId(this.installedAppId(id)))
 	}
 
 	/**
-	 * Returns the token info for a SmartApp principal
+	 * Returns the token info for an intalled app principal
 	 */
 	public tokenInfo(): Promise<TokenInformation> {
 		return this.client.get<TokenInformation>('me')
 	}
 
+	/**
+	 * Creates an installed app instance
+	 * @param data configuration data for the app instance
+	 */
 	public create(data: ConfigurationRequest): Promise<InstalledAppResponse> {
 		return this.client.post<InstalledAppResponse>(undefined, data)
 	}
 
+	/**
+	 * Updates the display name of an installled app instance
+	 * @param id UUID of the installed app
+	 * @param data request containing the display name
+	 */
 	public update(id: string, data: InstalledAppUpdateRequest): Promise<InstalledApp> {
 		return this.client.put<InstalledApp>(id, data)
 	}
 
+	/**
+	 * List configurations of an installed app instance
+	 * @param id UUID of the installed app
+	 * @param options including the desired configuration status
+	 */
 	public listConfigurations(id: string, options: ConfigurationListOptions = {}): Promise<InstalledAppConfigItem[]> {
 		const params: HttpClientParams = {}
 		if ('configurationStatus' in options && options.configurationStatus) {
@@ -380,6 +415,11 @@ export class InstalledAppsEndpoint extends Endpoint{
 		return this.client.getPagedItems<InstalledAppConfigItem>(`${id}/configs`, params)
 	}
 
+	/**
+	 * Returns a specific installed app configuration
+	 * @param id UUID of the installed app
+	 * @param configurationId UUID of the configuration
+	 */
 	public getConfiguration(id: string, configurationId: string): Promise<InstalledAppConfiguration> {
 		return this.client.get<InstalledAppConfiguration>(`${id}/configs/${configurationId}`)
 	}
@@ -401,7 +441,7 @@ export class InstalledAppsEndpoint extends Endpoint{
 
 	/**
 	 * Returns the current authorized configuration, or undefined if there is no authorized configuration
-	 * @param id The installedAppId
+	 * @param id UUID of the installed app
 	 */
 	public async getAuthorizedConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
 		const items = await this.listConfigurations(id, {configurationStatus: InstallConfigurationStatus.AUTHORIZED})
@@ -414,7 +454,7 @@ export class InstalledAppsEndpoint extends Endpoint{
 
 	/**
 	 * Returns the current authorized configuration, or the latest configuration of any status if none are authorized
-	 * @param id
+	 * @param id UUID of the installed app
 	 */
 	public async getCurrentConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
 		let item = await this.getAuthorizedConfiguration(id)
@@ -424,24 +464,55 @@ export class InstalledAppsEndpoint extends Endpoint{
 		return item
 	}
 
+	/**
+	 * Updates an Installed App configuration. Call implicitly operates on the latest 'STAGED' configuration.
+	 * @param id UUID of the installed app
+	 * @param data the new configuration
+	 */
 	public updateConfiguration(id: string, data: ConfigurationUpdateRequest): Promise<InstalledAppConfiguration> {
 		return this.client.put<InstalledAppConfiguration>(`${id}/configs`, data)
 	}
 
+	/**
+	 * Allows specific configuration keys to be removed / upserted from any configuration that may already exist.
+	 * This operation is only supported on install configurations in status of 'STAGED'. Useful for iteratively
+	 * configuring an installed app.
+	 * @param id UUID of the installed app
+	 * @param configurationId UUID of the configuration
+	 * @param data requests containing upserts and removals of configuration items
+	 */
 	public patchConfiguration(id: string, configurationId: string, data: ConfigurationPatchRequest): Promise<InstalledAppConfiguration> {
 		return this.client.put<InstalledAppConfiguration>(`${id}/configs/${configurationId}`, data)
 	}
 
+	/**
+	 * Deletes an installed app instance
+	 * @param id UUID of the installed app
+	 */
 	public async delete(id: string): Promise<Status> {
 		await this.client.delete<Count>(id)
 		return SuccessStatusValue
 	}
 
+	/**
+	 * Create events for an installed app. Note that this method is here in support of future functionality not yet
+	 * available in the SmartThings platform.
+	 * @param data object contain lists of events
+	 * @param id UUID of the installed app. This value does not need to be specified if the client is configured with
+	 * an installed app ID
+	 */
 	public async createEvent(data: InstalledAppEvents, id?: string): Promise<Status> {
 		await this.client.post<Status>(`${this.installedAppId(id)}/events`, data)
 		return SuccessStatusValue
 	}
 
+	/**
+	 * Send a message to a message group. Note that this method is here in support of future functionality not yet
+	 * available in the SmartThings platform.
+	 * @param data the message
+	 * @param id UUID of the installed app. This value does not need to be specified if the client is configured with
+	 * an installed app ID
+	 */
 	public async sendMessage(data: InstalledAppMessage, id?: string): Promise<Status> {
 		await this.client.post<Status>(`${this.installedAppId(id)}/send-message`, data)
 		return SuccessStatusValue

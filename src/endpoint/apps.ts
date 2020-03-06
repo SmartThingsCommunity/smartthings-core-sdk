@@ -200,10 +200,6 @@ export interface AppSettings {
 	settings?: { [key: string]: string }
 }
 
-export interface SignatureTypeRequest {
-	signatureType: SignatureType
-}
-
 export class AppsEndpoint extends Endpoint {
 
 	constructor(config: EndpointClientConfig) {
@@ -211,7 +207,7 @@ export class AppsEndpoint extends Endpoint {
 	}
 
 	/**
-	 * Returns a list of all apps belonging to the principal
+	 * Returns a list of all apps belonging to the principal (i.e. the user)
 	 */
 	public async list(): Promise<App[]> {
 		return this.client.getPagedItems<App>()
@@ -219,12 +215,16 @@ export class AppsEndpoint extends Endpoint {
 
 	/**
 	 * Returns a specific app
-	 * @param id either the appId or app name
+	 * @param id either the appId UUID or the appName unique name
 	 */
 	public get(id: string): Promise<App> {
 		return this.client.get<App>(id)
 	}
 
+	/**
+	 * Create a new app. For WEBHOOK_SMART_APPs the default SignatureType is ST_PADLOCK.
+	 * @param data the app definition
+	 */
 	public create(data: AppRequest): Promise<AppCreationResponse> {
 		// TODO -- use of query params might be temporary
 		const params = { requireConfirmation: 'false', signatureType: 'ST_PADLOCK' }
@@ -234,42 +234,87 @@ export class AppsEndpoint extends Endpoint {
 		return this.client.post(undefined , data, params)
 	}
 
+	/**
+	 * Update an existing app
+	 * @param id either the appId UUID or the appName unique name
+	 * @param data the new app definition
+	 */
 	public update(id: string, data: AppRequest): Promise<App> {
 		return this.client.put(id, data)
 	}
 
+	/**
+	 * Get the settings of an app. Settings are string name/value pairs for optional use by the app developer.
+	 * @param id either the appId UUID or the appName unique name
+	 */
 	public getSettings(id: string): Promise<AppSettings> {
 		return this.client.get(`${id}/settings`)
 	}
 
+	/**
+	 * Update the settings of an app. Settings are string name/value pairs for optional use by the app developer.
+	 * @param id either the appId UUID or the appName unique name
+	 * @param data the new app settings
+	 */
 	public updateSettings(id: string, data: AppSettings): Promise<AppSettings> {
 		return this.client.put(`${id}/settings`, data)
 	}
 
-	public async updateSignatureType(id: string, data: SignatureTypeRequest): Promise<Status> {
-		await this.client.put(`${id}/signature-type`, data)
+	/**
+	 * Update the signature type of an app. The signature type determines what mechanism is used to verify
+	 * the identity of endpoint apps
+	 * @param id either the appId UUID or the appName unique name
+	 * @param signatureType the new signature type
+	 */
+	public async updateSignatureType(id: string, signatureType: SignatureType): Promise<Status> {
+		await this.client.put(`${id}/signature-type`, {signatureType})
 		return Promise.resolve(SuccessStatusValue)
 	}
 
+	/**
+	 * Pings the targetUrl of the app to verify its existence. Endpoint apps and API Access apps must be registed
+	 * in order to receive events from SmartThings.
+	 * @param id either the appId UUID or the appName unique name
+	 */
 	public async register(id: string): Promise<Status> {
 		await this.client.put(`${id}/register`)
 		return Promise.resolve(SuccessStatusValue)
 	}
 
+	/**
+	 * Returns the OAuth information for this app, including the name, scopes, and redirect URLs, if any
+	 * @param id either the appId UUID or the appName unique name
+	 */
 	public getOauth(id: string): Promise<AppOAuth> {
 		return this.client.get<AppOAuth>(`${id}/oauth`)
 	}
 
+	/**
+	 * Updates the OAuth defintion for this app. Use this method to change the scopes or redirect
+	 * URLs (for API access apps). This method does not change the clientId or clientSecret of the app.
+	 * @param id either the appId UUID or the appName unique name
+	 * @param data new OAuth definition
+	 */
 	public updateOauth(id: string, data: AppOAuth): Promise<AppOAuth> {
 		return this.client.put<AppOAuth>(`${id}/oauth`,  data)
 	}
 
+	/**
+	 * Regenerate clientId and clientSecret for this app. Note that this operation will result in any currently
+	 * authorized installed app instances to need to be re-authorized to make calls to SmartThings.
+	 * @param id either the appId UUID or the appName unique name
+	 * @param data new OAuth definition
+	 */
 	public regenerateOauth(id: string, data: AppOAuth): Promise<AppOAuthResponse> {
 		return this.client.post<AppOAuthResponse>(`${id}/oauth/generate`, data)
 	}
 
-	public async delete(appNameOrId: string): Promise<Count> {
-		await this.client.delete(appNameOrId)
+	/**
+	 * Deletes the specified app
+	 * @param id either the appId UUID or the appName unique name
+	 */
+	public async delete(id: string): Promise<Count> {
+		await this.client.delete(id)
 		return { count: 1 }
 	}
 }
