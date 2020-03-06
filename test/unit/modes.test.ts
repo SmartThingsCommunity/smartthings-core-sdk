@@ -17,6 +17,7 @@ import create from './data/modes/post_locations_95efee9b-6073-4871-b5ba-de664218
 import update from './data/modes/put_locations_95efee9b-6073-4871-b5ba-de6642187293_modes'
 import deleteMode  from './data/modes/delete_locations_95efee9b-6073-4871-b5ba-de6642187293_modes'
 import deleteModeExplicit  from './data/modes/delete_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_modes'
+import setCurrent from './data/modes/put_locations_95efee9b-6073-4871-b5ba-de6642187293_modes_current'
 
 
 const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
@@ -68,6 +69,13 @@ describe('Modes',  () => {
 		const response: Mode = await client.modes.getCurrent('b4db3e54-14f3-4bf4-b217-b8583757d446')
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(explicitGet.request))
 		expect(response).toBe(explicitGet.response)
+	})
+
+	it('set current implicit', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: setCurrent.response }))
+		const response: Mode = await client.modes.setCurrent('7b7ca378-03ed-419d-93c1-76d3bb41c8b3')
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(setCurrent.request))
+		expect(response).toBe(setCurrent.response)
 	})
 
 	it('create', async () => {

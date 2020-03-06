@@ -19,9 +19,11 @@
 		"dist/**/*"
 	],
 	"dependencies": {
+		"@types/underscore": "^1.9.4",
 		"async-mutex": "^0.1.4",
 		"axios": "^0.19.2",
-		"qs": "^6.9.1"
+		"qs": "^6.9.1",
+		"underscore": "^1.9.2"
 	},
 	"devDependencies": {
 		"@types/es6-promise": "^3.3.0",
@@ -52,6 +54,7 @@
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
 		"docs-gen": "typedoc --out docs src",
+		"json-docs-gen": "typedoc --json dist/docs.json --mode modules src",
 		"prepare": "npm run build",
 		"prepublishOnly": "npm test && npm run lint",
 		"preversion": "npm run lint",

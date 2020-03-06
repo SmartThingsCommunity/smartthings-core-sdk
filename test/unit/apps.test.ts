@@ -5,7 +5,7 @@ import {
 	App,
 	AppCreationResponse,
 	Status,
-	SuccessStatusValue, AppOAuth, Count,
+	SuccessStatusValue, AppOAuth, Count, SignatureType,
 } from '../../src'
 import {expectedRequest} from './helpers/utils'
 import list from './data/apps/get_apps'
@@ -47,7 +47,7 @@ describe('Apps',  () => {
 
 	it('Update signature type', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putSignature.response }))
-		const response: Status = await client.apps.updateSignatureType('a01c0ba4-3ac2-4a5c-9628-c43e394c1ea2', putSignature.request.data)
+		const response: Status = await client.apps.updateSignatureType('a01c0ba4-3ac2-4a5c-9628-c43e394c1ea2', SignatureType.ST_PADLOCK)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(putSignature.request))
 		expect(response).toBe(SuccessStatusValue)
 	})

@@ -89,6 +89,10 @@ export interface Device {
 	type?: DeviceIntegrationType
 }
 
+export interface DeviceUpdate {
+	label?: string
+}
+
 export interface DeviceCreate {
 	label?: string
 	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
@@ -162,11 +166,34 @@ export interface CommandList {
 }
 
 export interface DeviceListOptions {
+	/**
+	 * Capability ID (for example, 'switchLevel') or array of capability IDs
+	 */
 	capability?: string | string[]
+
+	/**
+	 * Whether to AND or OR the capability IDs when more than one is specified
+	 */
 	capabilitiesMode?: 'and' | 'or'
+
+	/**
+	 * Location UUID or array of location UUIDs
+	 */
 	locationId?: string | string[]
+
+	/**
+	 * Device UUID or array of device UUIDs
+	 */
 	deviceId?: string | string[]
+
+	/**
+	 * Limit the number of results to this value. By default all devices are returned
+	 */
 	max?: number
+
+	/**
+	 * Page number for when a max number of results has been specified, starting with 1
+	 */
 	page?: number
 }
 
@@ -180,6 +207,13 @@ export class DevicesEndpoint extends Endpoint {
 		super(new EndpointClient('devices', config))
 	}
 
+	/**
+	 * Returns a list of devices matching the query options or all devices accessible by the principal (i.e. user)
+	 * if no options are specified.
+	 *
+	 * @param options query options, capability, capabilitiesMode ('and' or 'or'), locationId, deviceId. These can
+	 * be single values or arrays.
+	 */
 	public async list(options: DeviceListOptions = {}): Promise<Device[]> {
 		const params: HttpClientParams = {}
 		if ('capability' in options && options.capability) {
@@ -205,9 +239,11 @@ export class DevicesEndpoint extends Endpoint {
 		return this.client.getPagedItems<Device>(undefined, params)
 	}
 
-	// From current SA SDK -- deprecate?
-	// listInLocation
-	// listAll
+	/**
+	 * Returns all devices in the location specified in the client configuration. Throws an error if no location is
+	 * specified in the client config. For use only in SmartApps.
+	 * @deprecated use list() instead
+	 */
 	public listInLocation(): Promise<Device[]> {
 		if (this.client.config.locationId) {
 			return this.list({locationId: this.client.config.locationId})
@@ -216,6 +252,7 @@ export class DevicesEndpoint extends Endpoint {
 	}
 
 	/**
+	 * Returns all devices accessible by the principal (i.e. user)
 	 * @deprecated use list() instead
 	 */
 	public listAll(): Promise<Device[]> {
@@ -223,6 +260,7 @@ export class DevicesEndpoint extends Endpoint {
 	}
 
 	/**
+	 * Returns devices with the specified capability.
 	 * @deprecated use list({capability: 'switch'} instead
 	 */
 	public findByCapability(capability: string): Promise<Device[]> {
@@ -232,15 +270,28 @@ export class DevicesEndpoint extends Endpoint {
 		return Promise.reject(Error('Location ID not defined'))
 	}
 
+	/**
+	 * Returns a description of the specified device
+	 * @param id UUID of the device
+	 */
 	public get(id: string): Promise<Device> {
 		return this.client.get<Device>(id)
 	}
 
+	/**
+	 * Deletes the specified device
+	 * @param id UUID of the device
+	 */
 	public delete(id: string): Promise<Device> {
 		return this.client.delete<Device>(id)
 	}
 
 
+	/**
+	 * Install a device.
+	 * @param definition the device definition. If the client configuration specifies a locationId and installedAppId
+	 * then these values don't need to be included in the definition.
+	 */
 	public create(definition: DeviceCreate): Promise<Device> {
 		const app = {
 			installedAppId: this.installedAppId(),
@@ -256,34 +307,70 @@ export class DevicesEndpoint extends Endpoint {
 		return this.client.post<Device>('', data)
 	}
 
-	public update(id: string, data: Device): Promise<Device> {
+	/**
+	 * Update a device. Currently only the device label can be changed
+	 * @param id UUID of the device
+	 * @param data new device definition with the label specified
+	 */
+	public update(id: string, data: DeviceUpdate): Promise<Device> {
 		return this.client.put<Device>(id, data)
 	}
 
+	/**
+	 * Returns the current values of all device attributes
+	 * @param id UUID of the device
+	 */
 	public getStatus(id: string): Promise<DeviceStatus> {
 		return this.client.get<DeviceStatus>(`${id}/status`)
 	}
 
+	/**
+	 * Returns the current values of all device attributes
+	 * @deprecated use getStatus instead
+	 */
 	public getState(id: string): Promise<DeviceStatus> {
 		return this.client.get<DeviceStatus>(`${id}/status`)
 	}
 
+	/**
+	 * Gets the attribute values of the specified component of the device
+	 * @param id UUID of the device
+	 * @param componentId alphanumeric component ID, e.g. 'main'
+	 */
 	public getComponentStatus(id: string, componentId: string): Promise<ComponentStatus> {
 		return this.client.get<ComponentStatus>(`${id}/components/${componentId}/status`)
 	}
 
+	/**
+	 * Gets the attribute values of the specified component of the device
+	 * @deprecated use getComponentStatus instead
+	 */
 	public getComponentState(id: string, componentId: string): Promise<ComponentStatus> {
 		return this.client.get<ComponentStatus>(`${id}/components/${componentId}/status`)
 	}
 
+	/**
+	 * Gets the attribute values of the specified component capability
+	 * @param id UUID of the device
+	 * @param componentId alphanumeric component ID, e.g. 'main'
+	 * @param capabilityId alphanumeric capability ID, e.g. 'switchLevel'
+	 */
 	public getCapabilityStatus(id: string, componentId: string, capabilityId: string): Promise<CapabilityStatus> {
 		return this.client.get<CapabilityStatus>(`${id}/components/${componentId}/capabilities/${capabilityId}/status`)
 	}
 
+	/**
+	 * Gets the attribute values of the specified ccomponent capability
+	 * @deprecated use getCapabilityStatus instead
+	 */
 	public getCapabilityState(id: string, componentId: string, capabilityId: string): Promise<CapabilityStatus> {
 		return this.client.get<CapabilityStatus>(`${id}/components/${componentId}/capabilities/${capabilityId}/status`)
 	}
 
+	/**
+	 * Returns the health status of the device
+	 * @param id UUID of the device
+	 */
 	public getHealth(id: string): Promise<DeviceHealth> {
 		return this.client.get<DeviceHealth>(`${id}/health`).catch(reason => {
 			if (reason.statusCode === 404) {
@@ -297,32 +384,51 @@ export class DevicesEndpoint extends Endpoint {
 		})
 	}
 
+	/**
+	 * Sends the specified list of commands to the device
+	 * @param id UUID of the device
+	 * @param commands list of commands
+	 */
 	public async executeCommands(id: string, commands: Command[]): Promise<Status> {
 		this.client.post(`${id}/commands`, { commands })
 		return SuccessStatusValue
 	}
 
+	/**
+	 * Sends the specified command to the device
+	 * @param id UUID of the device
+	 * @param command a single device command
+	 */
 	public async executeCommand(id: string, command: Command): Promise<Status> {
 		this.executeCommands(id, [command])
 		return SuccessStatusValue
 	}
 
 	/**
+	 * Sends the specified commands to the device
 	 * @deprecated use executeCommands instead
-	 * @param id
-	 * @param commands
 	 */
 	public async postCommands(id: string, commands: CommandList): Promise<Status> {
 		this.client.post(`${id}/commands`, commands)
 		return SuccessStatusValue
 	}
 
-	public async sendCommand(item: ConfigEntry, capabilityNameOrCmdList: string | CommandRequest[], command: string, args: (object | string | number)[]): Promise<Status> {
+	/**
+	 * Sends the specified command or commands to the device and component defined in the specified config entry. The
+	 * end result is the same as calling the executeCommand method, but this method accepts a SmartApp config entry
+	 * for convenience
+	 * @param item installedApp config entry specifying the device UUID and component
+	 * @param capabilityIdOrCmdList either a capability ID or list of commands. If a list of commands is specified
+	 * then the command and args parameters are not required.
+	 * @param command the command name. Required when a capability ID has been specified in the previous parameter
+	 * @param args list of arguments. Required when a capability ID has been specified and the command has arguments
+	 */
+	public async sendCommand(item: ConfigEntry, capabilityIdOrCmdList: string | CommandRequest[], command?: string, args?: (object | string | number)[]): Promise<Status> {
 		let commands
 		const {deviceConfig} = item
 		if (deviceConfig) {
-			if (Array.isArray(capabilityNameOrCmdList)) {
-				commands = capabilityNameOrCmdList.map(it => {
+			if (Array.isArray(capabilityIdOrCmdList)) {
+				commands = capabilityIdOrCmdList.map(it => {
 					return {
 						component: deviceConfig.componentId,
 						capability: it.capability,
@@ -334,7 +440,7 @@ export class DevicesEndpoint extends Endpoint {
 				commands = [
 					{
 						component: deviceConfig.componentId,
-						capability: capabilityNameOrCmdList,
+						capability: capabilityIdOrCmdList,
 						command,
 						arguments: args || [],
 					},
@@ -348,17 +454,32 @@ export class DevicesEndpoint extends Endpoint {
 		return Promise.reject(Error('Device config not found'))
 	}
 
-	public sendCommands(items: ConfigEntry[], capabilityNameOrCmdList: string | CommandRequest[], command: string, args: (object | string | number)[]): Promise<Status[]> {
+	/**
+	 * Sends the specified command or commands to the devices and components defined in the specified config entry list. The
+	 * end result is the same as calling the executeCommand method, but this method accepts a SmartApp config entry
+	 * for convenience
+	 * @param items a list of the installedApp config entries specifying device UUIDs and component IDs
+	 * @param capabilityIdOrCmdList either a capability ID or list of commands. If a list of commands is specified
+	 * then the command and args parameters are not required.
+	 * @param command the command name. Required when a capability ID has been specified in the previous parameter
+	 * @param args list of arguments. Required when a capability ID has been specified and the command has arguments
+	 */
+	public sendCommands(items: ConfigEntry[], capabilityIdOrCmdList: string | CommandRequest[], command: string, args: (object | string | number)[]): Promise<Status[]> {
 		const results = []
 		if (items) {
 			for (const it of items) {
-				results.push(this.sendCommand(it, capabilityNameOrCmdList, command, args))
+				results.push(this.sendCommand(it, capabilityIdOrCmdList, command, args))
 			}
 		}
 
 		return Promise.all(results)
 	}
 
+	/**
+	 * Creates events for the specified device
+	 * @param id UUID of the device
+	 * @param events list of events
+	 */
 	public createEvents(id: string, events: DeviceEvent[]): void {
 		this.client.post(`${id}/events`, { events })
 	}
@@ -373,9 +494,7 @@ export class DevicesEndpoint extends Endpoint {
 	}
 
 	/**
-	 * Returns hue and saturation of the nameed color
-	 * @param color
-	 * @param sat
+	 * Convenience function that returns hue and saturation of the named color
 	 * @deprecated
 	 */
 	public namedColor(color: string, sat = 100): HueSaturation {

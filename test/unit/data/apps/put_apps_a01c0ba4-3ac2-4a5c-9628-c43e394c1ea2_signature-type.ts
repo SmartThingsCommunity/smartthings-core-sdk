@@ -10,7 +10,7 @@ const request = {
 		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
 	},
 	'data': {
-		'signatureType': SignatureType.ST_PADLOCK
+		'signatureType':'ST_PADLOCK'
 	}
 }
 const response = {}

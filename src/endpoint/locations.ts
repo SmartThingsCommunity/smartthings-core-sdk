@@ -35,22 +35,42 @@ export class LocationsEndpoint extends Endpoint {
 		super(new EndpointClient('locations', config))
 	}
 
+	/**
+	 * Returns a list of all locations accessible by the principal (i.e. user)
+	 */
 	public async list(): Promise<LocationItem[]> {
 		return this.client.getPagedItems<LocationItem>()
 	}
 
+	/**
+	 * Get the definition of a specific location
+	 * @param id UUID of the location
+	 */
 	public get(id?: string): Promise<Location> {
 		return this.client.get<Location>(this.locationId(id))
 	}
 
+	/**
+	 * Creates a location
+	 * @param location definition of the location
+	 */
 	public create(location: LocationCreate): Promise<Location> {
 		return this.client.post(undefined, location)
 	}
 
+	/**
+	 * Updates a location
+	 * @param id UUID of the location
+	 * @param location new location definition
+	 */
 	public update(id: string, location: LocationUpdate): Promise<Location> {
 		return this.client.put(id, location)
 	}
 
+	/**
+	 * Deletes a location and all of the devices and installed apps associated with it.
+	 * @param id UUID of the location
+	 */
 	public async delete(id: string): Promise<Status> {
 		await this.client.delete(id)
 		return SuccessStatusValue

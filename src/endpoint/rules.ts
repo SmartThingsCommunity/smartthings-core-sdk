@@ -277,27 +277,65 @@ export class RulesEndpoint extends Endpoint {
 		super(new EndpointClient('rules', config))
 	}
 
+	/**
+	 * List the rules for a location and the access token principal. The principal is the user in the case of a
+	 * PAT (personal access) token or the installed app in the case of a SmartApp token. The rules belonging to one
+	 * principal cannot see the rules belonging to another principal.
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
 	public list(locationId?: string): Promise<Rule[]> {
 		return this.client.getPagedItems<Rule>(undefined, {locationId: this.locationId(locationId)})
 	}
 
+	/**
+	 * Get a specific rule
+	 * @param id UUID of the rule
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
 	public get(id: string, locationId?: string): Promise<Rule> {
 		return this.client.get<Rule>(id, {locationId: this.locationId(locationId)})
 	}
 
+	/**
+	 * Delete a specific rule
+	 * @param id UUID of the rule
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
 	public async delete(id: string, locationId?: string): Promise<Status> {
 		await this.client.delete(id, {locationId: this.locationId(locationId)})
 		return SuccessStatusValue
 	}
 
+	/**
+	 * Create a rule
+	 * @param data the rule definition
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
 	public create(data: RuleRequest, locationId?: string): Promise<Rule> {
 		return this.client.post(undefined, data, {locationId: this.locationId(locationId)})
 	}
 
+	/**
+	 * Update a rule
+	 * @param id UUID of the rule
+	 * @param data the new rule definition
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
 	public update(id: string, data: RuleRequest, locationId?: string): Promise<Rule> {
 		return this.client.put(id, data, {locationId: this.locationId(locationId)})
 	}
 
+	/**
+	 * Execute a rule's actions
+	 * @param id UUID of the rule
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
 	public async execute(id: string, locationId?: string): Promise<Status> {
 		await this.client.post(`execute/${id}`, undefined, {locationId: this.locationId(locationId)})
 		return SuccessStatusValue
