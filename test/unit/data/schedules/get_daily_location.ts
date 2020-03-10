@@ -4,8 +4,8 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
-	}
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+	},
 }
 const response = {
 	'locationId': '0bcbe542-d340-42a9-b00a-a2067170810e',
@@ -18,6 +18,6 @@ const response = {
 	'timeZoneId': 'America/Los_Angeles',
 	'locale': 'en_US',
 	'backgroundImage': null,
-	'additionalProperties': {}
+	'additionalProperties': {},
 }
 export default {request, response}

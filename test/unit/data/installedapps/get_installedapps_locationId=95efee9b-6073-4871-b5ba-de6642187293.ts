@@ -4,11 +4,11 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'params': {
-		'locationId': '95efee9b-6073-4871-b5ba-de6642187293'
-	}
+		'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
+	},
 }
 const response = {
 	'items': [
@@ -22,7 +22,7 @@ const response = {
 			'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
 			'owner': {
 				'ownerType': 'USER',
-				'ownerId': 'c257d2c7-332b-d60d-808d-550bfbd54556'
+				'ownerId': 'c257d2c7-332b-d60d-808d-550bfbd54556',
 			},
 			'notices': [],
 			'createdDate': '2020-02-27T22:52:33Z',
@@ -31,21 +31,21 @@ const response = {
 				'pluginId': null,
 				'pluginUri': null,
 				'dashboardCardsEnabled': false,
-				'preInstallDashboardCardsEnabled': false
+				'preInstallDashboardCardsEnabled': false,
 			},
 			'iconImage': {
-				'url': null
+				'url': null,
 			},
 			'classifications': [
-				'AUTOMATION'
+				'AUTOMATION',
 			],
 			'principalType': 'LOCATION',
-			'singleInstance': false
-		}
+			'singleInstance': false,
+		},
 	],
 	'_links': {
 		'next': null,
-		'previous': null
-	}
+		'previous': null,
+	},
 }
 export default {request, response}

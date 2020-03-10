@@ -4,7 +4,7 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'data': {
 		'appId': '1c593873-ef7d-4665-8f0d-e1da25861e02',
@@ -19,10 +19,10 @@ const request = {
 						'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
 						'componentId': 'main',
 						'permissions': [
-							'r:devices:385931b6-0121-4848-bcc8-54cb76436de1'
-						]
-					}
-				}
+							'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
+						],
+					},
+				},
 			],
 			'targetSwitch': [
 				{
@@ -32,13 +32,13 @@ const request = {
 						'componentId': 'main',
 						'permissions': [
 							'r:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc'
-						]
-					}
-				}
-			]
-		}
-	}
+							'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
+						],
+					},
+				},
+			],
+		},
+	},
 }
 const response = {
 	'installedApp': {
@@ -51,7 +51,7 @@ const response = {
 		'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
 		'owner': {
 			'ownerType': 'USER',
-			'ownerId': 'c257d2c7-332b-d60d-808d-550bfbd54556'
+			'ownerId': 'c257d2c7-332b-d60d-808d-550bfbd54556',
 		},
 		'notices': [],
 		'createdDate': '2020-02-29T15:51:17Z',
@@ -60,16 +60,16 @@ const response = {
 			'pluginId': null,
 			'pluginUri': null,
 			'dashboardCardsEnabled': false,
-			'preInstallDashboardCardsEnabled': false
+			'preInstallDashboardCardsEnabled': false,
 		},
 		'iconImage': {
-			'url': null
+			'url': null,
 		},
 		'classifications': [
-			'AUTOMATION'
+			'AUTOMATION',
 		],
 		'principalType': 'LOCATION',
-		'singleInstance': false
+		'singleInstance': false,
 	},
 	'configurationDetail': {
 		'installedAppId': 'e09af197-4a51-42d9-8fd9-a39a67049d4a',
@@ -84,14 +84,14 @@ const response = {
 						'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
 						'componentId': 'main',
 						'permissions': [
-							'r:devices:385931b6-0121-4848-bcc8-54cb76436de1'
-						]
+							'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
+						],
 					},
 					'permissionConfig': null,
 					'modeConfig': null,
 					'sceneConfig': null,
-					'messageConfig': null
-				}
+					'messageConfig': null,
+				},
 			],
 			'targetSwitch': [
 				{
@@ -102,18 +102,18 @@ const response = {
 						'componentId': 'main',
 						'permissions': [
 							'r:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc'
-						]
+							'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
+						],
 					},
 					'permissionConfig': null,
 					'modeConfig': null,
 					'sceneConfig': null,
-					'messageConfig': null
-				}
-			]
+					'messageConfig': null,
+				},
+			],
 		},
 		'createdDate': '2020-02-29T15:51:17Z',
-		'lastUpdatedDate': '2020-02-29T15:51:17Z'
-	}
+		'lastUpdatedDate': '2020-02-29T15:51:17Z',
+	},
 }
 export default {request, response}

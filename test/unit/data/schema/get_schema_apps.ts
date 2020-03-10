@@ -4,8 +4,8 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
-	}
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+	},
 }
 const response = {
 	'userId': 'cttxzyhxtb',
@@ -34,7 +34,7 @@ const response = {
 			'lambdaArnCN': null,
 			'icon2x': null,
 			'aws:rep:updateregion': 'us-east-1',
-			'aws:rep:updatetime': 1574872827.371001
+			'aws:rep:updatetime': 1574872827.371001,
 		},
 		{
 			'oAuthClientSecret': 'my-not-so-client-decret-123abcxyz',
@@ -61,7 +61,7 @@ const response = {
 			'lambdaArnCN': null,
 			'icon2x': 'https://catalog3rd.samsungiotcloud.com/devws/1ysuNuhCZYPpu8ha',
 			'aws:rep:updateregion': 'us-east-1',
-			'aws:rep:updatetime': 1581384137.552001
+			'aws:rep:updatetime': 1581384137.552001,
 		},
 		{
 			'appName': 'Simple Schema Connector',
@@ -83,7 +83,7 @@ const response = {
 			'oAuthAuthorizationUrl': 'https://st-dummy-oauth-server.glitch.me/oauth/login',
 			'oAuthClientId': 'aac8cf7d9-4102-4cfa-a253-107efa32e4bf',
 			'oAuthTokenUrl': 'https://st-dummy-oauth-server.glitch.me/oauth/token',
-			'modified': 'Wed, 19 Feb 2020 16:44:56 GMT'
+			'modified': 'Wed, 19 Feb 2020 16:44:56 GMT',
 		},
 		{
 			'oAuthClientSecret': '10oubejohoa20u32fv6d9k6n8qv1it20hdpl8k14r1crl1g45jd8',
@@ -109,7 +109,7 @@ const response = {
 			'lambdaArnCN': null,
 			'icon2x': null,
 			'aws:rep:updateregion': 'us-east-1',
-			'aws:rep:updatetime': 1574870792.856001
+			'aws:rep:updatetime': 1574870792.856001,
 		},
 		{
 			'oAuthClientSecret': '77b6cf87-c20c-49d9-91d1-c79e4a336f0d',
@@ -137,7 +137,7 @@ const response = {
 			'lambdaArnCN': null,
 			'icon2x': 'https://catalog3rd.samsungiotcloud.com/devws/z37Twjyvo3isl3Du',
 			'aws:rep:updateregion': 'us-east-1',
-			'aws:rep:updatetime': 1583349775.064001
+			'aws:rep:updatetime': 1583349775.064001,
 		},
 		{
 			'appName': 'Virtual C2C Devices (Lambda)',
@@ -160,7 +160,7 @@ const response = {
 			'oAuthClientId': '15245388-2660-4a3e-a1be-1e276dba1377',
 			'oAuthTokenUrl': 'https://st-schema.ngrok.io/oauth/token',
 			'modified': 'Wed, 04 Sep 2019 17:53:33 GMT',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices'
+			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices',
 		},
 		{
 			'appName': 'Virtual C2C Devices',
@@ -183,7 +183,7 @@ const response = {
 			'oAuthAuthorizationUrl': 'https://st-schema.ngrok.io/oauth/login',
 			'oAuthClientId': '15245388-2660-4a3e-a1be-1e276dba1377',
 			'oAuthTokenUrl': 'https://st-schema.ngrok.io/oauth/token',
-			'modified': 'Wed, 04 Sep 2019 17:53:55 GMT'
+			'modified': 'Wed, 04 Sep 2019 17:53:55 GMT',
 		},
 		{
 			'appName': 'Functional Test Schema App',
@@ -201,7 +201,7 @@ const response = {
 			'oAuthClientId': '15245388-2660-4a3e-a1be-1e276dba1377',
 			'oAuthTokenUrl': 'https://st-schema.ngrok.io/oauth/token',
 			'modified': 'Thu, 05 Mar 2020 21:45:24 GMT',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices'
+			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices',
 		},
 		{
 			'appName': 'Functional Test Schema App (Modified)',
@@ -222,7 +222,7 @@ const response = {
 			'oAuthClientId': '15245388-2660-4a3e-a1be-1e276dba1377',
 			'oAuthTokenUrl': 'https://st-schema.ngrok.io/oauth/token',
 			'modified': 'Thu, 05 Mar 2020 20:27:10 GMT',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices'
+			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices',
 		},
 		{
 			'appName': 'Virtual ST Schema Devices',
@@ -245,7 +245,7 @@ const response = {
 			'oAuthClientId': '15245388-2660-4a3e-a1be-1e276dba1377',
 			'oAuthTokenUrl': 'https://st-schema.ngrok.io/oauth/token',
 			'modified': 'Tue, 30 Jul 2019 01:09:46 GMT',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices'
+			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices',
 		},
 		{
 			'appName': 'Dummy Schema Connector',
@@ -268,7 +268,7 @@ const response = {
 			'oAuthClientId': 'xxxxxxxx',
 			'oAuthTokenUrl': 'https://example.com/token',
 			'modified': 'Fri, 06 Sep 2019 15:23:41 GMT',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:virtual-sts-staging-dummy'
+			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:virtual-sts-staging-dummy',
 		},
 		{
 			'oAuthClientSecret': '77b6cf87-c20c-49d9-91d1-c79e4a336f0d',
@@ -296,8 +296,8 @@ const response = {
 			'lambdaArnCN': null,
 			'icon2x': null,
 			'aws:rep:updateregion': 'us-east-1',
-			'aws:rep:updatetime': 1575413505.978001
-		}
-	]
+			'aws:rep:updatetime': 1575413505.978001,
+		},
+	],
 }
 export default {request, response}

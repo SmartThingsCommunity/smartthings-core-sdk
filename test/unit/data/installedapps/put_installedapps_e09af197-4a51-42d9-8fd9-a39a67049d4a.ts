@@ -4,11 +4,11 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'data': {
-		'displayName': 'Updated Functional Test Switch Reflector'
-	}
+		'displayName': 'Updated Functional Test Switch Reflector',
+	},
 }
 const response = {
 	'installedAppId': 'e09af197-4a51-42d9-8fd9-a39a67049d4a',
@@ -20,7 +20,7 @@ const response = {
 	'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
 	'owner': {
 		'ownerType': 'USER',
-		'ownerId': 'c257d2c7-332b-d60d-808d-550bfbd54556'
+		'ownerId': 'c257d2c7-332b-d60d-808d-550bfbd54556',
 	},
 	'notices': [],
 	'createdDate': '2020-02-29T15:51:17Z',
@@ -29,15 +29,15 @@ const response = {
 		'pluginId': null,
 		'pluginUri': null,
 		'dashboardCardsEnabled': false,
-		'preInstallDashboardCardsEnabled': false
+		'preInstallDashboardCardsEnabled': false,
 	},
 	'iconImage': {
-		'url': null
+		'url': null,
 	},
 	'classifications': [
-		'AUTOMATION'
+		'AUTOMATION',
 	],
 	'principalType': 'LOCATION',
-	'singleInstance': false
+	'singleInstance': false,
 }
 export default {request, response}

@@ -464,7 +464,8 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param command the command name. Required when a capability ID has been specified in the previous parameter
 	 * @param args list of arguments. Required when a capability ID has been specified and the command has arguments
 	 */
-	public sendCommands(items: ConfigEntry[], capabilityIdOrCmdList: string | CommandRequest[], command: string, args: (object | string | number)[]): Promise<Status[]> {
+	public sendCommands(items: ConfigEntry[], capabilityIdOrCmdList: string | CommandRequest[],
+			command: string, args: (object | string | number)[]): Promise<Status[]> {
 		const results = []
 		if (items) {
 			for (const it of items) {

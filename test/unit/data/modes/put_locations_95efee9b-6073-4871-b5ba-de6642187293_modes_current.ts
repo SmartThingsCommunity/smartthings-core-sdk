@@ -4,15 +4,15 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'data': {
-		'modeId': '7b7ca378-03ed-419d-93c1-76d3bb41c8b3'
-	}
+		'modeId': '7b7ca378-03ed-419d-93c1-76d3bb41c8b3',
+	},
 }
 const response = {
 	'id': '7b7ca378-03ed-419d-93c1-76d3bb41c8b3',
 	'label': 'Mode Four',
-	'name': 'Mode 4'
+	'name': 'Mode 4',
 }
 export default {request, response}

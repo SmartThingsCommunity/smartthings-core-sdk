@@ -4,11 +4,11 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'params': {
-		'locationId': '95efee9b-6073-4871-b5ba-de6642187293'
-	}
+		'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
+	},
 }
 const response = {
 	'items': [
@@ -24,36 +24,36 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'switchLevel',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'colorControl',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'colorTemperature',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'refresh',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '4d24a797-e0c0-45ad-8725-04aa6eb2eeb1'
+				'id': '4d24a797-e0c0-45ad-8725-04aa6eb2eeb1',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': '46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
@@ -67,38 +67,38 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
+							'version': 1,
+						},
+					],
 				},
 				{
 					'id': 'outlet1',
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
-						}
-					]
+							'version': 1,
+						},
+					],
 				},
 				{
 					'id': 'outlet2',
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '3c7e7257-c378-4a43-a8c5-760ff7e9b644'
+				'id': '3c7e7257-c378-4a43-a8c5-760ff7e9b644',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': '5d5a44a6-8859-4574-adc7-03a28171a76d',
@@ -111,24 +111,24 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'refresh',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b'
+				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': '79b75c24-1ab0-487e-a046-08cb9e860c1d',
@@ -142,28 +142,28 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'contactSensor',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'battery',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'refresh',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '7417af19-8d1f-40ed-92ce-b64e2a44af52'
+				'id': '7417af19-8d1f-40ed-92ce-b64e2a44af52',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': '8cfb5b5f-1683-4459-932c-9493c63da626',
@@ -177,32 +177,32 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'motionSensor',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'battery',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'temperatureMeasurement',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'refresh',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '408305ac-c91f-42ff-9b1d-9fc14d83fe9b'
+				'id': '408305ac-c91f-42ff-9b1d-9fc14d83fe9b',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': 'a99366de-14e5-4580-85a7-b0833a80b929',
@@ -216,40 +216,40 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'temperatureMeasurement',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'thermostatHeatingSetpoint',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'thermostatCoolingSetpoint',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'thermostatMode',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'thermostatFanMode',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'thermostatOperatingState',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '96406249-c14c-4d0e-8dd2-f62fbe381e78'
+				'id': '96406249-c14c-4d0e-8dd2-f62fbe381e78',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': 'ab555251-04ef-4df9-afb9-37d95d36d2be',
@@ -262,36 +262,36 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'switchLevel',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'colorControl',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'colorTemperature',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'refresh',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '4d24a797-e0c0-45ad-8725-04aa6eb2eeb1'
+				'id': '4d24a797-e0c0-45ad-8725-04aa6eb2eeb1',
 			},
 			'viper': {},
-			'type': 'VIPER'
+			'type': 'VIPER',
 		},
 		{
 			'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
@@ -305,26 +305,26 @@ const response = {
 					'capabilities': [
 						{
 							'id': 'switch',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'refresh',
-							'version': 1
+							'version': 1,
 						},
 						{
 							'id': 'healthCheck',
-							'version': 1
-						}
-					]
-				}
+							'version': 1,
+						},
+					],
+				},
 			],
 			'profile': {
-				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b'
+				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b',
 			},
 			'viper': {},
-			'type': 'VIPER'
-		}
+			'type': 'VIPER',
+		},
 	],
-	'_links': {}
+	'_links': {},
 }
 export default {request, response}

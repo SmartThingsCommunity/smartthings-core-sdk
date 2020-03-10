@@ -54,7 +54,7 @@ describe('Schema',  () => {
 			'icon': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYU2Cs',
 			'icon2x': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYU2Cs',
 			'icon3x': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYU2Cs',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices'
+			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices',
 		})
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
 		expect(response).toBe(create.response)

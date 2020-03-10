@@ -4,7 +4,7 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'data': {
 		'commands': [
@@ -12,10 +12,10 @@ const request = {
 				'component': 'main',
 				'capability': 'switch',
 				'command': 'on',
-				'arguments': []
-			}
-		]
-	}
+				'arguments': [],
+			},
+		],
+	},
 }
 const response = {}
 export default {request, response}

@@ -27,9 +27,22 @@ module.exports = {
 	},
 	rules: {
 		indent: 'off',
-		'@typescript-eslint/indent': ['error', 'tab'],
+		'@typescript-eslint/indent': [
+			'error',
+			'tab',
+			{
+				FunctionDeclaration: { body: 1, parameters: 2 },
+				FunctionExpression: { body: 1, parameters: 2 },
+				SwitchCase: 1,
+			},
+		],
 		'linebreak-style': ['error',  'unix'],
-		quotes: ['error', 'single'],
+		quotes: 'off',
+		'@typescript-eslint/quotes': [
+			'error',
+			'single',
+			{ avoidEscape: true },
+		],
 		curly: ['error', 'all'],
 		'comma-dangle': [
 			'error',
