@@ -1,12 +1,8 @@
 import { Endpoint } from '../endpoint'
 import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
 import { Owner, Status, SuccessStatusValue } from '../types'
+import { CapabilityReference } from './devices'
 
-
-export interface CapabilityReference {
-	id: string
-	version?: number
-}
 
 export interface DeviceComponentRequest {
 	id?: string
