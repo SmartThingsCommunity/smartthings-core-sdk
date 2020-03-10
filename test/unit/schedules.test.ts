@@ -3,7 +3,6 @@ import {
 	BearerTokenAuthenticator,
 	Schedule,
 	SmartThingsClient,
-	Subscription,
 } from '../../src'
 import {expectedRequest} from './helpers/utils'
 import postDaily from './data/schedules/post_daily'

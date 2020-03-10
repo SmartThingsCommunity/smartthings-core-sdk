@@ -1,12 +1,12 @@
 const data = {
 	items: [
 		{
-			id: "switch",
-	        version: 1
-        },
-        {
-			id: "switch",
-	        version: 2
+			id: 'switch',
+			version: 1,
+		},
+		{
+			id: 'switch',
+			version: 2,
 		},
 	],
 	'_links': {

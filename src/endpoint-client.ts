@@ -88,8 +88,7 @@ export default class EndpointClient {
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	public async request<T = any, R = AxiosResponse<T>>(method: HttpClientMethod, path?: string,
-		data?: any, params?: HttpClientParams): Promise<T> {
-
+			data?: any, params?: HttpClientParams): Promise<T> {
 		const headers: HttpClientHeaders = this.config.headers ? { ...this.config.headers } : {}
 
 		if (this.config.loggingId) {

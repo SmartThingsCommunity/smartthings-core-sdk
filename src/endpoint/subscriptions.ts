@@ -305,11 +305,11 @@ export class SubscriptionsEndpoint extends Endpoint {
 	 * is true. If modes is not specified then events are sent for all modes.
 	 */
 	public subscribeToDevices(
-		devices: ConfigEntry[],
-		capability: string,
-		attribute: string,
-		subscriptionName: string,
-		options: DeviceSubscriptionOptions = {},
+			devices: ConfigEntry[],
+			capability: string,
+			attribute: string,
+			subscriptionName: string,
+			options: DeviceSubscriptionOptions = {},
 	): Promise<Subscription[]> {
 
 		const ops: Promise<Subscription>[] = []

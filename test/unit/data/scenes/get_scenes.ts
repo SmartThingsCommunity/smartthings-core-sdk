@@ -4,9 +4,9 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
-	'params': {}
+	'params': {},
 }
 const response = {
 	'items': [
@@ -21,7 +21,7 @@ const response = {
 			'lastUpdatedDate': 1582612667000,
 			'lastExecutedDate': 1582990765000,
 			'editable': false,
-			'apiVersion': 'ocfmode'
+			'apiVersion': 'ocfmode',
 		},
 		{
 			'sceneId': '13a63ff0-587e-45d2-8c4e-b40525f2093c',
@@ -34,7 +34,7 @@ const response = {
 			'lastUpdatedDate': 1582612638000,
 			'lastExecutedDate': 1582990762000,
 			'editable': false,
-			'apiVersion': 'ocfmode'
+			'apiVersion': 'ocfmode',
 		},
 		{
 			'sceneId': 'd6bb2387-d022-453c-8747-b9665b8697f1',
@@ -47,7 +47,7 @@ const response = {
 			'lastUpdatedDate': 1581190971000,
 			'lastExecutedDate': null,
 			'editable': false,
-			'apiVersion': 'ocfmode'
+			'apiVersion': 'ocfmode',
 		},
 		{
 			'sceneId': '90b36cd5-c017-47ca-8ebd-045ca63b571f',
@@ -60,12 +60,12 @@ const response = {
 			'lastUpdatedDate': 1582612587000,
 			'lastExecutedDate': 1582612680000,
 			'editable': false,
-			'apiVersion': 'ocfmode'
-		}
+			'apiVersion': 'ocfmode',
+		},
 	],
 	'_links': {
 		'next': null,
-		'previous': null
-	}
+		'previous': null,
+	},
 }
 export default {request, response}

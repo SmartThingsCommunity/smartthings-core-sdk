@@ -4,8 +4,8 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
-	}
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+	},
 }
 const response = {
 	'items': [
@@ -25,40 +25,40 @@ const response = {
 						{
 							'id': 'switch',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'switchLevel',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'colorControl',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'colorTemperature',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'refresh',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'healthCheck',
 							'version': 1,
-							'status': null
-						}
+							'status': null,
+						},
 					],
-					'categories': []
-				}
+					'categories': [],
+				},
 			],
 			'childDevices': [],
 			'profile': {
-				'id': '4d24a797-e0c0-45ad-8725-04aa6eb2eeb1'
+				'id': '4d24a797-e0c0-45ad-8725-04aa6eb2eeb1',
 			},
 			'app': null,
 			'ble': null,
@@ -73,12 +73,12 @@ const response = {
 				'manufacturerName': 'STS',
 				'modelName': 'c2c-rgbw-color-bulb',
 				'swVersion': null,
-				'hwVersion': null
+				'hwVersion': null,
 			},
 			'type': 'VIPER',
 			'vid': 'SmartThings-smartthings-c2c-rgbw-color-bulb',
 			'mnmn': 'SmartThings',
-			'ocfDeviceType': 'oic.d.light'
+			'ocfDeviceType': 'oic.d.light',
 		},
 		{
 			'deviceId': '79b75c24-1ab0-487e-a046-08cb9e860c1d',
@@ -96,30 +96,30 @@ const response = {
 						{
 							'id': 'contactSensor',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'battery',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'refresh',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'healthCheck',
 							'version': 1,
-							'status': null
-						}
+							'status': null,
+						},
 					],
-					'categories': []
-				}
+					'categories': [],
+				},
 			],
 			'childDevices': [],
 			'profile': {
-				'id': '7417af19-8d1f-40ed-92ce-b64e2a44af52'
+				'id': '7417af19-8d1f-40ed-92ce-b64e2a44af52',
 			},
 			'app': null,
 			'ble': null,
@@ -134,12 +134,12 @@ const response = {
 				'manufacturerName': 'STS',
 				'modelName': 'c2c-contact-3',
 				'swVersion': null,
-				'hwVersion': null
+				'hwVersion': null,
 			},
 			'type': 'VIPER',
 			'vid': 'SmartThings-smartthings-c2c-contact-3',
 			'mnmn': 'SmartThings',
-			'ocfDeviceType': 'x.com.st.d.sensor.contact'
+			'ocfDeviceType': 'x.com.st.d.sensor.contact',
 		},
 		{
 			'deviceId': '8cfb5b5f-1683-4459-932c-9493c63da626',
@@ -157,35 +157,35 @@ const response = {
 						{
 							'id': 'motionSensor',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'battery',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'temperatureMeasurement',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'refresh',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'healthCheck',
 							'version': 1,
-							'status': null
-						}
+							'status': null,
+						},
 					],
-					'categories': []
-				}
+					'categories': [],
+				},
 			],
 			'childDevices': [],
 			'profile': {
-				'id': '408305ac-c91f-42ff-9b1d-9fc14d83fe9b'
+				'id': '408305ac-c91f-42ff-9b1d-9fc14d83fe9b',
 			},
 			'app': null,
 			'ble': null,
@@ -200,12 +200,12 @@ const response = {
 				'manufacturerName': 'STS',
 				'modelName': 'c2c-motion',
 				'swVersion': null,
-				'hwVersion': null
+				'hwVersion': null,
 			},
 			'type': 'VIPER',
 			'vid': 'SmartThings-smartthings-c2c-motion',
 			'mnmn': 'SmartThings',
-			'ocfDeviceType': 'x.com.st.d.sensor.motion'
+			'ocfDeviceType': 'x.com.st.d.sensor.motion',
 		},
 		{
 			'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
@@ -223,25 +223,25 @@ const response = {
 						{
 							'id': 'switch',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'refresh',
 							'version': 1,
-							'status': null
+							'status': null,
 						},
 						{
 							'id': 'healthCheck',
 							'version': 1,
-							'status': null
-						}
+							'status': null,
+						},
 					],
-					'categories': []
-				}
+					'categories': [],
+				},
 			],
 			'childDevices': [],
 			'profile': {
-				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b'
+				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b',
 			},
 			'app': null,
 			'ble': null,
@@ -256,17 +256,17 @@ const response = {
 				'manufacturerName': 'STS',
 				'modelName': 'c2c-switch',
 				'swVersion': null,
-				'hwVersion': null
+				'hwVersion': null,
 			},
 			'type': 'VIPER',
 			'vid': 'SmartThings-smartthings-c2c-switch',
 			'mnmn': 'SmartThings',
-			'ocfDeviceType': 'oic.d.switch'
-		}
+			'ocfDeviceType': 'oic.d.switch',
+		},
 	],
 	'_links': {
 		'next': null,
-		'previous': null
-	}
+		'previous': null,
+	},
 }
 export default {request, response}

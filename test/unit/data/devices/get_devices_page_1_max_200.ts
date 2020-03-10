@@ -4,8 +4,8 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d'
-	}
+		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+	},
 }
 const response = {
 	items: [
@@ -34,7 +34,7 @@ const response = {
 				},
 			],
 			'profile': {
-				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b'
+				'id': '7eaca7e4-dd01-4711-8e20-1a869bb44b1b',
 			},
 			'viper': {},
 			'type': 'VIPER',

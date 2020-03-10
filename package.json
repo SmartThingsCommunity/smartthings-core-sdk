@@ -45,8 +45,8 @@
 		"typescript": "^3.8.3"
 	},
 	"scripts": {
-		"format": "eslint src/**/*.ts .eslintrc.js test/**/*.ts --ignore-pattern '!.eslintrc.js' --fix",
-		"lint": "eslint src/**/*.ts test/**/*.ts .eslintrc.js --ignore-pattern '!.eslintrc.js'",
+		"format": "eslint --ext .ts src test .eslintrc.js --ignore-pattern '!.eslintrc.js' --fix",
+		"lint": "eslint --ext .ts src test .eslintrc.js --ignore-pattern '!.eslintrc.js'",
 		"test": "jest",
 		"test-coverage": "jest --coverage",
 		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
