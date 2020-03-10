@@ -7,6 +7,7 @@ export * from './rest-client'
 export * from './types'
 
 export * from './endpoint/apps'
+export * from './endpoint/capabilities'
 export * from './endpoint/deviceprofiles'
 export * from './endpoint/devices'
 export * from './endpoint/installedapps'

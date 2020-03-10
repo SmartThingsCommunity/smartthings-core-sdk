@@ -9,7 +9,7 @@ export enum Required {
 	DATA = 'data'
 }
 
-export enum CapabilityStatus {
+export enum CustomCapabilityStatus {
 	PROPOSED = 'proposed',
 	LIVE = 'live',
 	DEPRECATED = 'deprecated',
@@ -20,11 +20,6 @@ export interface CapabilitySummary {
 	id: string
 	version: number
 	status?: string
-}
-
-//might be able to remove this one, since I used getPagedItems in list functions
-export interface CapabilityList {
-	items: CapabilitySummary[]
 }
 
 export interface DataSchema {
@@ -88,8 +83,8 @@ export interface CapabilityCommand {
 }
 
 export interface CapabilityUpdate {
-	attributes?: { [name: string]: CapabilityAttribute } //name: lower camelcase
-	commands?: { [name: string]: CapabilityCommand } // name: lower camelcase
+	attributes?: { [name: string]: CapabilityAttribute } // name: lower camel case
+	commands?: { [name: string]: CapabilityCommand } // name: lower camel case
 }
 
 export interface CapabilityCreate extends CapabilityUpdate {
@@ -99,7 +94,7 @@ export interface CapabilityCreate extends CapabilityUpdate {
 export interface Capability extends CapabilityCreate {
 	id?: string
 	version?: number
-	status?: CapabilityStatus
+	status?: CustomCapabilityStatus
 }
 
 export interface Namespace {
@@ -123,13 +118,11 @@ export class CapabilitiesEndpoint extends Endpoint {
 		return list
 	}
 
-	//not public yet
 	public async listNamespaces(): Promise<Namespace[]> {
 		const list = await this.client.getPagedItems<Namespace>('/namespaces')
 		return list
 	}
 
-	//not public yet
 	public async listByNamespace(namespace: string): Promise<CapabilitySummary[]> {
 		const list = await this.client.getPagedItems<CapabilitySummary>(`/namespaces/${namespace}`)
 		return list

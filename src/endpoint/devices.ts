@@ -4,7 +4,7 @@ import { ConfigEntry} from './installedapps'
 import { Links, Status, SuccessStatusValue } from '../types'
 
 
-export interface Capability {
+export interface CapabilityReference {
 	id: string
 	version?: number
 }
@@ -12,7 +12,7 @@ export interface Capability {
 export interface Component {
 	id?: string // <^[-_!.~'()*0-9a-zA-Z]{1,36}$>
 	label?: string
-	capabilities: Capability[]
+	capabilities: CapabilityReference[]
 }
 
 export interface DeviceProfileReference {

@@ -42,7 +42,7 @@
 		"prettier": "^1.19.1",
 		"ts-jest": "^24.2.0",
 		"typedoc": "^0.15.2",
-		"typescript": "^3.8.2"
+		"typescript": "^3.8.3"
 	},
 	"scripts": {
 		"format": "eslint src/**/*.ts .eslintrc.js test/**/*.ts --ignore-pattern '!.eslintrc.js' --fix",
