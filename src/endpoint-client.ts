@@ -88,7 +88,7 @@ export default class EndpointClient {
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	public async request<T = any, R = AxiosResponse<T>>(method: HttpClientMethod, path?: string,
-			data?: any, params?: HttpClientParams): Promise<T> {
+		data?: any, params?: HttpClientParams): Promise<T> {
 
 		const headers: HttpClientHeaders = this.config.headers ? { ...this.config.headers } : {}
 
@@ -126,7 +126,7 @@ export default class EndpointClient {
 			response = await axios.request(axiosConfig)
 			return response.data
 		} catch (error) {
-			if (error.status === 401 && this.config.authenticator.refresh) {
+			if (error.response && error.response.status === 401 && this.config.authenticator.refresh) {
 				if (this.config.authenticator.acquireRefreshMutex) {
 					const release = await this.config.authenticator.acquireRefreshMutex()
 					try {
