@@ -239,7 +239,7 @@ describe('Endpoint Client',  () => {
 	it('expired token request', async () => {
 		axios.request
 			.mockImplementationOnce(() => Promise.reject(
-				{ status: 401, data: 'Unauthorized' }))
+				{ response: {status: 401, data: 'Unauthorized'} }))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { 'access_token': 'abcdefghijk', 'refresh_token': 'lmnopqrstuv' } }))
 			.mockImplementationOnce(() => Promise.resolve(
@@ -268,7 +268,7 @@ describe('Endpoint Client',  () => {
 
 		axios.request
 			.mockImplementationOnce(() => Promise.reject(
-				{ status: 401, data: 'Unauthorized' }))
+				{response: { status: 401, data: 'Unauthorized' }}))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { 'access_token': 'abcdefghijk', 'refresh_token': 'lmnopqrstuv' } }))
 			.mockImplementationOnce(() => Promise.resolve(
@@ -281,12 +281,12 @@ describe('Endpoint Client',  () => {
 	})
 
 	it('get 404', async () => {
-		axios.request.mockImplementationOnce(() => Promise.reject({ status: 404, data: 'Not Found' }))
+		axios.request.mockImplementationOnce(() => Promise.reject({response: { status: 404, data: 'Not Found' }}))
 		let threwError = false
 		try {
 			await client.get('path2')
 		} catch (error) {
-			expect(error.status).toBe(404)
+			expect(error.response.status).toBe(404)
 			threwError = true
 		}
 		expect(axios.request).toHaveBeenCalledTimes(1)
@@ -296,14 +296,14 @@ describe('Endpoint Client',  () => {
 
 	it('get refresh fail', async () => {
 		axios.request
-			.mockImplementationOnce(() => Promise.reject({ status: 401, data: 'Unauthorized' }))
-			.mockImplementationOnce(() => Promise.reject({ status: 500, data: 'Server error' }))
+			.mockImplementationOnce(() => Promise.reject({response: { status: 401, data: 'Unauthorized' }}))
+			.mockImplementationOnce(() => Promise.reject({response: { status: 500, data: 'Server error' }}))
 
 		let threwError = false
 		try {
 			await client.get('path2')
 		} catch (error) {
-			expect(error.status).toBe(500)
+			expect(error.response.status).toBe(500)
 			threwError = true
 		}
 		expect(axios.request).toHaveBeenCalledTimes(2)
