@@ -198,7 +198,7 @@ export interface SchemaPage {
 	pageType: SchemaPageType
 }
 
-export interface UnauthorizedSchemaPage {
+export interface UnauthorizedSchemaPage extends SchemaPage {
 	/**
 	 * An href to the OAuth page for this connector that allows authentication and connection to the SmartThings
 	 * patform.

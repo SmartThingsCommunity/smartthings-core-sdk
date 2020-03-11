@@ -1,8 +1,6 @@
 import axios from '../../__mocks__/axios'
 
-import { NoOpAuthenticator } from '../../src/authenticator'
-import { SmartThingsClient } from '../../src/st-client'
-import { Capability, CapabilitySummary, CapabilityCreate } from '../../src/endpoint/capabilities'
+import { NoOpAuthenticator, SmartThingsClient, Capability, CapabilitySummary, CapabilityCreate } from '../../src'
 import capability1 from './data/capabilities/capability1'
 import capabilitiesList from './data/capabilities/list'
 import capabilitiesList1 from './data/capabilities/list1'
@@ -33,11 +31,11 @@ describe('Capabilities',  () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})
-    
+
 	it('list', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: capabilitiesList}))
 		const response: CapabilitySummary[] = await client.capabilities.list()
-		
+
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities', undefined))
 		expect(response).toBe(capabilitiesList.items)
@@ -59,7 +57,7 @@ describe('Capabilities',  () => {
 	it('list by id with one version', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: capabilitiesList}))
 		const response: CapabilitySummary[] = await client.capabilities.listVersions('switch')
-		
+
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/switch', undefined))
 		expect(response).toBe(capabilitiesList.items)
@@ -69,7 +67,7 @@ describe('Capabilities',  () => {
 		axios.request
 			.mockImplementationOnce(() => Promise.resolve({status: 200, data: capabilitiesList3}))
 		const response: CapabilitySummary[] = await client.capabilities.listVersions('switch')
-		
+
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/switch', undefined))
 		expect(response).toBe(capabilitiesList3.items)
