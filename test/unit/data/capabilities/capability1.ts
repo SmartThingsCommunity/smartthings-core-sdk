@@ -1,13 +1,13 @@
 import {
-	CapabilityStatus,
+	CustomCapabilityStatus,
 	Required,
-} from '../../../../src/endpoint/capabilities'
+} from '../../../../src'
 
 
 const data = {
 	id: 'namespace.colorTemperature',
 	version: 1,
-	status: CapabilityStatus.PROPOSED,
+	status: CustomCapabilityStatus.PROPOSED,
 	name: 'Color Temperature',
 	attributes: {
 		colorTemperature: {
