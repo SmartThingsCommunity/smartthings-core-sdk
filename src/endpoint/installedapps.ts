@@ -486,11 +486,12 @@ export class InstalledAppsEndpoint extends Endpoint{
 	}
 
 	/**
-	 * Deletes an installed app instance
+	 * Deletes an installed app instance. If the client is configured with an installedApp ID this value can be
+	 * omitted.
 	 * @param id UUID of the installed app
 	 */
-	public async delete(id: string): Promise<Status> {
-		await this.client.delete<Count>(id)
+	public async delete(id?: string): Promise<Status> {
+		await this.client.delete<Count>(this.installedAppId(id))
 		return SuccessStatusValue
 	}
 
