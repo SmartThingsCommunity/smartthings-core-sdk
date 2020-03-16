@@ -54,7 +54,7 @@ export interface NotificationRequest {
 	 * set here, you can set the default language when it does not match with
 	 * the actual setting.
 	 */
-	messages: Array<NotificationItem>
+	messages: NotificationItem[]
 
 	/**
 	 * Supports the ability to replace the custom variable in a title or body.
@@ -62,7 +62,7 @@ export interface NotificationRequest {
 	 * location nickname that the platform has, put it as the form of
 	 * ${System.locationNickname} in the title or body.
 	 */
-	replacements?: Array<ReplacementsObject>
+	replacements?: ReplacementsObject[]
 
 	/**
 	 * Supports the ability to launch the specific plugin on your SmartThings app.

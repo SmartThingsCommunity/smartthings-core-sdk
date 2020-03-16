@@ -6,8 +6,8 @@ import { CapabilityReference } from './devices'
 
 export interface DeviceComponentRequest {
 	id?: string
-	capabilities?: Array<CapabilityReference>
-	categories?: Array<string>
+	capabilities?: CapabilityReference[]
+	categories?: string[]
 }
 
 export interface DeviceComponent extends DeviceComponentRequest {
@@ -24,12 +24,12 @@ export enum DeviceProfileStatus {
 
 export interface DeviceProfileRequest {
 	name?: string
-	components?: Array<DeviceComponentRequest>
+	components?: DeviceComponentRequest[]
 	metadata?: { [key: string]: string }
 }
 
 export interface DeviceProfileUpdateRequest {
-	components?: Array<DeviceComponentRequest>
+	components?: DeviceComponentRequest[]
 	metadata?: { [key: string]: string }
 }
 
@@ -37,7 +37,7 @@ export interface DeviceProfile extends DeviceProfileRequest {
 	id: string
 	name: string
 	owner: Owner
-	components: Array<DeviceComponent>
+	components: DeviceComponent[]
 	metadata?: { [key: string]: string }
 	status: DeviceProfileStatus
 }

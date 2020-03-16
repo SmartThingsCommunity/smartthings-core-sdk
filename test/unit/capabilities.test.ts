@@ -1,6 +1,6 @@
 import axios from '../../__mocks__/axios'
 
-import { NoOpAuthenticator, SmartThingsClient, Capability, CapabilitySummary, CapabilityCreate, Namespace } from '../../src'
+import { NoOpAuthenticator, SmartThingsClient, Capability, CapabilitySummary, CapabilityCreate, CapabilityNamespace } from '../../src'
 import capability1 from './data/capabilities/capability1'
 import capabilitiesList from './data/capabilities/list'
 import capabilitiesList1 from './data/capabilities/list1'
@@ -80,7 +80,7 @@ describe('Capabilities',  () => {
 	it('list namespaces', async () => {
 		axios.request
 			.mockImplementationOnce(() => Promise.resolve({status: 200, data: namespacesList}))
-		const response: Namespace[] = await client.capabilities.listNamespaces()
+		const response: CapabilityNamespace[] = await client.capabilities.listNamespaces()
 
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/namespaces', undefined))

@@ -29,9 +29,9 @@ export enum SignatureType {
 
 export interface LambdaSmartApp {
 	/**
-	 * A list of AWS arns referencing a Lambda function.
+	 * A list of AWS ARNs referencing a Lambda function.
 	 */
-	functions?: Array<string>
+	functions?: string[]
 }
 
 export class WebhookSmartApp {
@@ -80,7 +80,7 @@ export interface App {
 	 * Services\" menu in mobile clients. * HIDDEN - Denotes an integration
 	 * that should not display in mobile clients
 	 */
-	classifications?: Array<AppClassification>
+	classifications?: AppClassification[]
 	/**
 	 * A default display name for an app.
 	 */
@@ -116,8 +116,8 @@ export interface App {
 
 export interface OAuthRequest {
 	clientName: string
-	scope?: Array<string>
-	redirectUris?: Array<string>
+	scope?: string[]
+	redirectUris?: string[]
 }
 
 export interface AppRequest {
@@ -140,7 +140,7 @@ export interface AppRequest {
 	 * Services\" menu in mobile clients. * HIDDEN - Denotes an integration
 	 * that should not display in mobile clients
 	 */
-	classifications?: Array<AppClassification>
+	classifications?: AppClassification[]
 	/**
 	 * A default display name for an app.
 	 */
@@ -181,19 +181,19 @@ export interface AppOAuth {
 	 * A list of SmartThings API OAuth scope identifiers that maybe required to
 	 * execute your integration.
 	 */
-	scope?: Array<string>
+	scope?: string[]
 	/**
 	 * A list of redirect URIs.
 	 */
-	redirectUris?: Array<string>
+	redirectUris?: string[]
 }
 
 export interface AppOAuthResponse {
 	clientName: string
 	oauthClientId: string
 	oauthClientSecret: string
-	scope?: Array<string>
-	redirectUris?: Array<string>
+	scope?: string[]
+	redirectUris?: string[]
 }
 
 export interface AppSettings {

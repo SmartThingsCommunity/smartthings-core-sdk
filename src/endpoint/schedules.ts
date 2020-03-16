@@ -43,7 +43,7 @@ export interface Schedule {
 	/**
 	 * list of scheduled execution times in millis from jan 1 1970 UTC
 	 */
-	scheduledExecutions?: Array<number>
+	scheduledExecutions?: number[]
 	/**
 	 * The unique per installed app name of the schedule.
 	 */

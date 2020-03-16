@@ -19,11 +19,11 @@ export interface DeviceConfig {
 	 * The component ID on the device.
 	 */
 	componentId?: string
-	permissions?: Array<string>
+	permissions?: string[]
 }
 
 export interface PermissionConfig {
-	permissions?: Array<string>
+	permissions?: string[]
 }
 
 export interface ModeConfig {
@@ -38,7 +38,7 @@ export interface SceneConfig {
 	 * The ID of the scene.
 	 */
 	sceneId?: string
-	permissions?: Array<string>
+	permissions?: string[]
 }
 
 export interface MessageConfig {
@@ -191,7 +191,7 @@ export interface ConfigurationRequest {
 	locationId: string
 	installedAppType: InstalledAppType
 	configurationStatus: InstallConfigurationStatus
-	config: {[name: string]: Array<ConfigEntry>}
+	config: {[name: string]: ConfigEntry[]}
 }
 
 export interface InstalledAppConfiguration {
@@ -227,12 +227,12 @@ export interface InstalledAppUpdateRequest {
 }
 
 export interface ConfigurationUpdateRequest {
-	config: {[name: string]: Array<ConfigEntry>}
+	config: {[name: string]: ConfigEntry[]}
 }
 
 export interface ConfigurationPatchRequest {
 	removals: string[]
-	upserts: {[name: string]: Array<ConfigEntry>}
+	upserts: {[name: string]: ConfigEntry[]}
 }
 
 export interface ConfigurationItemsList {
@@ -264,8 +264,8 @@ export interface SmartAppDashboardEvent {
 }
 
 export interface InstalledAppEvents {
-	smartAppEvents?: Array<SmartAppEvent>
-	smartAppDashboardEvents?: Array<SmartAppDashboardEvent>
+	smartAppEvents?: SmartAppEvent[]
+	smartAppDashboardEvents?: SmartAppDashboardEvent[]
 }
 
 export enum InstalledAppMessageType {

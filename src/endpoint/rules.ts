@@ -39,8 +39,8 @@ export interface SingleOperandCondition {
 }
 
 export interface Condition {
-	and?: Array<Condition>
-	or?: Array<Condition>
+	and?: Condition[]
+	or?: Condition[]
 	not?: Condition
 	equals?: SimpleCondition
 	greaterThan?: SimpleCondition
@@ -84,7 +84,7 @@ export enum OperandAggregationMode {
 }
 
 export interface ArrayOperand {
-	operands: Array<Operand>
+	operands: Operand[]
 	aggregation?: OperandAggregationMode
 }
 
@@ -93,7 +93,7 @@ export class MapOperand extends null<string, Operand> {
 }
 
 export interface DeviceOperand {
-	devices?: Array<string>
+	devices?: string[]
 	component: string
 	capability: string
 	attribute: string
@@ -126,7 +126,7 @@ export interface DateOperand {
 	 * A java time zone ID reference
 	 */
 	timeZoneId?: string
-	daysOfWeek?: Array<DayOfWeek>
+	daysOfWeek?: DayOfWeek[]
 	year?: number
 	month?: number
 	day?: number
@@ -137,7 +137,7 @@ export interface DateTimeOperand {
 	 * A java time zone ID reference
 	 */
 	timeZoneId?: string
-	daysOfWeek?: Array<DayOfWeek>
+	daysOfWeek?: DayOfWeek[]
 	year?: number
 	month?: number
 	day?: number
@@ -204,8 +204,8 @@ export interface IfAction extends Condition {
 	 * Unique id for the action
 	 */
 	id?: string
-	then?: Array<Action>
-	'_else'?: Array<Action>
+	then?: Action[]
+	'_else'?: Action[]
 	subscriptionMode?: SubscriptionMode
 }
 
@@ -222,8 +222,8 @@ export interface CommandAction {
 	 * Unique id for the action
 	 */
 	id?: string
-	devices: Array<string>
-	commands: Array<DeviceCommand>
+	devices: string[]
+	commands: DeviceCommand[]
 }
 
 export interface EveryAction {
@@ -233,7 +233,7 @@ export interface EveryAction {
 	id?: string
 	interval?: Interval
 	specific?: TimeOperand
-	actions: Array<Action>
+	actions: Action[]
 }
 
 export interface LocationAction {
@@ -257,7 +257,7 @@ export interface RuleRequest {
 	 * Name for the rule
 	 */
 	name: string
-	actions: Array<Action>
+	actions: Action[]
 	/**
 	 * Time zone ID for this rule. This overrides the location time zone ID,
 	 * but is overridden by time zone ID provided by each operand individually.

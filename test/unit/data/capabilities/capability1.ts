@@ -1,7 +1,4 @@
-import {
-	CustomCapabilityStatus,
-	Required,
-} from '../../../../src'
+import { CustomCapabilityStatus, CapabilitySchemaPropertyName } from '../../../../src'
 
 
 const data = {
@@ -26,7 +23,7 @@ const data = {
 					},
 				},
 				additionalProperties: false,
-				required: [Required.VALUE],
+				required: [CapabilitySchemaPropertyName.VALUE],
 			},
 		},
 	},
