@@ -7,7 +7,7 @@ const data = {
 	],
 	'_links': {
 		'next': {
-			'href': 'https://api.smartthings.com/capabilities?page=1&max=200',
+			'href': 'https://api.smartthings.com/capabilities/namespaces/testNamespace?page=1&max=200',
 		},
 	},
 }

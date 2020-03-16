@@ -114,7 +114,7 @@ export class CapabilitiesEndpoint extends Endpoint {
 	}
 
 	public async listNamespaces(): Promise<Namespace[]> {
-		const list = await this.client.getPagedItems<Namespace>('namespaces')
+		const list = await this.client.get<Namespace[]>('namespaces')
 		return list
 	}
 
