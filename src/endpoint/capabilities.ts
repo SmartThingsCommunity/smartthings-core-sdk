@@ -108,23 +108,23 @@ export class CapabilitiesEndpoint extends Endpoint {
 		super(new EndpointClient('capabilities', config))
 	}
 
-	public async list(): Promise<CapabilitySummary[]> {
+	public async list(namespace: string): Promise<CapabilitySummary[]> {
+		const list = await this.client.getPagedItems<CapabilitySummary>(`namespaces/${namespace}`)
+		return list
+	}
+
+	public async listNamespaces(): Promise<Namespace[]> {
+		const list = await this.client.getPagedItems<Namespace>('namespaces')
+		return list
+	}
+
+	public async listStandard(): Promise<CapabilitySummary[]> {
 		const list = await this.client.getPagedItems<CapabilitySummary>()
 		return list
 	}
 
 	public async listVersions(capabilityId: string): Promise<CapabilitySummary[]> {
 		const list = await this.client.getPagedItems<CapabilitySummary>(capabilityId)
-		return list
-	}
-
-	public async listNamespaces(): Promise<Namespace[]> {
-		const list = await this.client.getPagedItems<Namespace>('/namespaces')
-		return list
-	}
-
-	public async listByNamespace(namespace: string): Promise<CapabilitySummary[]> {
-		const list = await this.client.getPagedItems<CapabilitySummary>(`/namespaces/${namespace}`)
 		return list
 	}
 
