@@ -79,7 +79,6 @@ export interface SignedHttpRequest {
 
 export class SignatureVerifier {
 	constructor(private keyResolver: HttpKeyResolver, private logger?: Logger) {
-
 	}
 
 	async isAuthorized(request: SignedHttpRequest): Promise<boolean> {

@@ -3,7 +3,7 @@ import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
 import { Status, SuccessStatusValue } from '../types'
 
 
-export enum Required {
+export enum CapabilitySchemaPropertyName {
 	VALUE = 'value',
 	UNIT = 'unit',
 	DATA = 'data'
@@ -22,20 +22,20 @@ export interface CapabilitySummary {
 	status?: string
 }
 
-export interface DataSchema {
+export interface CapabilityDataSchema {
 	type: string
 	additionalProperties?: boolean
 	required?: string[]
-	properties?: { [name: string]: JSONSchema }
+	properties?: { [name: string]: CapabilityJSONSchema }
 }
 
-export interface UnitSchema {
+export interface CapabilityUnitSchema {
 	type?: string
 	enum?: string[]
 	default?: string
 }
 
-export interface JSONSchema {
+export interface CapabilityJSONSchema {
 	type?: string
 	minimum?: number
 	maximum?: number
@@ -45,41 +45,41 @@ export interface JSONSchema {
 	propertyName?: unknown
 }
 
-export interface AttributeProperties {
-	value: JSONSchema
-	unit?: UnitSchema
-	data?: DataSchema
+export interface CapabilityAttributeProperties {
+	value: CapabilityJSONSchema
+	unit?: CapabilityUnitSchema
+	data?: CapabilityDataSchema
 }
 
-export interface EnumCommand {
+export interface CapabilityEnumCommand {
 	command: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	value: any
 }
 
-export interface AttributeSchema {
+export interface CapabilityAttributeSchema {
 	title?: string
 	type: string
-	properties: AttributeProperties
+	properties: CapabilityAttributeProperties
 	additionalProperties: boolean
-	required?: Required[]
+	required?: CapabilitySchemaPropertyName[]
 }
 
 export interface CapabilityAttribute {
-	schema: AttributeSchema
+	schema: CapabilityAttributeSchema
 	setter?: string
-	enumCommands?: EnumCommand[]
+	enumCommands?: CapabilityEnumCommand[]
 }
 
-export interface Argument {
+export interface CapabilityArgument {
 	name: string
 	optional?: boolean
-	schema: JSONSchema
+	schema: CapabilityJSONSchema
 }
 
 export interface CapabilityCommand {
 	name: string // ^[[a-z]*([A-Z][a-z]*)*]{1,36}$
-	arguments?: Argument[]
+	arguments?: CapabilityArgument[]
 }
 
 export interface CapabilityUpdate {
@@ -97,35 +97,502 @@ export interface Capability extends CapabilityCreate {
 	status?: CustomCapabilityStatus
 }
 
-export interface Namespace {
+export interface CapabilityNamespace {
 	name: string
 	ownerType: string
 	ownerId: string
 }
+
+export interface CapabilityAlternative {
+	/**
+	 * The attribute value or command (argument) name to be shown in this
+	 * alternative string.
+	 */
+	key: string
+	/**
+	 * The string that shows whether the property value is equal to the 'key'
+	 * value.
+	 */
+	value: string
+	/**
+	 * Active components are shown colorfully while inactive ones are shown
+	 * dimmed in the UI. For example, the "motion sensor" capability might use
+	 * active for "detected" inactive for "clear" so that a user can see
+	 * the "detected" state easily.
+	 *
+	 * Default: "active"
+	 */
+	type?: 'active'| 'inactive'
+	/**
+	 * Additional description for each value. This description is shown in
+	 * the detail view or automation under this particular key.
+	 */
+	description?: string
+}
+
+export interface CapabilityBasicState {
+	/**
+	 * This contains strings corresponding to each possible value of the
+	 * property. The strings must be human-readable so that the UI Client
+	 * can show these strings as user options.
+	 */
+	alternatives?: CapabilityAlternative[]
+}
+
+export interface CapabilityLabeledState extends CapabilityBasicState {
+	/**
+	 * This displays a string. This can be a formatted string with variables.
+	 *
+	 * Example: {{attribute.value}} {{attribute.unit}}
+	 */
+	label?: string
+}
+
+export interface CapabilityGrouped {
+	/**
+	 * The group name to which this belongs. Some complex devices can be
+	 * shown grouped dashboard card. This is used for grouping states
+	 * and actions in the dashboard.
+	 */
+	group?: string
+}
+
+export enum CapabilityPresentationOperator {
+	CONTAINS = 'CONTAINS',
+	DOES_NOT_CONTAIN = 'DOES_NOT_CONTAIN',
+	EQUALS = 'EQUALS',
+	DOES_NOT_EQUAL = 'DOES_NOT_EQUAL',
+	GREATER_THAN = 'GREATER_THAN',
+	GREATER_THAN_OR_EQUALS = 'GREATER_THAN_OR_EQUALS',
+	LESS_THAN = 'LESS_THAN',
+	LESS_THAN_OR_EQUALS = 'LESS_THAN_OR_EQUALS',
+}
+
+export interface CapabilityPushButton {
+	command: string
+	argument?: string
+}
+
+export interface CapabilityToggleSwitchCommand {
+	/**
+	 * To specify separate commands with no arguments for on and off, use the
+	 * “on” and “off” fields respectively. To specify a single command, use
+	 * “name” for the command and the “on” and “off” fields for the arguments.
+	 */
+	command: {
+		name?: string
+		on: string
+		off: string
+	}
+}
+
+export interface CapabilityToggleSwitch extends CapabilityToggleSwitchCommand {
+	state?: {
+		attribute: string
+		on: string
+		off: string
+	} & CapabilityLabeledState
+}
+
+export interface CapabilityPlayPause {
+	/**
+	 * To specify separate commands for play and pause, use the “play” and
+	 * “pause” fields respectively. To specify a single command, use “name”
+	 * for the command and the “play” and “pause” fields for the arguments.
+	 */
+	command: {
+		name?: string
+		play: string
+		pause: string
+	}
+	state: {
+		/**
+		 * The value of "attribute" which indicates playing state. When the
+		 * attribute value equals to this then UI will show playing state.
+		 */
+		attribute: string
+		play: string
+		/**
+		 * The value of "attribute" which indicates paused state. When the
+		 * attribute value equals to this then UI will show paused state.
+		 */
+		pause: string
+	} & CapabilityBasicState
+}
+
+export interface CapabilityPlayStop {
+	/**
+	 * To specify separate commands for play and stop, use the “play” and
+	 * “pause” fields respectively. To specify a single command, use “name”
+	 * for the command and the “play” and “pause” fields for the arguments.
+	 */
+	command: {
+		name?: string
+		play: string
+		stop: string
+	}
+	state: {
+		attribute: string
+		/**
+		 * The value of "attribute" which indicates playing state. When the
+		 * attribute value equals to this then UI will show playing state.
+		 */
+		play: string
+		/**
+		 * The value of "attribute" which indicates stopped state. When the
+		 * attribute value equals to this then UI will show stopped state.
+		 */
+		stop: string
+	} & CapabilityBasicState
+}
+
+export interface CapabilitySlider {
+	range: [number, number]
+	step: number
+	/**
+	 * The command which will set the value of the slider. The value is given
+	 * as its only argument.
+	 */
+	command: string
+	attribute?: string
+}
+
+export interface CapabilityList {
+	command?: {
+		name?: string
+		/**
+		 * This contains strings corresponding to each possible value of the
+		 * property. The strings must be human-readable so that the UI Client
+		 * can show these strings as user options.
+		 */
+		alternatives: CapabilityAlternative[]
+		/**
+		 * The attribute name specified in supportedValues is an array that has
+		 * values supported at runtime.
+		 */
+		supportedValues?: string
+	}
+	state?: CapabilityLabeledState
+}
+
+export interface CapabilityTextField {
+	command: string
+	/**
+	 * This displays a string. This can be a formatted string with variables.
+	 *
+	 * Example: {{attribute.value}} {{attribute.unit}}
+	 */
+	state?: string
+	range?: [number, number]
+}
+
+export interface CapabilityNumberField {
+	attribute?: string
+	command: string
+	range?: [number, number]
+}
+
+export interface CapabilityStepper {
+	/**
+	 * To specify a single command, use "command" for the command
+	 * and the "increase" and "decrease" fields for the arguments.
+	 * To specify separate commands, leave "command" out and
+	 * specify the "increase" and "decrease commands in their
+	 * respective fields.
+	 */
+	command: {
+		name?: string
+		increase?: string
+		decrease?: string
+	}
+	attribute?: string
+	step: number
+	range: [number, number]
+}
+
+export interface CapabilityDashboardAction extends CapabilityGrouped {
+	/**
+	 * Specify the type of UI component to use to display this action.
+	 * The corresponding field must also be included. For example,
+	 * if you specify "switch" here, you must also include the
+	 * "switch" key for this action.
+	 */
+	displayType: string
+	pushButton?: CapabilityPushButton
+	toggleSwitch?: CapabilityToggleSwitchCommand
+	switch?: CapabilityToggleSwitchCommand
+	standbyPowerSwitch?: CapabilityToggleSwitchCommand
+	playPause?: CapabilityPlayPause
+	playStop?: CapabilityPlayStop
+}
+
+export interface CapabilityDashboardBasicPlusItem {
+	/**
+	 * Specify the type of UI component to use to display this action.
+	 * The corresponding field must also be included. For example,
+	 * if you specify "stepper" here, you must also include the
+	 * "stepper" key for this action.
+	 */
+	displayType: string
+	stepper?: CapabilityStepper
+	/**
+	 * Including a basicPlus item with the "feature" display type adds
+	 * a shortcut item to the UI which will display the desired detail
+	 * view.
+	 */
+	feature?: {
+		/**
+		 * The feature name of the detail view. For example, if the
+		 * feature is specified as "cooking", the "cooking" detail
+		 * view is launched when the user clicks the button.
+		 */
+		key: string
+		/**
+		 * The alternative string of given "key" value.
+		 */
+		value: string
+	}[]
+	/**
+	 * This resource is shown when the condition in the
+	 * visibleCondition is met. If this key is omitted, the component is
+	 * always visible.
+	 */
+	visibleCondition?: {
+		/**
+		 * The component that controls the visibility of this component.
+		 * This can be another component or this one.
+		 */
+		/**
+		 * We can reference a different component, capability and version
+		 * to affect the visibility of this object.
+		 */
+		capability: string
+		version?: number // integer, default: 1
+		component?: string
+		attribute: string
+		operator: CapabilityPresentationOperator
+		/**
+		 * The value that the visible condition evaluates against.
+		 */
+		operand: string
+	}
+}
+
+export interface CapabilityDashboard {
+	states?: (CapabilityLabeledState & CapabilityGrouped & {
+		label: string
+	})[]
+	actions?: CapabilityDashboardAction[]
+	basicPlus?: CapabilityDashboardBasicPlusItem[]
+}
+
+export interface CapabilityDetailView {
+	label: string
+	/**
+	 * Specify the type of UI component to use to display this action.
+	 * The corresponding field must also be included. For example,
+	 * if you specify "switch" here, you must also include the
+	 * "switch" key for this action.
+	 */
+	displayType: string
+	toggleSwitch?: CapabilityToggleSwitch
+	standbyPowerSwitch?: CapabilityToggleSwitch
+	switch?: CapabilityToggleSwitch
+	slider?: CapabilitySlider
+	pushButton?: CapabilityPushButton
+	playPause?: CapabilityPlayPause
+	playStop?: CapabilityPlayStop
+	list?: CapabilityList
+	textField?: CapabilityTextField
+	numberField?: CapabilityNumberField
+	stepper?: CapabilityStepper
+	status?: CapabilityLabeledState & {
+		/**
+		 * This displays a string. This can be a formatted string with variables.
+		 *
+		 * Example: {{attribute.value}} {{attribute.unit}}
+		 */
+		unit?: string
+	}
+}
+
+export interface CapabilityAutomationCondition {
+	label: string
+	/**
+	 * Specify the type of UI component to use to display this action.
+	 * The corresponding field must also be included. For example,
+	 * if you specify "slider" here, you must also include the
+	 * "slider" key for this action.
+	 */
+	displayType: string
+	slider?: {
+		range: [number, number]
+		step: number
+		attribute: string
+	}
+	list?: {
+		/**
+		 * This contains strings corresponding to each possible value of the
+		 * property. The strings must be human-readable so that the UI Client
+		 * can show these strings as user options.
+		 */
+		alternatives: CapabilityAlternative[]
+		/**
+		 * The attribute name specified in supportedValues is an array
+		 * that has values supported at runtime.
+		 */
+		supportedValues?: string
+		attribute?: string
+	}
+	numberField?: {
+		attribute: string
+		range: [number, number]
+	}
+	textField?: {
+		attribute: string
+		range: [number, number]
+	}
+	/**
+	 * The effect used to emphasize this resource widget. If set to
+	 * true and this object has alternatives, a list will appear
+	 * without a label.
+	 *
+	 * default: false
+	 */
+	emphasis?: boolean
+}
+
+export interface CapabilityAutomationAction {
+	label: string
+	/**
+	 * Specify the type of UI component to use to display this action.
+	 * The corresponding field must also be included. For example,
+	 * if you specify "slider" here, you must also include the
+	 * "slider" key for this action.
+	 */
+	displayType: string
+	slider?: {
+		range: [number, number]
+		step: number
+		command: string
+	}
+	list?: {
+		alternatives: CapabilityAlternative[]
+		supportedValues?: string
+		command: string
+	}
+	textField?: {
+		command: string
+		range?: [number, number]
+	}
+	numberField?: {
+		command: string
+		range?: [number, number]
+	}
+	multiArgCommand?: {
+		command: string
+		arguments: {
+			/**
+			 * Specify the type of UI component to use to display this action.
+			 * The corresponding field must also be included. For example,
+			 * if you specify "switch" here, you must also include the
+			 * "switch" key for this action.
+			 */
+			displayType: string
+			switch?: {
+				/**
+				 * argument name of command
+				 */
+				name: string
+				/**
+				 * value for "on"
+				 */
+				on: string
+				/**
+				 * value for "off"
+				 */
+				off: string
+			}
+			slider?: {
+				range: [number, number]
+				step: number // default: 1
+				/**
+				 * Argument name of command
+				 */
+				name: string
+			}
+			list?: {
+				alternatives: CapabilityAlternative[]
+				supportedValues?: string
+				name: string
+			}
+			textField?: {
+				name: string
+				range?: [number, number]
+			}
+			numberField?: {
+				name: string
+				range?: [number, number]
+			}
+		}[]
+	}
+	/**
+	 * The effect used to emphasize this resource widget. If set to
+	 * true and this object has alternatives, a list will appear
+	 * without a label.
+	 *
+	 * default: false
+	 */
+	emphasis?: boolean
+}
+
+export interface CapabilityAutomation {
+	conditions?: CapabilityAutomationCondition[]
+	actions?: CapabilityAutomationAction[]
+}
+
+export interface CapabilityPresentationUpdate {
+	dashboard?: CapabilityDashboard
+	detailView?: CapabilityDetailView[]
+	automation?: CapabilityAutomation
+}
+
+export interface CapabilityPresentationCreate extends CapabilityPresentationUpdate {
+	id?: string
+	version?: number // integer
+}
+
+export interface CapabilityPresentation extends CapabilityPresentationUpdate {
+	id: string
+	version: number // integer
+}
+
 
 export class CapabilitiesEndpoint extends Endpoint {
 	constructor(config: EndpointClientConfig) {
 		super(new EndpointClient('capabilities', config))
 	}
 
+	/**
+	 * Get a list of custom capabilities for the given namespace.
+	 */
 	public async list(namespace: string): Promise<CapabilitySummary[]> {
-		const list = await this.client.getPagedItems<CapabilitySummary>(`namespaces/${namespace}`)
-		return list
+		return this.client.getPagedItems<CapabilitySummary>(`namespaces/${namespace}`)
 	}
 
-	public async listNamespaces(): Promise<Namespace[]> {
-		const list = await this.client.get<Namespace[]>('namespaces')
-		return list
+	public async listNamespaces(): Promise<CapabilityNamespace[]> {
+		return this.client.get<CapabilityNamespace[]>('namespaces')
 	}
 
+	/**
+	 * Gets a list of standard capabilities.
+	 */
 	public async listStandard(): Promise<CapabilitySummary[]> {
-		const list = await this.client.getPagedItems<CapabilitySummary>()
-		return list
+		return this.client.getPagedItems<CapabilitySummary>()
 	}
 
 	public async listVersions(capabilityId: string): Promise<CapabilitySummary[]> {
-		const list = await this.client.getPagedItems<CapabilitySummary>(capabilityId)
-		return list
+		return this.client.getPagedItems<CapabilitySummary>(capabilityId)
 	}
 
 	public get(capabilityId: string, capabilityVersion: number): Promise<Capability> {
@@ -143,5 +610,17 @@ export class CapabilitiesEndpoint extends Endpoint {
 	public async delete(capabilityId: string, capabilityVersion: number): Promise<Status> {
 		await this.client.delete(`${capabilityId}/${capabilityVersion}`)
 		return SuccessStatusValue
+	}
+
+	public async getPresentation(capabilityId: string, capabilityVersion: number): Promise<CapabilityPresentation> {
+		return this.client.get(`${capabilityId}/${capabilityVersion}/presentation`)
+	}
+
+	public async createPresentation(capabilityId: string, capabilityVersion: number, presentation: CapabilityPresentationCreate): Promise<CapabilityPresentation> {
+		return this.client.post(`${capabilityId}/${capabilityVersion}/presentation`, presentation)
+	}
+
+	public async updatePresentation(capabilityId: string, capabilityVersion: number, presentation: CapabilityPresentationUpdate): Promise<CapabilityPresentation> {
+		return this.client.put(`${capabilityId}/${capabilityVersion}/presentation`, presentation)
 	}
 }

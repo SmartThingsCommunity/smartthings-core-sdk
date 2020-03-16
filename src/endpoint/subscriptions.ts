@@ -41,7 +41,7 @@ export interface DeviceSubscriptionDetail {
 	 * List of mode ID's that the subscription will execute for. If not provided
 	 * then all modes will be supported.
 	 */
-	modes?: Array<string>
+	modes?: string[]
 }
 
 export interface CapabilitySubscriptionDetail {
@@ -76,7 +76,7 @@ export interface CapabilitySubscriptionDetail {
 	 * List of modes that the subscription will execute for. If not provided
 	 * then all modes will be supported.
 	 */
-	modes?: Array<string>
+	modes?: string[]
 
 }
 
@@ -92,7 +92,7 @@ export interface DeviceLifecycleDetail {
 	 * An array of GUIDs of devices being subscribed to. A max of 20 GUIDs are
 	 * allowed.
 	 */
-	deviceIds?: Array<string>
+	deviceIds?: string[]
 	/**
 	 * A name for the subscription that will be passed to the installed app.
 	 */
@@ -108,7 +108,7 @@ export interface DeviceHealthDetail {
 	 * An array of GUIDs of devices being subscribed to. A max of 20 GUIDs are
 	 * allowed.
 	 */
-	deviceIds?: Array<string>
+	deviceIds?: string[]
 	/**
 	 * A name for the subscription that will be passed to the installed app.
 	 */
@@ -207,7 +207,7 @@ export interface DeviceSubscriptionOptions {
 	/**
 	 * List of mode UUIDs. Send events only when location mode is one of these values.
 	 */
-	modes?: Array<string>
+	modes?: string[]
 }
 
 export class SubscriptionsEndpoint extends Endpoint {

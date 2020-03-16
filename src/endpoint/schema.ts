@@ -110,7 +110,7 @@ export interface SchemaAppRequest {
 
 interface SchemaAppList {
 	userId?: string
-	endpointApps: Array<SchemaApp>
+	endpointApps: SchemaApp[]
 }
 
 export interface DeviceResult {
@@ -176,7 +176,7 @@ export interface InstalledSchemaApp {
 
 interface InstalledSchemaAppList {
 	userId?: string
-	installedSmartApps: Array<InstalledSchemaApp>
+	installedSmartApps: InstalledSchemaApp[]
 }
 
 export interface SchemaCreateReponse {
@@ -209,7 +209,7 @@ export interface UnauthorizedSchemaPage extends SchemaPage {
 export interface AuthorizedSchemaPage extends SchemaPage {
 	isaId?: string
 	locationId?: string
-	devices?: Array<DeviceResult>
+	devices?: DeviceResult[]
 	icon?: string
 	icon2x?: string
 	icon3x?: string
