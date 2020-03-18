@@ -98,5 +98,8 @@ and updating of scenes.
 * [schema](src/endpoint/schema.ts#L220) - CRUD operations for ST Schema connectors and installed instances, along with
 operations to list the devices owned by each installed instance.
 
+* [services](src/endpoint/services.ts#L499) - Operations to query for and subscribe to location service data, currently
+consisting of current weather conditions, weather forecast, and air quality data.
+
 * [subscriptions](src/endpoint/subscriptions.ts#L213) -- Operations for subscribing to events, for use in SmartApps and
 API Access apps.
