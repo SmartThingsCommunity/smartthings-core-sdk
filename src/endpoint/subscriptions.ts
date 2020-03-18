@@ -241,8 +241,11 @@ export class SubscriptionsEndpoint extends Endpoint {
 	 * @param installedAppId UUID of the installed app. This parameter is not required if the client id configured
 	 * with an installedAppId
 	 */
-	public delete(name: string, installedAppId?: string): Promise<Count> {
-		return this.client.delete<Count>(`${this.installedAppId(installedAppId)}/subscriptions/${name}`)
+	public delete(name?: string, installedAppId?: string): Promise<Count> {
+		if (name) {
+			return this.client.delete<Count>(`${this.installedAppId(installedAppId)}/subscriptions/${name}`)
+		}
+		return this.client.delete<Count>(`${this.installedAppId(installedAppId)}/subscriptions`)
 	}
 
 	/**

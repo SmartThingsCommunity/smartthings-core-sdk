@@ -194,6 +194,25 @@ export class SchedulesEndpoint extends Endpoint {
 	}
 
 	/**
+	 *
+	 * @param name
+	 * @param dateTime
+	 * @param overwrite
+	 * @param installedAppId
+	 */
+	public runOnce(name: string, dateTime: number | Date, overwrite = true, installedAppId?: string): Promise<Schedule> {
+		const time: number = dateTime instanceof Date ? dateTime.getTime() : dateTime
+		const body = {
+			name,
+			once: {
+				time,
+				overwrite,
+			},
+		}
+		return this.create(body, installedAppId)
+	}
+
+	/**
 	 * Creates a one-time schedule that runs after the specified period of time.
 	 * @param name the name of the schedule
 	 * @param delay the amount of time that should elapse before the schedule runs, in seconds

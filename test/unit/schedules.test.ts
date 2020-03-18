@@ -10,6 +10,7 @@ import postDailySimple from './data/schedules/post_daily_simple'
 import postDailyDate from './data/schedules/post_daily_date'
 import getDailyLocation from './data/schedules/get_daily_location'
 import postDailyLocation from './data/schedules/post_daily_location'
+import postOnce from './data/schedules/post_once'
 
 
 const client = new SmartThingsClient(
@@ -53,4 +54,19 @@ describe('Schedules',  () => {
 		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(postDailyLocation.request))
 		expect(response).toBe(postDailyLocation.response)
 	})
+
+	it('Run once time', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: postOnce.response}))
+		const response: Schedule = await client.schedules.runOnce('onOnce', 1584891000000)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(postOnce.request))
+		expect(response).toBe(postOnce.response)
+	})
+
+	it('Run once Date', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: postOnce.response}))
+		const response: Schedule = await client.schedules.runOnce('onOnce', new Date(1584891000000))
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(postOnce.request))
+		expect(response).toBe(postOnce.response)
+	})
+
 })
