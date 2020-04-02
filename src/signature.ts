@@ -2,6 +2,7 @@ import axios from 'axios'
 import sshpk from 'sshpk'
 import httpSignature from 'http-signature'
 import {SmartThingsURLProvider, defaultSmartThingsURLProvider} from './endpoint-client'
+import { Logger } from './logger'
 
 
 export interface KeyCache {
@@ -77,17 +78,21 @@ export interface SignedHttpRequest {
 }
 
 export class SignatureVerifier {
-	constructor(private keyResolver: HttpKeyResolver) {
+	constructor(private keyResolver: HttpKeyResolver, private logger: Logger) {
 
 	}
 
 	async isAuthorized(request: SignedHttpRequest): Promise<boolean> {
-		const keyResolver = this.keyResolver
-		const parsed = httpSignature.parseRequest(request, undefined)
-		const publicKey = await keyResolver.getKey(parsed.keyId)
+		try {
+			const keyResolver = this.keyResolver
+			const parsed = httpSignature.parseRequest(request, undefined)
+			const publicKey = await keyResolver.getKey(parsed.keyId)
 
-		if (httpSignature.verifySignature(parsed, publicKey)) {
-			return true
+			return httpSignature.verifySignature(parsed, publicKey)
+		} catch (error) {
+			if (this.logger) {
+				this.logger.error(error.message | error)
+			}
 		}
 		return false
 	}
