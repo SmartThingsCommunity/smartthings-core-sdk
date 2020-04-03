@@ -15,14 +15,10 @@ export interface Component {
 	capabilities: CapabilityReference[]
 }
 
-export interface DeviceProfileReference {
-	id?: string
-}
-
 export interface AppDeviceDetails {
 	installedAppId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
 	externalId?: string // <= 64 characters
-	profile?: DeviceProfileReference
+	profileId?: string
 }
 
 export enum DeviceNetworkSecurityLevel {
@@ -80,7 +76,7 @@ export interface Device {
 	deviceTypeId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	components?: Component[]
 	childDevices?: Device[]
-	profile?: DeviceProfileReference
+	profileId?: string
 	app?: AppDeviceDetails
 	dth?: DthDeviceDetails
 	ir?: IrDeviceDetails
@@ -97,6 +93,16 @@ export interface DeviceCreate {
 	label?: string
 	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	app?: AppDeviceDetails
+	profileId?: undefined
+}
+
+export interface AlternateDeviceCreate {
+	label?: string
+	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	installedAppId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
+	externalId?: string // <= 64 characters
+	profileId?: string
+	app?: undefined
 }
 
 export interface DeviceList {
@@ -292,16 +298,27 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param definition the device definition. If the client configuration specifies a locationId and installedAppId
 	 * then these values don't need to be included in the definition.
 	 */
-	public create(definition: DeviceCreate): Promise<Device> {
-		const app = {
-			installedAppId: this.installedAppId(),
-			...definition.app,
-		}
-
-		const data = {
-			label: definition.label,
-			locationId: this.locationId(),
-			...app,
+	public create(definition: DeviceCreate | AlternateDeviceCreate): Promise<Device> {
+		let data
+		if (definition.app) {
+			data = {
+				label: definition.label,
+				locationId: this.locationId(definition.locationId),
+				app: {
+					installedAppId: this.installedAppId(),
+					...definition.app,
+				},
+			}
+		} else if (definition.profileId) {
+			data = {
+				label: definition.label,
+				locationId: this.locationId(definition.locationId),
+				app: {
+					installedAppId: this.installedAppId(definition.installedAppId),
+					profileId: definition.profileId,
+					externalId: definition.externalId,
+				},
+			}
 		}
 
 		return this.client.post<Device>('', data)
