@@ -479,19 +479,20 @@ export class DevicesEndpoint extends Endpoint {
 	/**
 	 * Creates events for the specified device
 	 * @param id UUID of the device
-	 * @param events list of events
+	 * @param deviceEvents list of events
 	 */
-	public createEvents(id: string, events: DeviceEvent[]): void {
-		this.client.post(`${id}/events`, { events })
+	public async createEvents(id: string, deviceEvents: DeviceEvent[]): Promise<Status> {
+		await this.client.post(`${id}/events`, { deviceEvents })
+		return SuccessStatusValue
 	}
 
 	/**
 	 * @deprecated use createEvents instead
 	 * @param id
-	 * @param events
+	 * @param deviceEvents
 	 */
-	public sendEvents(id: string, events: DeviceEventList): void {
-		this.client.post(`${id}/events`, events)
+	public sendEvents(id: string, deviceEvents: DeviceEventList): void {
+		this.client.post(`${id}/events`, deviceEvents)
 	}
 
 	/**
