@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/core-sdk",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "JavaScript/TypeScript library for using SmartThings APIs",
 	"author": "SmartThings, Inc.",
 	"homepage": "https://github.com/SmartThingsCommunity/smartthings-core-sdk",

@@ -17,6 +17,7 @@ import getCapabilityStatus from './data/devices/get_devices_385931b6-0121-4848-b
 import getComponent1Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet1_status'
 import getComponent2Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet2_status'
 import getHealth from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_health'
+import createEvents from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_events'
 import turnOn1 from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_commands'
 
 
@@ -223,6 +224,21 @@ describe('Devices',  () => {
 		]
 		const response: Status = await client.devices.sendCommand(configEntry, cmdList, 'on', [])
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
+		expect(response).toBe(SuccessStatusValue)
+	})
+
+	it('createEvents', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: createEvents.response }))
+		const events = [
+			{
+				'component': 'main',
+				'capability': 'switchLevel',
+				'attribute': 'level',
+				'value': 0,
+			},
+		]
+		const response: Status = await client.devices.createEvents('385931b6-0121-4848-bcc8-54cb76436de1', events)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(createEvents.request))
 		expect(response).toBe(SuccessStatusValue)
 	})
 })
