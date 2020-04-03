@@ -19,11 +19,14 @@ import getComponent2Status from './data/devices/get_devices_46c38b7c-81bc-4e65-8
 import getHealth from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_health'
 import createEvents from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_events'
 import turnOn1 from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_commands'
+import create from './data/devices/post_devices'
+import create2 from './data/devices/post_devices_2'
 
 
 const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
 const locationId ='95efee9b-6073-4871-b5ba-de6642187293'
-const isaClient = new SmartThingsClient(authenticator, {locationId})
+const installedAppId ='6f5ea629-4c05-4a90-a244-cc129b0a80c3'
+const isaClient = new SmartThingsClient(authenticator, {locationId, installedAppId})
 const client = new SmartThingsClient(authenticator, {})
 
 
@@ -32,15 +35,6 @@ describe('Devices',  () => {
 		axios.request.mockReset()
 	})
 
-	// it('list', async () => {
-	// 	axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deviceList }))
-	// 	const response: Device[] = await client.devices.list()
-	//
-	// 	expect(axios.request).toHaveBeenCalledTimes(1)
-	// 	expect(axios.request).toHaveBeenCalledWith(expectedRequest('devices', {}))
-	// 	expect(response).toBe(deviceList.items)
-	// })
-	//
 	it('list with multiple pages', async () => {
 		const expectedList = [...listPage1.response.items, ...listPage2.response.items]
 		axios.request
@@ -116,6 +110,62 @@ describe('Devices',  () => {
 		const response: DeviceHealth = await client.devices.getHealth('385931b6-0121-4848-bcc8-54cb76436de1')
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getHealth.request))
 		expect(response).toBe(getHealth.response)
+	})
+
+	it('create', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
+		const data = {
+			'label': 'Living room light',
+			'app': {
+				'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
+				'externalId': 'Th13390',
+			},
+		}
+		const response: Device = await isaClient.devices.create(data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
+		expect(response).toBe(create.response)
+	})
+
+	it('create explicit', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create2.response }))
+		const data = {
+			'label': 'Living room light',
+			'locationId': 'c54591e2-a3f3-419a-8526-ce3ff9c3b0f8',
+			'app': {
+				'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
+				'externalId': 'Th13390',
+				'installedAppId': '871ae474-8341-418e-ace1-1d72ec22311d',
+			},
+		}
+		const response: Device = await isaClient.devices.create(data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create2.request))
+		expect(response).toBe(create2.response)
+	})
+
+	it('create alternate', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
+		const data = {
+			'label': 'Living room light',
+			'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
+			'externalId': 'Th13390',
+		}
+		const response: Device = await isaClient.devices.create(data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
+		expect(response).toBe(create.response)
+	})
+
+	it('create alternate explicit', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create2.response }))
+		const data = {
+			'label': 'Living room light',
+			'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
+			'externalId': 'Th13390',
+			'locationId': 'c54591e2-a3f3-419a-8526-ce3ff9c3b0f8',
+			'installedAppId': '871ae474-8341-418e-ace1-1d72ec22311d',
+		}
+		const response: Device = await isaClient.devices.create(data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create2.request))
+		expect(response).toBe(create2.response)
 	})
 
 	it('executeCommand', async () => {
