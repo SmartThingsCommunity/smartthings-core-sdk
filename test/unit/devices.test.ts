@@ -204,6 +204,23 @@ describe('Devices',  () => {
 		expect(response).toBe(SuccessStatusValue)
 	})
 
+	it('executeCommands', async () => {
+		const reason = { message: 'something went wrong', name: 'Error' }
+		axios.request.mockImplementationOnce(() => Promise.reject(reason))
+		expect.assertions(2)
+		try {
+			await client.devices.executeCommands('385931b6-0121-4848-bcc8-54cb76436de1', [{
+				component: 'main',
+				capability: 'switch',
+				command: 'on',
+				arguments: [],
+			}])
+		} catch (error) {
+			expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
+			expect(error).toBe(reason)
+		}
+	})
+
 	it('postCommands', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
 		const response: Status = await client.devices.postCommands('385931b6-0121-4848-bcc8-54cb76436de1', {commands: [{
