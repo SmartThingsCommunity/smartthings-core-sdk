@@ -78,7 +78,7 @@ export interface SignedHttpRequest {
 }
 
 export class SignatureVerifier {
-	constructor(private keyResolver: HttpKeyResolver, private logger: Logger) {
+	constructor(private keyResolver: HttpKeyResolver, private logger?: Logger) {
 
 	}
 
