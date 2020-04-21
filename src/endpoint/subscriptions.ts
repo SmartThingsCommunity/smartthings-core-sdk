@@ -303,7 +303,7 @@ export class SubscriptionsEndpoint extends Endpoint {
 	 * name such as 'switch' subscribed to all values of the switch attribute. Specifying a name.value string such as
 	 * 'switch.on' subscribed to only the on values of the switch. Specifying the wildcard '*' subscribes to all
 	 * values of all attributes of the capability.
-	 * @param subscriptionName the alphanumber subscription name
+	 * @param subscriptionName the alphanumeric subscription name
 	 * @param options map of options, stateChange only a modes. If not stateChangeOnly is not specified the default
 	 * is true. If modes is not specified then events are sent for all modes.
 	 */

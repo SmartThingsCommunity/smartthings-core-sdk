@@ -407,7 +407,7 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param commands list of commands
 	 */
 	public async executeCommands(id: string, commands: Command[]): Promise<Status> {
-		this.client.post(`${id}/commands`, { commands })
+		await this.client.post(`${id}/commands`, { commands })
 		return SuccessStatusValue
 	}
 
@@ -417,7 +417,7 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param command a single device command
 	 */
 	public async executeCommand(id: string, command: Command): Promise<Status> {
-		this.executeCommands(id, [command])
+		await this.executeCommands(id, [command])
 		return SuccessStatusValue
 	}
 
@@ -426,7 +426,7 @@ export class DevicesEndpoint extends Endpoint {
 	 * @deprecated use executeCommands instead
 	 */
 	public async postCommands(id: string, commands: CommandList): Promise<Status> {
-		this.client.post(`${id}/commands`, commands)
+		await this.client.post(`${id}/commands`, commands)
 		return SuccessStatusValue
 	}
 
