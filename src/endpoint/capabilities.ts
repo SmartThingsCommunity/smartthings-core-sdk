@@ -326,6 +326,27 @@ export interface CapabilityDashboardAction extends CapabilityGrouped {
 	playStop?: CapabilityPlayStop
 }
 
+export interface CapabilityVisibleCondition {
+	/**
+	 * The component that controls the visibility of this component.
+	 * This can be another component or this one.
+	 */
+	capability: string
+	/**
+	 * The integer version of the capability.
+	 *
+	 * default: 1
+	 */
+	version?: number
+	component?: string
+	attribute: string
+	operator: CapabilityPresentationOperator
+	/**
+	 * The value that the visible condition evaluates against.
+	 */
+	operand: string
+}
+
 export interface CapabilityDashboardBasicPlusItem {
 	/**
 	 * Specify the type of UI component to use to display this action.
@@ -357,25 +378,7 @@ export interface CapabilityDashboardBasicPlusItem {
 	 * visibleCondition is met. If this key is omitted, the component is
 	 * always visible.
 	 */
-	visibleCondition?: {
-		/**
-		 * The component that controls the visibility of this component.
-		 * This can be another component or this one.
-		 */
-		/**
-		 * We can reference a different component, capability and version
-		 * to affect the visibility of this object.
-		 */
-		capability: string
-		version?: number // integer, default: 1
-		component?: string
-		attribute: string
-		operator: CapabilityPresentationOperator
-		/**
-		 * The value that the visible condition evaluates against.
-		 */
-		operand: string
-	}
+	visibleCondition?: CapabilityVisibleCondition
 }
 
 export interface CapabilityDashboard {
@@ -406,13 +409,15 @@ export interface CapabilityDetailView {
 	textField?: CapabilityTextField
 	numberField?: CapabilityNumberField
 	stepper?: CapabilityStepper
-	status?: CapabilityLabeledState & {
-		/**
-		 * This displays a string. This can be a formatted string with variables.
-		 *
-		 * Example: {{attribute.value}} {{attribute.unit}}
-		 */
-		unit?: string
+	status?: {
+		state: CapabilityLabeledState & {
+			/**
+			 * This displays a string. This can be a formatted string with variables.
+			 *
+			 * Example: {{attribute.value}} {{attribute.unit}}
+			 */
+			unit?: string
+		}
 	}
 }
 
@@ -446,11 +451,11 @@ export interface CapabilityAutomationCondition {
 	}
 	numberField?: {
 		attribute: string
-		range: [number, number]
+		range?: [number, number]
 	}
 	textField?: {
 		attribute: string
-		range: [number, number]
+		range?: [number, number]
 	}
 	/**
 	 * The effect used to emphasize this resource widget. If set to
@@ -460,6 +465,54 @@ export interface CapabilityAutomationCondition {
 	 * default: false
 	 */
 	emphasis?: boolean
+}
+
+export interface CapabilityMultiArgCommand {
+	command: string
+	arguments: {
+		/**
+		 * Specify the type of UI component to use to display this action.
+		 * The corresponding field must also be included. For example,
+		 * if you specify "switch" here, you must also include the
+		 * "switch" key for this action.
+		 */
+		displayType: string
+		switch?: {
+			/**
+			 * argument name of command
+			 */
+			name: string
+			/**
+			 * value for "on"
+			 */
+			on: string
+			/**
+			 * value for "off"
+			 */
+			off: string
+		}
+		slider?: {
+			range: [number, number]
+			step: number // default: 1
+			/**
+			 * Argument name of command
+			 */
+			name: string
+		}
+		list?: {
+			alternatives: CapabilityAlternative[]
+			supportedValues?: string
+			name: string
+		}
+		textField?: {
+			name: string
+			range?: [number, number]
+		}
+		numberField?: {
+			name: string
+			range?: [number, number]
+		}
+	}[]
 }
 
 export interface CapabilityAutomationAction {
@@ -489,53 +542,7 @@ export interface CapabilityAutomationAction {
 		command: string
 		range?: [number, number]
 	}
-	multiArgCommand?: {
-		command: string
-		arguments: {
-			/**
-			 * Specify the type of UI component to use to display this action.
-			 * The corresponding field must also be included. For example,
-			 * if you specify "switch" here, you must also include the
-			 * "switch" key for this action.
-			 */
-			displayType: string
-			switch?: {
-				/**
-				 * argument name of command
-				 */
-				name: string
-				/**
-				 * value for "on"
-				 */
-				on: string
-				/**
-				 * value for "off"
-				 */
-				off: string
-			}
-			slider?: {
-				range: [number, number]
-				step: number // default: 1
-				/**
-				 * Argument name of command
-				 */
-				name: string
-			}
-			list?: {
-				alternatives: CapabilityAlternative[]
-				supportedValues?: string
-				name: string
-			}
-			textField?: {
-				name: string
-				range?: [number, number]
-			}
-			numberField?: {
-				name: string
-				range?: [number, number]
-			}
-		}[]
-	}
+	multiArgCommand?: CapabilityMultiArgCommand
 	/**
 	 * The effect used to emphasize this resource widget. If set to
 	 * true and this object has alternatives, a list will appear
