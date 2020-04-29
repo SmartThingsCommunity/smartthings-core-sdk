@@ -101,7 +101,12 @@ export enum InstallConfigurationStatus {
 	DONE = 'DONE',
 	AUTHORIZED = 'AUTHORIZED',
 	REVOKED = 'REVOKED',
+}
+
+export enum InstalledAppStatus {
 	PENDING = 'PENDING',
+	AUTHORIZED = 'AUTHORIZED',
+	REVOKED = 'REVOKED',
 	DISABLED = 'DISABLED',
 }
 
@@ -133,7 +138,7 @@ export interface InstalledApp {
 	 */
 	installedAppId: string
 	installedAppType: InstalledAppType
-	installedAppStatus: InstallConfigurationStatus
+	installedAppStatus: InstalledAppStatus
 	/**
 	 * A user defined name for the installed app. May be null.
 	 */
@@ -304,13 +309,14 @@ export interface  InstalledAppMessage {
 }
 
 // TODO -- tags??
+
 export interface InstalledAppListOptions {
-	locationId?: string
-	installedAppStatus?: string
-	installedAppType?: string
-	appId?: string
-	modeId?: string
-	deviceId?: string
+	locationId?: string | string[]
+	installedAppStatus?: InstalledAppStatus | InstalledAppStatus[]
+	installedAppType?: InstalledAppType | InstalledAppType[]
+	appId?: string | string[]
+	modeId?: string | string[]
+	deviceId?: string | string[]
 	max?: number
 	page?: number
 }
@@ -341,10 +347,10 @@ export class InstalledAppsEndpoint extends Endpoint{
 			params.locationId = this.client.config.locationId
 		}
 		if ('installedAppStatus' in options && options.installedAppStatus) {
-			params.deviceId = options.installedAppStatus
+			params.installedAppStatus = options.installedAppStatus
 		}
 		if ('installedAppType' in options && options.installedAppType) {
-			params.deviceId = options.installedAppType
+			params.installedAppType = options.installedAppType
 		}
 		if ('deviceId' in options && options.deviceId) {
 			params.deviceId = options.deviceId
