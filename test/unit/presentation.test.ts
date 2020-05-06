@@ -2,7 +2,6 @@ import axios from '../../__mocks__/axios'
 
 import { NoOpAuthenticator, SmartThingsClient, PresentationDeviceConfig } from '../../src'
 import presentationDeviceConfiguration from './data/presentation/presentation'
-import presentationDeviceConfigurationForGet from './data/presentation/presentationForGet'
 
 
 const authenticator = new NoOpAuthenticator()

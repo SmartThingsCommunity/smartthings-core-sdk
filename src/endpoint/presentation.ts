@@ -48,7 +48,7 @@ export interface PresentationDeviceConfigCreate {
 	 * Preloaded iconId or URL used to retrieve icons to be drawn on the UI
 	 * client.
 	 */
-	iconURL?: string
+	iconUrl?: string
 	dashboard?: {
 		states: PresentationDeviceConfigEntry[]
 		actions: PresentationDeviceConfigEntry[]
@@ -128,7 +128,7 @@ export interface PresentationDevicePresentation {
 			version?: number
 			component: string
 		})[]
-	}[]
+	}
 	detailView?: (CapabilityDetailView & {
 		capability: string
 		version?: number
