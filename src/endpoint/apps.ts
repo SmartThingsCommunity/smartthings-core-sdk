@@ -34,7 +34,7 @@ export interface LambdaSmartApp {
 	functions?: string[]
 }
 
-export class WebhookSmartApp {
+export interface WebhookSmartApp {
 	/**
 	 * A URL that should be invoked during execution.
 	 */
@@ -46,6 +46,15 @@ export class WebhookSmartApp {
 	 */
 	publicKey?: string
 	signatureType?: SignatureType
+}
+
+export interface ApiOnlySubscription {
+	targetUrl: string
+	targetStatus: AppTargetStatus
+}
+
+export interface ApiOnlyApp {
+	subscription?: ApiOnlySubscription
 }
 
 export interface AppUISettings {
@@ -111,6 +120,7 @@ export interface App {
 	lastUpdatedDate?: string
 	lambdaSmartApp?: LambdaSmartApp
 	webhookSmartApp?: WebhookSmartApp
+	apiOnly?: ApiOnlyApp
 	ui?: AppUISettings
 }
 
@@ -163,7 +173,7 @@ export interface AppRequest {
 	lambdaSmartApp?: LambdaSmartApp
 	webhookSmartApp?: WebhookSmartApp
 	ui?: AppUISettings
-	oauth: OAuthRequest
+	oauth?: OAuthRequest
 }
 
 export interface AppCreationResponse {
