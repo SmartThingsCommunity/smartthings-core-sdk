@@ -5,9 +5,6 @@ The SmartThings Core SDK is a wrapper designed to simplify the use of the
 from JavaScript and TypeScript applications. This is the very first release of this SDK and should be considered
 a work in progress. Changes may still be made that are not backwardly compatible.
 
-If you are developing a SmartApp or API Access app using NodeJS you should continue to use the
-[SmartApp NodeJS SDK](https://github.com/SmartThingsCommunity/smartapp-sdk-nodejs) for now. We will
-be releasing a new version of that SDK soon that uses this Core SDK for making REST API calls.
 
 ## Installation
 
