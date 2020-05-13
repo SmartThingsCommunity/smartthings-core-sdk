@@ -179,7 +179,7 @@ export interface InstalledApp {
 	 * mobile clients. * HIDDEN - Denotes an integration that should not display
 	 * in mobile clients
 	 */
-	classifications: InstalledAppClassification
+	classifications?: InstalledAppClassification[]
 	/**
 	 * Denotes the principal type to be used with the app.  Default is LOCATION.
 	 */
