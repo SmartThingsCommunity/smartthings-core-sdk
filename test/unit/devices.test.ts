@@ -246,7 +246,7 @@ describe('Devices',  () => {
 				],
 			},
 		}
-		const response: Status[] = await client.devices.sendCommands([configEntry], 'switch', 'on', [])
+		const response: Status[] = await client.devices.sendCommands([configEntry], 'switch', 'on')
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
 		expect(response.length).toEqual(1)
 		expect(response[0]).toBe(SuccessStatusValue)
