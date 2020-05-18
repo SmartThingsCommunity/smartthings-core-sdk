@@ -1,4 +1,4 @@
-import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
+import EndpointClient, {EndpointClientConfig, HttpClientParams} from '../endpoint-client'
 import { Endpoint } from '../endpoint'
 import { Count, IconImage, Owner, PrincipalType, Status, SuccessStatusValue } from '../types'
 
@@ -237,9 +237,16 @@ export class AppsEndpoint extends Endpoint {
 	 */
 	public create(data: AppRequest): Promise<AppCreationResponse> {
 		// TODO -- use of query params might be temporary
-		const params = { requireConfirmation: 'false', signatureType: 'ST_PADLOCK' }
-		if (data.webhookSmartApp && data.webhookSmartApp.signatureType) {
-			params.signatureType = data.webhookSmartApp.signatureType
+		const params: HttpClientParams = {}
+		if (data.webhookSmartApp) {
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			params.requireConfirmation = true
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			params.signatureType = data.webhookSmartApp.signatureType || 'ST_PADLOCK'
 		}
 		return this.client.post(undefined , data, params)
 	}

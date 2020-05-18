@@ -10,7 +10,7 @@ const request = {
 		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
 	},
 	'params': {
-		'requireConfirmation': 'false',
+		'requireConfirmation': true,
 		'signatureType': 'APP_RSA',
 	},
 	'data': {
@@ -58,7 +58,7 @@ const response = {
 		'lastUpdatedDate': '2020-02-29T15:51:14Z',
 		'webhookSmartApp': {
 			'targetUrl': 'https://smartthings-api.ngrok.io/smartapp',
-			'targetStatus': 'CONFIRMED',
+			'targetStatus': 'PENDING',
 			'publicKey': '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi2VTBwuG99UM6MRduWlveCTLCovloGpM\r\n7j7kOv0GiD89l14e0uho3K3lk5tgThd63UNpoVfvNqg5+/ugk0rJasg+aN4KGwll4RxVaYB5MVzB\r\noCoDuHHBBR3C5ukGNcb+IsKoAYx89Pujtcmnl51FIiHVP6KJc2JYxD8ZbwAZ/TzKWLWPrdKWZpHf\r\nGhNyh8j7bau29xslfyM0VwkUtFhwRTu5r8Vj7iWVi+Wf0VyeNgRAjH2WmtD8ArPHax3Rbt+3SMot\r\nkdIiuj7bMNlHohrgs8lUKvATIbh1wVic8rNV9Zr7u18Ywq/Pzar8V+17HSKkPtHgQeQtDjH8Br54\r\nddzicwIDAQAB\n-----END PUBLIC KEY-----',
 			'signatureType': 'APP_RSA',
 		},
