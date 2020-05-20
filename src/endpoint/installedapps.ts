@@ -7,7 +7,7 @@ export interface StringConfig {
 	/**
 	 * A config value
 	 */
-	value?: string
+	value: string
 }
 
 export interface DeviceConfig {
@@ -18,34 +18,34 @@ export interface DeviceConfig {
 	/**
 	 * The component ID on the device.
 	 */
-	componentId?: string
-	permissions?: string[]
+	componentId: string
+	permissions: string[]
 }
 
 export interface PermissionConfig {
-	permissions?: string[]
+	permissions: string[]
 }
 
 export interface ModeConfig {
 	/**
 	 * The ID of the mode.
 	 */
-	modeId?: string
+	modeId: string
 }
 
 export interface SceneConfig {
 	/**
 	 * The ID of the scene.
 	 */
-	sceneId?: string
-	permissions?: string[]
+	sceneId: string
+	permissions: string[]
 }
 
 export interface MessageConfig {
 	/**
 	 * The key value of the message group.
 	 */
-	messageGroupKey?: string
+	messageGroupKey: string
 }
 
 export enum ConfigValueType {
