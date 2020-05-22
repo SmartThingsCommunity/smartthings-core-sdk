@@ -431,7 +431,7 @@ export class SubscriptionsEndpoint extends Endpoint {
 	 * @param subscriptionName alphanumeric subscription name
 	 */
 	public subscribeToDeviceHealth(subscriptionName: string): Promise<Subscription> {
-		const path = `installedapps/${this.installedAppId()}/subscriptions`
+		const path = `${this.installedAppId()}/subscriptions`
 		const body = {
 			sourceType: SubscriptionSource.DEVICE_HEALTH,
 			deviceHealth: {
