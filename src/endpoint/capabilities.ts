@@ -186,9 +186,23 @@ export interface CapabilityToggleSwitchCommand {
 	}
 }
 
+export interface CapabilityDashboardToggleSwitch extends CapabilityToggleSwitchCommand {
+	state?: {
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
+		on: string
+		off: string
+	}
+}
+
 export interface CapabilityToggleSwitch extends CapabilityToggleSwitchCommand {
 	state?: {
-		attribute: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
 		on: string
 		off: string
 	} & CapabilityLabeledState
@@ -207,10 +221,13 @@ export interface CapabilityPlayPause {
 	}
 	state: {
 		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
+		/**
 		 * The value of "attribute" which indicates playing state. When the
 		 * attribute value equals to this then UI will show playing state.
 		 */
-		attribute: string
 		play: string
 		/**
 		 * The value of "attribute" which indicates paused state. When the
@@ -232,7 +249,10 @@ export interface CapabilityPlayStop {
 		stop: string
 	}
 	state: {
-		attribute: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
 		/**
 		 * The value of "attribute" which indicates playing state. When the
 		 * attribute value equals to this then UI will show playing state.
@@ -248,13 +268,20 @@ export interface CapabilityPlayStop {
 
 export interface CapabilitySlider {
 	range: [number, number]
-	step: number
+	step?: number
+	/**
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+	 */
+	unit?: string
 	/**
 	 * The command which will set the value of the slider. The value is given
 	 * as its only argument.
 	 */
-	command: string
-	attribute?: string
+	command?: string
+	/**
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+	 */
+	value?: string
 }
 
 export interface CapabilityList {
@@ -272,22 +299,32 @@ export interface CapabilityList {
 		 */
 		supportedValues?: string
 	}
-	state?: CapabilityLabeledState
+	state?: {
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value?: string
+	} & CapabilityLabeledState
 }
 
 export interface CapabilityTextField {
 	command: string
 	/**
-	 * This displays a string. This can be a formatted string with variables.
-	 *
-	 * Example: {{attribute.value}} {{attribute.unit}}
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
 	 */
-	state?: string
+	value?: string
 	range?: [number, number]
 }
 
 export interface CapabilityNumberField {
-	attribute?: string
+	/**
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+	 */
+	value?: string
+	/**
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+	 */
+	unit?: string
 	command: string
 	range?: [number, number]
 }
@@ -305,7 +342,10 @@ export interface CapabilityStepper {
 		increase?: string
 		decrease?: string
 	}
-	attribute?: string
+	/**
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+	 */
+	value?: string
 	step: number
 	range: [number, number]
 }
@@ -319,9 +359,9 @@ export interface CapabilityDashboardAction extends CapabilityGrouped {
 	 */
 	displayType: string
 	pushButton?: CapabilityPushButton
-	toggleSwitch?: CapabilityToggleSwitchCommand
-	switch?: CapabilityToggleSwitchCommand
-	standbyPowerSwitch?: CapabilityToggleSwitchCommand
+	toggleSwitch?: CapabilityDashboardToggleSwitch
+	switch?: CapabilityDashboardToggleSwitch
+	standbyPowerSwitch?: CapabilityDashboardToggleSwitch
 	playPause?: CapabilityPlayPause
 	playStop?: CapabilityPlayStop
 }
@@ -339,7 +379,10 @@ export interface CapabilityVisibleCondition {
 	 */
 	version?: number
 	component?: string
-	attribute: string
+	/**
+	 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+	 */
+	value: string
 	operator: CapabilityPresentationOperator
 	/**
 	 * The value that the visible condition evaluates against.
@@ -409,15 +452,11 @@ export interface CapabilityDetailView {
 	textField?: CapabilityTextField
 	numberField?: CapabilityNumberField
 	stepper?: CapabilityStepper
-	status?: {
-		state: CapabilityLabeledState & {
-			/**
-			 * This displays a string. This can be a formatted string with variables.
-			 *
-			 * Example: {{attribute.value}} {{attribute.unit}}
-			 */
-			unit?: string
-		}
+	state: CapabilityLabeledState & {
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+)
+		 */
+		unit?: string
 	}
 }
 
@@ -432,8 +471,15 @@ export interface CapabilityAutomationCondition {
 	displayType: string
 	slider?: {
 		range: [number, number]
-		step: number
-		attribute: string
+		step?: number
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+		 */
+		unit?: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
 	}
 	list?: {
 		/**
@@ -447,14 +493,27 @@ export interface CapabilityAutomationCondition {
 		 * that has values supported at runtime.
 		 */
 		supportedValues?: string
-		attribute?: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value?: string
 	}
 	numberField?: {
-		attribute: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+		 */
+		unit?: string
 		range?: [number, number]
 	}
 	textField?: {
-		attribute: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.value)+
+		 */
+		value: string
 		range?: [number, number]
 	}
 	/**
@@ -495,6 +554,10 @@ export interface CapabilityMultiArgCommand {
 			range: [number, number]
 			step: number // default: 1
 			/**
+			 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+			 */
+			unit?: string
+			/**
 			 * Argument name of command
 			 */
 			name: string
@@ -527,12 +590,16 @@ export interface CapabilityAutomationAction {
 	slider?: {
 		range: [number, number]
 		step: number
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+		 */
+		unit?: string
 		command: string
 	}
 	list?: {
 		alternatives: CapabilityAlternative[]
 		supportedValues?: string
-		command: string
+		command?: string
 	}
 	textField?: {
 		command: string
@@ -540,6 +607,10 @@ export interface CapabilityAutomationAction {
 	}
 	numberField?: {
 		command: string
+		/**
+		 * (^[[a-z]*([A-Z][a-z]*)*){1,36}(\.unit)+
+		 */
+		unit?: string
 		range?: [number, number]
 	}
 	multiArgCommand?: CapabilityMultiArgCommand
@@ -565,8 +636,8 @@ export interface CapabilityPresentationUpdate {
 }
 
 export interface CapabilityPresentationCreate extends CapabilityPresentationUpdate {
-	id?: string
-	version?: number // integer
+	id: string
+	version: number // integer
 }
 
 export interface CapabilityPresentation extends CapabilityPresentationUpdate {

@@ -71,7 +71,11 @@ module.exports = {
 		'@typescript-eslint/explicit-function-return-type': 'error',
 		'@typescript-eslint/no-explicit-any': 'error',
 		'@typescript-eslint/no-non-null-assertion': 'error',
-		'@typescript-eslint/no-use-before-define': 'error',
+		'no-use-before-define': 'off',
+		'@typescript-eslint/no-use-before-define': [
+			'error',
+			{ functions: false, classes: false, enums: false, variables: true }
+		],
 		'@typescript-eslint/no-var-requires': 'error',
 
 		// disallow non-import statements appearing before import statements
