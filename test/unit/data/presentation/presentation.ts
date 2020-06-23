@@ -27,7 +27,7 @@ const data = {
 				'visibleCondition': {
 					'component': 'component',
 					'version': 1,
-					'attribute': 'attributeName',
+					'value': 'valueName',
 					'operator': CapabilityPresentationOperator.GREATER_THAN_OR_EQUALS,
 					'operand': 'keyName',
 				} as CapabilityVisibleCondition,
@@ -44,7 +44,7 @@ const data = {
 				'visibleCondition': {
 					'component': 'component',
 					'version': 1,
-					'attribute': 'attributeName',
+					'value': 'valueName',
 					'operator': CapabilityPresentationOperator.GREATER_THAN_OR_EQUALS,
 					'operand': 'keyName',
 				} as CapabilityVisibleCondition,
@@ -62,7 +62,7 @@ const data = {
 			'visibleCondition': {
 				'component': 'component',
 				'version': 1,
-				'attribute': 'attributeName',
+				'value': 'valueName',
 				'operator': CapabilityPresentationOperator.GREATER_THAN_OR_EQUALS,
 				'operand': 'keyName',
 			} as CapabilityVisibleCondition,
@@ -80,7 +80,7 @@ const data = {
 				'visibleCondition': {
 					'component': 'component',
 					'version': 1,
-					'attribute': 'attributeName',
+					'value': 'valueName',
 					'operator': CapabilityPresentationOperator.GREATER_THAN_OR_EQUALS,
 					'operand': 'keyName',
 				} as CapabilityVisibleCondition,
@@ -97,7 +97,7 @@ const data = {
 				'visibleCondition': {
 					'component': 'component',
 					'version': 1,
-					'attribute': 'attributeName',
+					'value': 'valueName',
 					'operator': CapabilityPresentationOperator.GREATER_THAN_OR_EQUALS,
 					'operand': 'keyName',
 				} as CapabilityVisibleCondition,

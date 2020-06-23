@@ -179,7 +179,7 @@ interface InstalledSchemaAppList {
 	installedSmartApps: InstalledSchemaApp[]
 }
 
-export interface SchemaCreateReponse {
+export interface SchemaCreateResponse {
 	endpointAppId?: string
 	stClientId: string
 	stClientSecret: string
@@ -242,8 +242,8 @@ export class SchemaEndpoint extends Endpoint {
 	 * Create an ST Schema connector
 	 * @param data definition of the connector
 	 */
-	public create(data: SchemaAppRequest): Promise<SchemaCreateReponse> {
-		return this.client.post<SchemaCreateReponse>('apps', data)
+	public create(data: SchemaAppRequest): Promise<SchemaCreateResponse> {
+		return this.client.post<SchemaCreateResponse>('apps', data)
 	}
 
 	/**
