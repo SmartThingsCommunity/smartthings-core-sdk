@@ -74,7 +74,7 @@ module.exports = {
 		'no-use-before-define': 'off',
 		'@typescript-eslint/no-use-before-define': [
 			'error',
-			{ functions: false, classes: false, enums: false, variables: true }
+			{ functions: false, classes: false, enums: false, variables: true },
 		],
 		'@typescript-eslint/no-var-requires': 'error',
 
