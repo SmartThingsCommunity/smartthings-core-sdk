@@ -2,6 +2,7 @@ import { Endpoint } from '../endpoint'
 import EndpointClient, { EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { ConfigEntry} from './installedapps'
 import { Links, Status, SuccessStatusValue } from '../types'
+import {PresentationDevicePresentation} from './presentation'
 
 
 export interface CapabilityReference {
@@ -510,6 +511,14 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public sendEvents(id: string, deviceEvents: DeviceEventList): void {
 		this.client.post(`${id}/events`, deviceEvents)
+	}
+
+	/**
+	 * Get a device presentation. If mnmn is omitted the default SmartThingsCommunity mnmn is used.
+	 * @param deviceId UUID of the device
+	 */
+	public getPresentation(deviceId: string): Promise<PresentationDevicePresentation> {
+		return this.client.get<PresentationDevicePresentation>('/presentation', { deviceId })
 	}
 
 	/**
