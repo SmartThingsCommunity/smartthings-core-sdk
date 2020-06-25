@@ -191,7 +191,13 @@ export class PresentationEndpoint extends Endpoint {
 		return this.client.post<PresentationDeviceConfig>('deviceconfig', deviceConfig)
 	}
 
-	public getPresentation(vid: string): Promise<PresentationDevicePresentation> {
-		return this.client.get<PresentationDevicePresentation>('', { vid })
+	/**
+	 * Get a device presentation. If mnmn is omitted the default SmartThingsCommunity mnmn is used.
+	 * @param deviceId UUID of the device
+	 * @param mnmn The manufacturer name, e.g. SmartThingsCommunity
+	 * @param vid The id returned from the device config create operation
+	 */
+	public getPresentation(deviceId: string, mnmn: string, vid: string): Promise<PresentationDevicePresentation> {
+		return this.client.get<PresentationDevicePresentation>('', { vid, mnmn, deviceId })
 	}
 }
