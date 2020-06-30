@@ -1,6 +1,6 @@
 import axios from '../../__mocks__/axios'
 
-import { NoOpAuthenticator, SmartThingsClient, Capability, CapabilitySummary, CapabilityCreate, CapabilityNamespace } from '../../src'
+import { NoOpAuthenticator, SmartThingsClient, Capability, CapabilitySummary, CapabilityCreate, CapabilityNamespace, HttpClientParams } from '../../src'
 import capability1 from './data/capabilities/capability1'
 import capabilitiesList from './data/capabilities/list'
 import capabilitiesList1 from './data/capabilities/list1'
@@ -114,6 +114,18 @@ describe('Capabilities',  () => {
 
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities', undefined, reqData, 'post'))
+		expect(response).toBe(resData)
+	})
+
+	it('create with params', async () => {
+		const reqData: CapabilityCreate = create1
+		const resData: Capability = capability1
+		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: resData}))
+		const params: HttpClientParams = {'namespace': 'namespace'}
+		const response: Capability = await client.capabilities.create(reqData, params)
+
+		expect(axios.request).toHaveBeenCalledTimes(1)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities', params, reqData, 'post'))
 		expect(response).toBe(resData)
 	})
 })
