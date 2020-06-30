@@ -1,5 +1,5 @@
 import { Endpoint } from '../endpoint'
-import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
+import EndpointClient, { EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { Status, SuccessStatusValue } from '../types'
 
 
@@ -677,8 +677,8 @@ export class CapabilitiesEndpoint extends Endpoint {
 		return this.client.get<Capability>(`${capabilityId}/${capabilityVersion}`)
 	}
 
-	public create(capability: CapabilityCreate): Promise<Capability> {
-		return this.client.post(undefined, capability)
+	public create(capability: CapabilityCreate, params?: HttpClientParams): Promise<Capability> {
+		return this.client.post(undefined, capability, params)
 	}
 
 	public update(capabilityId: string, capabilityVersion: number, capability: CapabilityUpdate): Promise<Capability> {
