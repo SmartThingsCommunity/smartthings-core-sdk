@@ -43,6 +43,9 @@ export interface CapabilityJSONSchema {
 	maxLength?: number
 	enum?: string[]
 	propertyName?: unknown
+	properties?: { [name: string]: CapabilityJSONSchema }
+	items?: CapabilityJSONSchema | [CapabilityJSONSchema]
+	title?: string
 }
 
 export interface CapabilityAttributeProperties {
