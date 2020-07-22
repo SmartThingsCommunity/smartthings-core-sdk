@@ -43,6 +43,7 @@ export interface DthDeviceDetails {
 	completedSetup: boolean
 	networkSecurityLevel?: DeviceNetworkSecurityLevel
 	hubId?: string
+	installedGroovyAppId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 }
 
 export interface IrDeviceDetails {
@@ -57,6 +58,10 @@ export interface IrDeviceDetails {
 
 export interface ViperDeviceDetails {
 	uniqueIdentifier?: string
+	manufacturerName?: string
+	modelName?: string
+	swVersion?: string
+	hwVersion?: string
 }
 
 export enum DeviceIntegrationType {
@@ -67,23 +72,30 @@ export enum DeviceIntegrationType {
 	VIPER = 'VIPER',
 }
 
+export interface ProfileIdentifier {
+	id: string
+}
+
 export interface Device {
 	deviceId?: string
 	name?: string
 	label?: string
+	manufacturerName?: string
+	presentationId?: string
 	deviceManufacturerCode?: string
 	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	roomId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	deviceTypeId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	components?: Component[]
 	childDevices?: Device[]
-	profileId?: string
+	profile?: ProfileIdentifier
 	app?: AppDeviceDetails
 	dth?: DthDeviceDetails
 	ir?: IrDeviceDetails
 	irOcf?: IrDeviceDetails
 	viper?: ViperDeviceDetails
 	type?: DeviceIntegrationType
+	restrictionTier?: number
 }
 
 export interface DeviceUpdate {
