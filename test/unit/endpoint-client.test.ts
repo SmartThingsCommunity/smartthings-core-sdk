@@ -8,7 +8,7 @@ import {
 	RefreshTokenStore,
 	SequentialRefreshTokenAuthenticator,
 } from '../../src'
-import EndpointClient, { defaultSmartThingsURLProvider } from '../../src/endpoint-client'
+import { defaultSmartThingsURLProvider, EndpointClient } from '../../src/endpoint-client'
 
 
 class TokenStore implements RefreshTokenStore {

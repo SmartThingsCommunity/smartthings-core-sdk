@@ -1,5 +1,5 @@
 import { Endpoint } from '../endpoint'
-import EndpointClient, { EndpointClientConfig, HttpClientParams } from '../endpoint-client'
+import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { ConfigEntry} from './installedapps'
 import { Links, Status, SuccessStatusValue } from '../types'
 import {PresentationDevicePresentation} from './presentation'

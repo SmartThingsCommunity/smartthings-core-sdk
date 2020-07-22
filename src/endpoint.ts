@@ -1,4 +1,4 @@
-import EndpointClient from './endpoint-client'
+import { EndpointClient } from './endpoint-client'
 
 
 export class Endpoint {

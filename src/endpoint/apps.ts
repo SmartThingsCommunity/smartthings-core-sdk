@@ -1,4 +1,4 @@
-import EndpointClient, {EndpointClientConfig, HttpClientParams} from '../endpoint-client'
+import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { Endpoint } from '../endpoint'
 import { Count, IconImage, Owner, PrincipalType, Status, SuccessStatusValue } from '../types'
 
