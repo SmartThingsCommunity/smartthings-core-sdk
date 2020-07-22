@@ -1,6 +1,6 @@
 import {isString, isDate} from 'underscore'
 import { Endpoint } from '../endpoint'
-import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
+import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 import { Status, SuccessStatusValue } from '../types'
 import { ConfigEntry } from './installedapps'
 import { Location } from './locations'

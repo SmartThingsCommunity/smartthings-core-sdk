@@ -1,5 +1,5 @@
 import { Endpoint } from '../endpoint'
-import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
+import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 import { SuccessStatusValue, Status } from '../types'
 
 

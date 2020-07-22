@@ -54,7 +54,7 @@ export interface ItemsList {
 	}
 }
 
-export default class EndpointClient {
+export class EndpointClient {
 	private logger: Logger
 
 	constructor(public readonly basePath: string, public readonly config: EndpointClientConfig) {

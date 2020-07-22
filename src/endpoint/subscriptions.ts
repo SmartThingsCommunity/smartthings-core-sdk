@@ -1,5 +1,5 @@
 import { Endpoint } from '../endpoint'
-import EndpointClient, { EndpointClientConfig } from '../endpoint-client'
+import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 import { Count } from '../types'
 import { ConfigEntry } from './installedapps'
 
