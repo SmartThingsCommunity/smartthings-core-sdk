@@ -54,6 +54,12 @@ export interface ItemsList {
 	}
 }
 
+export interface EndpointClientRequestOptions <T> {
+	headerOverrides?: HttpClientHeaders
+	dryRun?: boolean
+	dryRunReturnValue?: T
+}
+
 export class EndpointClient {
 	private logger: Logger
 
@@ -90,7 +96,7 @@ export class EndpointClient {
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	public async request<T = any, R = AxiosResponse<T>>(method: HttpClientMethod, path?: string,
-			data?: any, params?: HttpClientParams): Promise<T> {
+			data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		const headers: HttpClientHeaders = this.config.headers ? { ...this.config.headers } : {}
 
 		if (this.config.loggingId) {
@@ -111,7 +117,7 @@ export class EndpointClient {
 		let axiosConfig: AxiosRequestConfig = {
 			url: this.url(path),
 			method,
-			headers,
+			headers: options?.headerOverrides ? { ...headers, ...options.headerOverrides } : headers,
 			params,
 			data,
 			paramsSerializer: params => qs.stringify(params, { indices: false }),
@@ -121,6 +127,12 @@ export class EndpointClient {
 
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug(`making axios request: ${JSON.stringify(axiosConfig)}`)
+		}
+		if (options?.dryRun) {
+			if (options.dryRunReturnValue) {
+				return options.dryRunReturnValue
+			}
+			throw new Error('skipping request; dry run mode')
 		}
 		let response
 		try {

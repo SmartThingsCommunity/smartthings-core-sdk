@@ -60,6 +60,28 @@ describe('Endpoint Client',  () => {
 		axios.request.mockReset()
 	})
 
+	it('request with header overrides', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+		const headerOverrides = { 'Content-Type': 'overridden content type'}
+		const response = await client.request('POST', 'mypath', { name: 'Bob' }, undefined, { headerOverrides })
+		expect(axios.request).toHaveBeenCalledTimes(1)
+		expect(axios.request).toHaveBeenCalledWith({
+			'url': 'https://api.smartthings.com/basepath/mypath',
+			'method': 'POST',
+			'headers': {
+				'Content-Type': 'overridden content type',
+				'Accept': 'application/json',
+				'Authorization': 'Bearer asdfghjkl',
+				'X-ST-CORRELATION': 'AAABBBCCC',
+			},
+			'data': { name: 'Bob' },
+			'params': undefined,
+			'paramsSerializer': expect.anything(),
+		})
+		expect(response.status).toBe('ok')
+		axios.request.mockReset()
+	})
+
 	it('get', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
 		const response = await client.get('path2')
