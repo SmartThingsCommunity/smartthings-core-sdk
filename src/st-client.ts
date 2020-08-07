@@ -6,6 +6,7 @@ import { AppsEndpoint } from './endpoint/apps'
 import { CapabilitiesEndpoint } from './endpoint/capabilities'
 import { DeviceProfilesEndpoint } from './endpoint/deviceprofiles'
 import { DevicesEndpoint } from './endpoint/devices'
+import { HistoryEndpoint } from './endpoint/history'
 import { InstalledAppsEndpoint } from './endpoint/installedapps'
 import { ModesEndpoint } from './endpoint/modes'
 import { LocationsEndpoint } from './endpoint/locations'
@@ -26,6 +27,7 @@ export class SmartThingsClient extends RESTClient {
 	public readonly capabilities: CapabilitiesEndpoint
 	public readonly deviceProfiles: DeviceProfilesEndpoint
 	public readonly devices: DevicesEndpoint
+	public readonly history: HistoryEndpoint
 	public readonly installedApps: InstalledAppsEndpoint
 	public readonly modes: ModesEndpoint
 	public readonly notifications: NotificationsEndpoint
@@ -46,6 +48,7 @@ export class SmartThingsClient extends RESTClient {
 		this.capabilities = new CapabilitiesEndpoint(this.config)
 		this.deviceProfiles = new DeviceProfilesEndpoint(this.config)
 		this.devices = new DevicesEndpoint(this.config)
+		this.history = new HistoryEndpoint(this.config)
 		this.installedApps = new InstalledAppsEndpoint(this.config)
 		this.locations = new LocationsEndpoint(this.config)
 		this.modes = new ModesEndpoint(this.config)
