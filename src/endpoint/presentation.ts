@@ -103,7 +103,7 @@ export interface PresentationDeviceConfig extends PresentationDeviceConfigCreate
 	/**
 	 * The name of the manufacturer.
 	 */
-	mnmn: string
+	manufacturerName: string
 	/**
 	 * A unique identifier for the presentation of a device. This can be a
 	 * model number on some device integrations, but moving forward will
@@ -113,7 +113,7 @@ export interface PresentationDeviceConfig extends PresentationDeviceConfigCreate
 	 * You can ignore this field unless you are specifically designing a
 	 * plugin with an external detail view.
 	 */
-	vid: string
+	presentationId: string
 	/**
 	 * Information used for obtaining details page plugins on different
 	 * platforms.
@@ -123,8 +123,8 @@ export interface PresentationDeviceConfig extends PresentationDeviceConfigCreate
 
 
 export interface PresentationDevicePresentation {
-	mnmn: string
-	vid: string
+	manufacturerName: string
+	presentationId: string
 	/**
 	 * Preloaded iconId or URL used to retrieve icons to be drawn on the UI
 	 * Client.
@@ -200,8 +200,8 @@ export class PresentationEndpoint extends Endpoint {
 		return this.client.get<PresentationDeviceConfig>(`types/${profileId}/deviceconfig`, extraParams)
 	}
 
-	public get(vid: string): Promise<PresentationDeviceConfig> {
-		return this.client.get<PresentationDeviceConfig>('deviceconfig', { vid })
+	public get(presentationId: string): Promise<PresentationDeviceConfig> {
+		return this.client.get<PresentationDeviceConfig>('deviceconfig', { presentationId })
 	}
 
 	/**
@@ -213,15 +213,15 @@ export class PresentationEndpoint extends Endpoint {
 	}
 
 	/**
-	 * Get a device presentation. If mnmn is omitted the default SmartThingsCommunity mnmn is used.
-	 * @param vid The id returned from the device config create operation
-	 * @param mnmn The manufacturer name, e.g. SmartThingsCommunity
+	 * Get a device presentation. If manufacturerName is omitted the default SmartThingsCommunity manufacturerName is used.
+	 * @param presentationId The id returned from the device config create operation
+	 * @param manufacturerName The manufacturer name, e.g. SmartThingsCommunity
 	 */
-	public getPresentation(vid: string, mnmn?: string): Promise<PresentationDevicePresentation> {
-		if (mnmn) {
-			return this.client.get<PresentationDevicePresentation>('', { vid, mnmn })
+	public getPresentation(presentationId: string, manufacturerName?: string): Promise<PresentationDevicePresentation> {
+		if (manufacturerName) {
+			return this.client.get<PresentationDevicePresentation>('', { presentationId, manufacturerName })
 		} else {
-			return this.client.get<PresentationDevicePresentation>('', { vid })
+			return this.client.get<PresentationDevicePresentation>('', { presentationId })
 		}
 	}
 }

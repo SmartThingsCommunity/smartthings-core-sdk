@@ -9,8 +9,8 @@ import {
 
 
 const data = {
-	'mnmn': 'Test Manufacturer',
-	'vid': 'vendor-00',
+	'manufacturerName': 'Test Manufacturer',
+	'presentationId': 'd8469d5c-3ca2-4601-9f21-2b7a0ccd44a5',
 	'type': 'profile',
 	'dpInfo': [
 

@@ -51,10 +51,10 @@ describe('Presentation',  () => {
 
 	it('get', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: presentationDeviceConfiguration}))
-		const response: PresentationDeviceConfig = await client.presentation.get('vid')
+		const response: PresentationDeviceConfig = await client.presentation.get('d8469d5c-3ca2-4601-9f21-2b7a0ccd44a5')
 
 		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest('presentation/deviceconfig', { vid: 'vid' }))
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest('presentation/deviceconfig', { presentationId: 'd8469d5c-3ca2-4601-9f21-2b7a0ccd44a5' }))
 		expect(response).toBe(presentationDeviceConfiguration)
 	})
 
