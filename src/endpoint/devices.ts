@@ -222,6 +222,11 @@ export interface DeviceListOptions {
 	 * Page number for when a max number of results has been specified, starting with 1
 	 */
 	page?: number
+
+	/**
+	 * Device Type
+	 */
+	type?: DeviceIntegrationType | DeviceIntegrationType[]
 }
 
 export interface HueSaturation {
@@ -262,6 +267,9 @@ export class DevicesEndpoint extends Endpoint {
 		}
 		if ('page' in options && options.page) {
 			params.page = options.page
+		}
+		if ('type' in options && options.type) {
+			params.type = options.type
 		}
 		return this.client.getPagedItems<Device>(undefined, params)
 	}

@@ -3,7 +3,7 @@ import axios from '../../__mocks__/axios'
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
-	Device, DeviceStatus, DeviceHealth, SuccessStatusValue, Status, ConfigValueType,
+	Device, DeviceStatus, DeviceHealth, SuccessStatusValue, Status, ConfigValueType, DeviceIntegrationType,
 } from '../../src'
 import {expectedRequest} from './helpers/utils'
 
@@ -17,6 +17,7 @@ import getCapabilityStatus from './data/devices/get_devices_385931b6-0121-4848-b
 import getComponent1Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet1_status'
 import getComponent2Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet2_status'
 import getHealth from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_health'
+import listDevicesExtraParams from './data/devices/list_devices_by_type'
 import createEvents from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_events'
 import turnOn1 from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_commands'
 import create from './data/devices/post_devices'
@@ -47,6 +48,13 @@ describe('Devices',  () => {
 		expect(axios.request).toHaveBeenNthCalledWith(1, expectedRequest(listPage1.request))
 		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(listPage2.request))
 		expect(response).toMatchObject(expectedList)
+	})
+
+	it('list with type', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listDevicesExtraParams.response }))
+		const response: Device[] = await client.devices.list({ type: DeviceIntegrationType.HUB })
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listDevicesExtraParams.request))
+		expect(response).toBe(listDevicesExtraParams.response.items)
 	})
 
 	it('list for an explicit location', async () => {

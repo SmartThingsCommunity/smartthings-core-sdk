@@ -57,7 +57,7 @@ export class RoomsEndpoint extends Endpoint {
 	}
 
 	/**
-	 * Uodate a room
+	 * Update a room
 	 * @param id UUID of the room
 	 * @param data request containing the name of the room
 	 * @param locationId UUID of the location. If the client is configured with a location ID this parameter
