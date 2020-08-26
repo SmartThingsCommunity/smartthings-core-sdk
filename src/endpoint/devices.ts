@@ -65,11 +65,19 @@ export interface ViperDeviceDetails {
 }
 
 export enum DeviceIntegrationType {
+	BLE = 'BLE',
+	BLE_D2D = 'BLE_D2D',
 	DTH = 'DTH',
 	ENDPOINT_APP = 'ENDPOINT_APP',
+	HUB = 'HUB',
 	IR = 'IR',
 	IR_OCF = 'IR_OCF',
+	MQTT = 'MQTT',
+	OCF = 'OCF',
+	PENGYOU = 'PENGYOU',
+	VIDEO = 'VIDEO',
 	VIPER = 'VIPER',
+	WATCH = 'WATCH',
 }
 
 export interface ProfileIdentifier {
