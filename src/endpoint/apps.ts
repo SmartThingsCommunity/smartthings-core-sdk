@@ -210,6 +210,11 @@ export interface AppSettings {
 	settings?: { [key: string]: string }
 }
 
+export interface AppListOptions {
+	appType?: AppType
+	classification?: AppClassification | AppClassification[]
+	tag?: { [key: string]: string }
+}
 export class AppsEndpoint extends Endpoint {
 
 	constructor(config: EndpointClientConfig) {
@@ -219,8 +224,20 @@ export class AppsEndpoint extends Endpoint {
 	/**
 	 * Returns a list of all apps belonging to the principal (i.e. the user)
 	 */
-	public async list(): Promise<App[]> {
-		return this.client.getPagedItems<App>()
+	public async list(options: AppListOptions = {}): Promise<App[]> {
+		const params: HttpClientParams = {}
+		if ('appType' in options && options.appType) {
+			params.appType = options.appType
+		}
+		if ('classification' in options && options.classification) {
+			params.classification = options.classification
+		}
+		if ('tag' in options && options.tag) {
+			for (const key of Object.keys(options.tag)) {
+				params[`tag:${key}`] = options.tag[key]
+			}
+		}
+		return this.client.getPagedItems<App>(undefined, params)
 	}
 
 	/**
