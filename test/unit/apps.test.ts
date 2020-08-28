@@ -1,14 +1,23 @@
 import axios from '../../__mocks__/axios'
 import {
-	BearerTokenAuthenticator,
-	SmartThingsClient,
 	App,
+	AppClassification,
 	AppCreationResponse,
+	AppOAuth,
+	AppType,
+	BearerTokenAuthenticator,
+	Count,
+	SignatureType,
+	SmartThingsClient,
 	Status,
-	SuccessStatusValue, AppOAuth, Count, SignatureType,
+	SuccessStatusValue,
 } from '../../src'
 import {expectedRequest} from './helpers/utils'
 import list from './data/apps/get_apps'
+import listAutomations from './data/apps/get_apps_automation'
+import listLambdaAutomations from './data/apps/get_apps_lambda_automations'
+import listWebhooks from './data/apps/get_apps_webhook'
+import listTags from './data/apps/get_apps_tags'
 import get from './data/apps/get_apps_sdktest-234-1582991474199'
 import post from './data/apps/post_apps_requireConfirmation=false&signatureType=APP_RSA'
 import putSignature from './data/apps/put_apps_a01c0ba4-3ac2-4a5c-9628-c43e394c1ea2_signature-type'
@@ -25,10 +34,38 @@ describe('Apps',  () => {
 	})
 
 	it('List', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listAutomations.response}))
+		const response: App[] = await client.apps.list({classification: AppClassification.AUTOMATION})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listAutomations.request))
+		expect(response).toBe(listAutomations.response.items)
+	})
+
+	it('List Automations', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response}))
 		const response: App[] = await client.apps.list()
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(list.request))
 		expect(response).toBe(list.response.items)
+	})
+
+	it('List Webhooks', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listWebhooks.response}))
+		const response: App[] = await client.apps.list({appType: AppType.WEBHOOK_SMART_APP})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listWebhooks.request))
+		expect(response).toBe(listWebhooks.response.items)
+	})
+
+	it('List Lambda Automations', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listLambdaAutomations.response}))
+		const response: App[] = await client.apps.list({appType: AppType.LAMBDA_SMART_APP, classification: AppClassification.AUTOMATION})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listLambdaAutomations.request))
+		expect(response).toBe(listLambdaAutomations.response.items)
+	})
+
+	it('List Tags', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listTags.response}))
+		const response: App[] = await client.apps.list({tag: {industry: 'energy', region: 'North America'}})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listTags.request))
+		expect(response).toBe(listTags.response.items)
 	})
 
 	it('Get', async () => {
