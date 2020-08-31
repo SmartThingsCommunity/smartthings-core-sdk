@@ -329,7 +329,7 @@ export class SubscriptionsEndpoint extends Endpoint {
 						componentId: item.deviceConfig.componentId,
 						capability: capability,
 						attribute: attributeName,
-						stateChangeOnly: options.stateChangeOnly ? options.stateChangeOnly : true,
+						stateChangeOnly: options.stateChangeOnly !== undefined ? options.stateChangeOnly : true,
 						subscriptionName: `${subscriptionName}_${index}`,
 						value: attributeValue,
 					}
@@ -370,7 +370,7 @@ export class SubscriptionsEndpoint extends Endpoint {
 			locationId: this.locationId(),
 			capability,
 			attribute: attributeName,
-			stateChangeOnly: options.stateChangeOnly ? options.stateChangeOnly : true,
+			stateChangeOnly: options.stateChangeOnly !== undefined ? options.stateChangeOnly : true,
 			subscriptionName,
 			value: attributeValue,
 		}
