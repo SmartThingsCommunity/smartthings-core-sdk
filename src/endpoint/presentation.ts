@@ -12,6 +12,26 @@ import {
 	CapabilityAutomationAction} from './capabilities'
 
 
+export enum PatchItemOpEnum {
+	ADD = 'add',
+	REPLACE = 'replace',
+	REMOVE = 'remove'
+}
+export interface PatchItem {
+	/**
+	 * Operation objects MUST have exactly one \"op\" member, whose value indicates the operation to perform
+	 */
+	op: PatchItemOpEnum
+
+	/**
+	 * path specifies a string format for identifying a specific value within a JSON document. It is used by all operations in patch to specify the part of the document to operate on.
+	 */
+	path: string
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	value?: any
+}
+
 export interface PresentationDeviceConfigEntry {
 	component: string
 	capability: string
@@ -34,6 +54,7 @@ export interface PresentationDeviceConfigEntry {
 		 */
 		step?: number
 	}[]
+	patch?: PatchItem[]
 	visibleCondition?: CapabilityVisibleCondition
 }
 

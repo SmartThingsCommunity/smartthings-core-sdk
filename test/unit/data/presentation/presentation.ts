@@ -1,6 +1,7 @@
 import {
 	CapabilityPresentationOperator,
 	CapabilityVisibleCondition,
+	PatchItemOpEnum,
 	PresentationDeviceConfig,
 	PresentationDeviceConfigEntry,
 	PresentationDPInfo,
@@ -24,6 +25,9 @@ const data = {
 				'values': [
 					{ 'key': 'keyName' },
 				],
+				'patch': [
+					{'op': PatchItemOpEnum.REPLACE, 'path': '/0/main/1/value', 'value': 'New Value'},
+				],
 				'visibleCondition': {
 					'component': 'component',
 					'version': 1,
@@ -40,6 +44,9 @@ const data = {
 				'version': 1,
 				'values': [
 					{ 'key': 'keyName' },
+				],
+				'patch': [
+					{'op': PatchItemOpEnum.REPLACE, 'path': '/0/main/1/value', 'value': 'New Value'},
 				],
 				'visibleCondition': {
 					'component': 'component',
@@ -59,6 +66,9 @@ const data = {
 			'values': [
 				{ 'key': 'keyName' },
 			],
+			'patch': [
+				{'op': PatchItemOpEnum.REPLACE, 'path': '/0/main/1/value', 'value': 'New Value'},
+			],
 			'visibleCondition': {
 				'component': 'component',
 				'version': 1,
@@ -77,6 +87,9 @@ const data = {
 				'values': [
 					{ 'key': 'keyName' },
 				],
+				'patch': [
+					{'op': PatchItemOpEnum.REPLACE, 'path': '/0/main/1/value', 'value': 'New Value'},
+				],
 				'visibleCondition': {
 					'component': 'component',
 					'version': 1,
@@ -93,6 +106,9 @@ const data = {
 				'version': 1,
 				'values': [
 					{ 'key': 'keyName' },
+				],
+				'patch': [
+					{'op': PatchItemOpEnum.REPLACE, 'path': '/0/main/1/value', 'value': 'New Value'},
 				],
 				'visibleCondition': {
 					'component': 'component',
