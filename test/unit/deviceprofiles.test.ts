@@ -14,6 +14,9 @@ import create from './data/deviceprofiles/post_deviceprofiles'
 import update from './data/deviceprofiles/put_deviceprofiles_149476cd-3ca9-4e62-ba40-a399e558b2bf'
 import updateStatus from './data/deviceprofiles/post_deviceprofiles_149476cd-3ca9-4e62-ba40-a399e558b2bf_status'
 import deleteProfile  from './data/deviceprofiles/delete_deviceprofiles_149476cd-3ca9-4e62-ba40-a399e558b2bf'
+import getLocales from './data/deviceprofiles/get_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n'
+import putTranslations from './data/deviceprofiles/put_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n_fr'
+import deleteTranslations from './data/deviceprofiles/delete_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n_fr'
 
 
 const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
@@ -119,4 +122,43 @@ describe('Device Profiles',  () => {
 		expect(response).toEqual(SuccessStatusValue)
 	})
 
+	it('get locales', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getLocales.response }))
+		const response = await client.deviceProfiles.listLocales('3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb')
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getLocales.request))
+		expect(response).toBe(getLocales.response.items)
+	})
+
+	it('Create a new translation', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putTranslations.response }))
+
+		const data = {
+			'tag': 'fr',
+			'components': {
+				'main': {
+					'label': 'Alimentation Principale',
+					'description': 'Contrôle l\'alimentation de toutes les prises',
+				},
+				'outlet1': {
+					'label': 'Sortie Un',
+					'description': 'Prise de courant commutable 1',
+				},
+				'outlet2': {
+					'label': 'Sortie Deux',
+					'description': 'Prise de courant commutable 2',
+				},
+			},
+		}
+
+		const response = await client.deviceProfiles.upsertTranslations('3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb', data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(putTranslations.request))
+		expect(response).toBe(putTranslations.response)
+	})
+
+	it('delete translations', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deleteTranslations.response }))
+		const response: Status = await client.deviceProfiles.deleteTranslations('3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb', 'fr')
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(deleteTranslations.request))
+		expect(response).toEqual(SuccessStatusValue)
+	})
 })

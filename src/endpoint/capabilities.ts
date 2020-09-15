@@ -1,6 +1,7 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
-import { Status, SuccessStatusValue } from '../types'
+import {LocaleReference, Status, SuccessStatusValue} from '../types'
+import {DeviceProfileTranslations} from './deviceprofiles'
 
 
 export enum CapabilitySchemaPropertyName {
@@ -648,6 +649,92 @@ export interface CapabilityPresentation extends CapabilityPresentationUpdate {
 	version: number // integer
 }
 
+export interface CapabilityLocalizationI18n {
+	/**
+	 * The localized substitution for the argument value
+	 */
+	label?: string
+}
+
+export interface CapabilityLocalizationArguments {
+	/**
+	 * Map of argument values to localizations
+	 */
+	i18n?: { [key: string]: CapabilityLocalizationI18n }
+
+	/**
+	 * The localized version of the argument name
+	 */
+	label?: string
+
+	/**
+	 * A localized description of what the argument represents
+	 */
+	description?: string
+}
+
+export interface CapabilityLocalizationCommands {
+	/**
+	 * The localized version of the command name
+	 */
+	label?: string
+
+	/**
+	 * A localized description of what the command does
+	 */
+	description?: string
+
+	/**
+	 * Map of argument names to localizations
+	 */
+	arguments?: { [key: string]: CapabilityLocalizationArguments }
+}
+
+export interface CapabilityLocalizationAttributes {
+	/**
+	 * The localized version of the label value
+	 */
+	label?: string
+
+	/**
+	 * A localized description of what the attribute represents
+	 */
+	description?: string
+
+	/**
+	 * A template string for the text that will be displayed regarding the attribute state.
+	 */
+	displayTemplate?: string
+
+	/**
+	 * Map of state property (value, unit, etc..) to localization mapping
+	 */
+	i18n?: { [key: string]: { [key: string]: undefined } }
+}
+
+export interface CapabilityLocalization {
+	tag: string
+
+	/**
+	 * A localized label for the capability
+	 */
+	label?: string
+
+	/**
+	 * A localized description of the capability
+	 */
+	description?: string
+
+	/**
+	 * Map of attribute name to localizations
+	 */
+	attributes?: { [key: string]: CapabilityLocalizationAttributes }
+
+	/**
+	 * Map of command name to localizations
+	 */
+	commands?: { [key: string]: CapabilityLocalizationCommands }
+}
 
 export class CapabilitiesEndpoint extends Endpoint {
 	constructor(config: EndpointClientConfig) {
@@ -703,5 +790,44 @@ export class CapabilitiesEndpoint extends Endpoint {
 
 	public async updatePresentation(capabilityId: string, capabilityVersion: number, presentation: CapabilityPresentationUpdate): Promise<CapabilityPresentation> {
 		return this.client.put(`${capabilityId}/${capabilityVersion}/presentation`, presentation)
+	}
+
+	/**
+	 * Returns a list of the locales supported by the device profile
+	 * @param capabilityId UUID of the device profile
+	 * @param capabilityVersion version number of the capability, starting with 1
+	 */
+	public listLocales(capabilityId: string, capabilityVersion: number): Promise<LocaleReference[]> {
+		return this.client.getPagedItems(`${capabilityId}/${capabilityVersion}/i18n`)
+	}
+
+	/**
+	 *
+	 * @param capabilityId ID of the capability
+	 * @param tag locale tag, e.g. 'en'm 'es', or 'ko'
+	 * @param capabilityVersion version number of the capability, starting with 1
+	 */
+	public getTranslations(capabilityId: string, capabilityVersion: number, tag: string): Promise<DeviceProfileTranslations> {
+		return this.client.get(`${capabilityId}/${capabilityVersion}/i18n/${tag}`)
+	}
+
+	/**
+	 * Create or update the translations for a capability
+	 * @param capabilityId ID of the capability
+	 * @param capabilityVersion version number of the capability, starting with 1
+	 * @param data translations
+	 */
+	public upsertTranslations(capabilityId: string, capabilityVersion: number, data: DeviceProfileTranslations): Promise<DeviceProfileTranslations> {
+		return this.client.put(`${capabilityId}/${capabilityVersion}/i18n/${data.tag}`, data)
+	}
+
+	/**
+	 * Retrieve the translations for the specified locale
+	 * @param capabilityId ID of the capability
+	 * @param capabilityVersion version number of the capability, starting with 1
+	 * @param tag locale tag, e.g. 'en'm 'es', or 'ko'
+	 */
+	public deleteTranslations(capabilityId: string, capabilityVersion: number, tag: string): Promise<Status> {
+		return this.client.delete(`${capabilityId}/${capabilityVersion}/i18n/${tag}`)
 	}
 }

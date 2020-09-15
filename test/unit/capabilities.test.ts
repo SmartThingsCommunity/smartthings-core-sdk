@@ -9,6 +9,8 @@ import capabilitiesList3 from './data/capabilities/list3'
 import standardCapabilitiesList from './data/capabilities/listStandard'
 import namespacesList from './data/capabilities/listNamespaces'
 import create1 from './data/capabilities/create1'
+import getLocales from './data/capabilities/locales'
+import putTranslations from './data/capabilities/translations'
 
 
 const authenticator = new NoOpAuthenticator()
@@ -127,5 +129,61 @@ describe('Capabilities',  () => {
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities', params, reqData, 'post'))
 		expect(response).toBe(resData)
+	})
+
+	it('get locales', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getLocales }))
+		const response = await client.capabilities.listLocales('bobflorian.outputModulation', 1)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/bobflorian.outputModulation/1/i18n', undefined, undefined))
+		expect(response).toBe(getLocales.items)
+	})
+
+	it('Create a new translation', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putTranslations }))
+
+		const data = {
+			'tag': 'fr',
+			'label': 'Output Modulation',
+			'attributes': {
+				'outputModulation': {
+					'label': 'La modulation de sortie',
+					'description': 'Power supply output modulation, i.e. AC frequency or DC',
+					'displayTemplate': '{{attribute}} de {{device.label}} est de {{value}}',
+					'i18n': {
+						'value': {
+							'50hz': {
+								'label': '50 Hz',
+							},
+							'60hz': {
+								'label': '60 Hz',
+							},
+							'400hz': {
+								'label': '400 Hz',
+							},
+							'dc': {
+								'label': 'DC',
+							},
+						},
+					},
+				},
+			},
+			'commands': {
+				'setOutputModulation': {
+					'label': 'Set Output Modulation',
+					'description': 'Set the output modulation to the specified value',
+					'arguments': {
+						'outputModulation': {
+							'i18n': {},
+							'label': 'Output Modulation',
+							'description': 'The desired output modulation',
+						},
+					},
+				},
+			},
+		}
+
+		const response = await client.capabilities.upsertTranslations('bobflorian.outputModulation', 1, data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/bobflorian.outputModulation/1/i18n/fr', undefined, data, 'put'))
+		expect(response).toBe(putTranslations)
 	})
 })
