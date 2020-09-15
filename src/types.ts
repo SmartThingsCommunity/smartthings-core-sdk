@@ -44,3 +44,7 @@ export const SuccessStatusValue = {
 export interface IconImage {
 	url?: string
 }
+
+export interface LocaleReference {
+	tag: string
+}
