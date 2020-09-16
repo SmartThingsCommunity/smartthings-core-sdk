@@ -6,8 +6,6 @@ export interface Logger {
 	level: string
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-	log(...args: any[]): void
-
 	trace(message: any, ...args: any[]): void
 	debug(message: any, ...args: any[]): void
 	info(message: any, ...args: any[]): void
@@ -32,9 +30,6 @@ export class NoLogLogger implements Logger {
 	public level = 'off'
 
 	/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
-	log(...args: any[]): void {
-		// no-op
-	}
 	trace(message: any, ...args: any[]): void {
 		// no-op
 	}
