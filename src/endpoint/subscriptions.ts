@@ -255,18 +255,7 @@ export class SubscriptionsEndpoint extends Endpoint {
 	 * with an installedAppId
 	 */
 	public create(data: SubscriptionRequest, installedAppId?: string): Promise<Subscription> {
-		return this.client.put<Subscription>(`${this.installedAppId(installedAppId)}/subscriptions/`, data)
-	}
-
-	/**
-	 * Update a subscription
-	 * @param name the alphanumeric subscription name
-	 * @param data the new subscription definition
-	 * @param installedAppId the UUID of the installed app. This parameter is not required if the client id configured
-	 * with an installedAppId
-	 */
-	public update(name: string, data: SubscriptionRequest, installedAppId?: string): Promise<Subscription> {
-		return this.client.put<Subscription>(`${this.installedAppId(installedAppId)}/subscriptions/${name}`, data)
+		return this.client.post<Subscription>(`${this.installedAppId(installedAppId)}/subscriptions`, data)
 	}
 
 	/**
