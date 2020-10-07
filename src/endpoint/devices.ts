@@ -214,6 +214,11 @@ export interface DeviceListOptions {
 	deviceId?: string | string[]
 
 	/**
+	 * UUID of an installed app instance
+	 */
+	installedAppId?: string
+
+	/**
 	 * Limit the number of results to this value. By default all devices are returned
 	 */
 	max?: number
@@ -261,6 +266,9 @@ export class DevicesEndpoint extends Endpoint {
 		}
 		if ('deviceId' in options && options.deviceId) {
 			params.deviceId = options.deviceId
+		}
+		if ('installedAppId' in options && options.installedAppId) {
+			params.installedAppId = options.installedAppId
 		}
 		if ('max' in options && options.max) {
 			params.max = options.max
