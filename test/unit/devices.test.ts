@@ -18,6 +18,7 @@ import getComponent1Status from './data/devices/get_devices_46c38b7c-81bc-4e65-8
 import getComponent2Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet2_status'
 import getHealth from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_health'
 import listDevicesExtraParams from './data/devices/list_devices_by_type'
+import listByIsa from './data/devices/list_devices_by_isa'
 import createEvents from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_events'
 import turnOn1 from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_commands'
 import create from './data/devices/post_devices'
@@ -76,6 +77,13 @@ describe('Devices',  () => {
 		const response: Device[] = await isaClient.devices.listInLocation()
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
 		expect(response).toBe(locationList.response.items)
+	})
+
+	it('list for an installed app', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listByIsa.response}))
+		const response: Device[] = await client.devices.list({installedAppId: 'f2b6aff2-832b-4d00-8d31-04b16d8f37c7'})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listByIsa.request))
+		expect(response).toBe(listByIsa.response.items)
 	})
 
 	it('get', async () => {
