@@ -38,6 +38,25 @@ export interface SingleOperandCondition {
 	aggregation?: ConditionAggregationMode
 }
 
+export interface TimedSimpleCondition {
+	id?: string
+	left: Operand
+	right: Operand
+	interval: Interval
+	aggregation?: ConditionAggregationMode
+}
+
+export enum ArmState {
+	ArmedStay = 'ArmedStay',
+	ArmedAway = 'ArmedAway',
+	Disarmed = 'Disarmed',
+}
+
+export interface SecurityState {
+	armState: ArmState
+	monitoring?: boolean
+}
+
 export interface Condition {
 	and?: Condition[]
 	or?: Condition[]
@@ -48,7 +67,10 @@ export interface Condition {
 	lessThan?: SimpleCondition
 	lessThanOrEquals?: SimpleCondition
 	between?: BetweenCondition
-	changes?: SingleOperandCondition
+	dropsBelow?: SimpleCondition
+	dropsToOrBelow?: SimpleCondition
+	risesAbove?: SimpleCondition
+	risesToOrAbove?: SimpleCondition
 }
 
 export enum SubscriptionMode {
@@ -242,6 +264,7 @@ export interface LocationAction {
 	 */
 	id: string
 	mode?: string
+	security?: SecurityState
 }
 
 export interface Action {
