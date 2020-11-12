@@ -110,6 +110,10 @@ export interface DeviceUpdate {
 	label?: string
 }
 
+export interface DeviceProfileUpdate {
+	profileId: string
+}
+
 export interface DeviceCreate {
 	label?: string
 	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
@@ -368,6 +372,18 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public update(id: string, data: DeviceUpdate): Promise<Device> {
 		return this.client.put<Device>(id, data)
+	}
+
+	/**
+	 * Update the deviceProfileId of a device. Note that currently this method can
+	 * only be called with an installedApp token with the i:deviceprofiles scope
+	 * on a device created by that app.
+	 * @param id UUID of the device
+	 * @param data the new device profile
+	 */
+	public updateProfile(id: string, data: DeviceProfileUpdate): Promise<Device> {
+		return this.client.request<Device>('put',`${id}/profile`, data, undefined,
+			{headerOverrides: {Accept: 'application/vnd.smartthings+json;v=20170916'}})
 	}
 
 	/**
