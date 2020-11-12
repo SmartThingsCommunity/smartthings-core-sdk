@@ -23,6 +23,8 @@ import createEvents from './data/devices/post_devices_385931b6-0121-4848-bcc8-54
 import turnOn1 from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_commands'
 import create from './data/devices/post_devices'
 import create2 from './data/devices/post_devices_2'
+import update from './data/devices/put_devices'
+import updateProfile from './data/devices/put_devices_profile'
 
 
 const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
@@ -182,6 +184,26 @@ describe('Devices',  () => {
 		const response: Device = await isaClient.devices.create(data)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create2.request))
 		expect(response).toBe(create2.response)
+	})
+
+	it('update name', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: update.response }))
+		const data = {
+			'label': 'Living room light',
+		}
+		const response: Device = await isaClient.devices.update('6f5ea629-4c05-4a90-a244-cc129b0a80c3', data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(update.request))
+		expect(response).toStrictEqual(create.response)
+	})
+
+	it('update profileId', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateProfile.response }))
+		const data = {
+			'profileId': '2b11d686-11e2-41f9-bff2-8aa40d9b944a',
+		}
+		const response: Device = await isaClient.devices.updateProfile('6f5ea629-4c05-4a90-a244-cc129b0a80c3', data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateProfile.request))
+		expect(response).toStrictEqual(updateProfile.response)
 	})
 
 	it('executeCommand', async () => {
