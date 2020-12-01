@@ -561,8 +561,8 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param id
 	 * @param deviceEvents
 	 */
-	public sendEvents(id: string, deviceEvents: DeviceEventList): void {
-		this.client.post(`${id}/events`, deviceEvents)
+	public async sendEvents(id: string, deviceEvents: DeviceEventList): Promise<void> {
+		await this.client.post(`${id}/events`, deviceEvents)
 	}
 
 	/**

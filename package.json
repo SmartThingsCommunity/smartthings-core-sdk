@@ -44,14 +44,14 @@
 		"jest": "^26.4.2",
 		"node": "^12.13.0",
 		"prettier": "^2.0.4",
-		"semantic-release": "^17.1.1",
+		"semantic-release": "^17.3.0",
 		"ts-jest": "^26.3.0",
 		"typedoc": "^0.17.4",
 		"typescript": "^3.8.3"
 	},
 	"scripts": {
-		"format": "eslint --ext .ts src test .eslintrc.js --ignore-pattern '!.eslintrc.js' --fix",
-		"lint": "eslint --ext .ts src test .eslintrc.js --ignore-pattern '!.eslintrc.js'",
+		"format": "eslint --ext .ts src test --fix",
+		"lint": "eslint --ext .ts src test",
 		"test": "jest",
 		"test-coverage": "jest --coverage",
 		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
