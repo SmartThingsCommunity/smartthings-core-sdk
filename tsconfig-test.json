@@ -9,10 +9,9 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"declarationMap": true,
-		"outDir": "./dist",
+		"outDir": "./dist_test",
 	},
 	"include": [
-		"./global.d.ts",
-		"./src/**/*.ts",
+		"./test/**/*.ts",
 	],
 }
