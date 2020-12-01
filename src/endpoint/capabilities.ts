@@ -87,7 +87,32 @@ export interface CapabilityCommand {
 }
 
 export interface CapabilityUpdate {
-	attributes?: { [name: string]: CapabilityAttribute } // name: lower camel case
+	/**
+	 * Attributes listed by name.
+	 *
+	 * Attribute name must be camel case starting with a lowercase letter. *ONLY* letters
+	 * are allowed (no numbers or special characters).
+	 */
+	attributes?: { [name: string]: CapabilityAttribute } // name: lower camel case, max 36 characters, NO numbers special characters
+
+	/**
+	 * Commands listed by name.
+	 *
+	 * Command name must be camel case starting with a lowercase letter. *ONLY* letters
+	 * are allowed (no numbers or special characters).
+	 *
+	 * The command name inside each command must match the key used here.
+	 *
+	 * {
+	 *     ...
+	 *     "commands": [
+	 *         "commandName": {           <-- must match name value below
+	 *             "name": "commandName", <-- Must match key above
+	 *             ...
+	 *         }
+	 *     ]
+	 * }
+	 */
 	commands?: { [name: string]: CapabilityCommand } // name: lower camel case
 }
 
