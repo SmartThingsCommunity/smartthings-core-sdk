@@ -200,8 +200,17 @@ export class PresentationEndpoint extends Endpoint {
 		return this.client.get<PresentationDeviceConfig>(`types/${profileId}/deviceconfig`, extraParams)
 	}
 
-	public get(presentationId: string): Promise<PresentationDeviceConfig> {
-		return this.client.get<PresentationDeviceConfig>('deviceconfig', { presentationId })
+	/**
+	 * Get a device configuration
+	 * @param presentationId The id returned from the device config create operation
+	 * @param manufacturerName The manufacturer name, e.g. SmartThingsCommunity
+	 */
+	public get(presentationId: string, manufacturerName?: string): Promise<PresentationDeviceConfig> {
+		if (manufacturerName) {
+			return this.client.get<PresentationDeviceConfig>('deviceconfig', { presentationId, manufacturerName })
+		} else {
+			return this.client.get<PresentationDeviceConfig>('deviceconfig', { presentationId })
+		}
 	}
 
 	/**
