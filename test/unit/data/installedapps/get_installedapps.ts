@@ -39,6 +39,7 @@ const response = {
 			],
 			'principalType': 'LOCATION',
 			'singleInstance': false,
+			'restrictionTier': 0,
 		},
 		{
 			'installedAppId': '24eac88d-ee09-42f8-b4ac-72f2e91b8ac4',
@@ -69,6 +70,7 @@ const response = {
 			],
 			'principalType': 'LOCATION',
 			'singleInstance': false,
+			'restrictionTier': 20,
 		},
 	],
 	'_links': {

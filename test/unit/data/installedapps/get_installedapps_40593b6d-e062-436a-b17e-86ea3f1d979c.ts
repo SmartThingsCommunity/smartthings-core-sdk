@@ -38,6 +38,7 @@ const response = {
 			],
 			'principalType': 'LOCATION',
 			'singleInstance': false,
+			'restrictionTier': 10,
 		},
 	],
 	'_links': {
