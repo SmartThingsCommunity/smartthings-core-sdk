@@ -189,6 +189,7 @@ export interface InstalledApp {
 	 * installed once within a user's account.
 	 */
 	singleInstance: boolean
+	restrictionTier?: number
 }
 
 export interface ConfigurationRequest {
