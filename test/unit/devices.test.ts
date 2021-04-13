@@ -11,6 +11,8 @@ import {expectedRequest} from './helpers/utils'
 import listPage1 from './data/devices/get_devices'
 import listPage2 from './data/devices/get_devices_page_1_max_200'
 import locationList from './data/devices/get_devices_locationId=95efee9b-6073-4871-b5ba-de6642187293'
+import healthLocationList from './data/devices/get_devices_health_locationId=95efee9b-6073-4871-b5ba-de6642187293'
+import statusLocationList from './data/devices/get_devices_status_locationId=95efee9b-6073-4871-b5ba-de6642187293'
 import get from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1'
 import getStatus from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_status'
 import getCapabilityStatus from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_components_main_capabilities_colorTemperature_status'
@@ -72,6 +74,20 @@ describe('Devices',  () => {
 		const response: Device[] = await isaClient.devices.list()
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
 		expect(response).toBe(locationList.response.items)
+	})
+
+	it('list with health', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: healthLocationList.response}))
+		const response: Device[] = await isaClient.devices.list({includeHealth: true})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(healthLocationList.request))
+		expect(response).toBe(healthLocationList.response.items)
+	})
+
+	it('list with status', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: statusLocationList.response}))
+		const response: Device[] = await isaClient.devices.list({includeStatus: true})
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(statusLocationList.request))
+		expect(response).toBe(statusLocationList.response.items)
 	})
 
 	it('list for an implicit location 2', async () => {

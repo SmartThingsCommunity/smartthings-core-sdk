@@ -5,9 +5,12 @@ import { Links, Status, SuccessStatusValue } from '../types'
 import {PresentationDevicePresentation} from './presentation'
 
 
+const HEADER_OVERRIDES = {Accept: 'application/vnd.smartthings+json;v=20170916'}
+
 export interface CapabilityReference {
 	id: string
 	version?: number
+	status?: CapabilityStatus
 }
 
 export interface Component {
@@ -84,6 +87,11 @@ export interface ProfileIdentifier {
 	id: string
 }
 
+export interface HealthState {
+	state: DeviceHealthState
+	lastUpdatedDate?: string
+}
+
 export interface Device {
 	deviceId?: string
 	name?: string
@@ -104,6 +112,7 @@ export interface Device {
 	viper?: ViperDeviceDetails
 	type?: DeviceIntegrationType
 	restrictionTier?: number
+	healthState?: HealthState
 }
 
 export interface DeviceUpdate {
@@ -223,6 +232,16 @@ export interface DeviceListOptions {
 	installedAppId?: string
 
 	/**
+	 * Include the device health, i.e. online/offline status in the response
+	 */
+	includeHealth?: boolean
+
+	/**
+	 * Include the device status data, i.e. the values of all attributes, in the response
+	 */
+	includeStatus?: boolean
+
+	/**
 	 * Limit the number of results to this value. By default all devices are returned
 	 */
 	max?: number
@@ -238,6 +257,18 @@ export interface DeviceListOptions {
 	type?: DeviceIntegrationType | DeviceIntegrationType[]
 }
 
+export interface DeviceGetOptions {
+	/**
+	 * Include the device health, i.e. online/offline status in the response
+	 */
+	includeHealth?: boolean
+
+	/**
+	 * Include the device status data, i.e. the values of all attributes, in the response
+	 */
+	includeStatus?: boolean
+}
+
 export interface HueSaturation {
 	hue: number
 	saturation: number
@@ -250,10 +281,12 @@ export class DevicesEndpoint extends Endpoint {
 
 	/**
 	 * Returns a list of devices matching the query options or all devices accessible by the principal (i.e. user)
-	 * if no options are specified.
+	 * if no options are specified. If the includeHealth option is set to true then the response will also contain
+	 * the health status of each device (i.e. if it is online or offline). If the includeStatus option is set to true
+	 * then the response will also include the status of all attributes (i.e. value and timestamp)
 	 *
-	 * @param options query options, capability, capabilitiesMode ('and' or 'or'), locationId, deviceId. These can
-	 * be single values or arrays.
+	 * @param options query options, capability, capabilitiesMode ('and' or 'or'), locationId, deviceId. which can
+	 * be single values or arrays, and includeHealth & includeStatus booleans
 	 */
 	public async list(options: DeviceListOptions = {}): Promise<Device[]> {
 		const params: HttpClientParams = {}
@@ -271,6 +304,12 @@ export class DevicesEndpoint extends Endpoint {
 		if ('deviceId' in options && options.deviceId) {
 			params.deviceId = options.deviceId
 		}
+		if ('includeHealth' in options && options.includeHealth !== undefined) {
+			params.includeHealth = options.includeHealth.toString()
+		}
+		if ('includeStatus' in options && options.includeStatus !== undefined) {
+			params.includeStatus = options.includeStatus.toString()
+		}
 		if ('installedAppId' in options && options.installedAppId) {
 			params.installedAppId = options.installedAppId
 		}
@@ -283,7 +322,8 @@ export class DevicesEndpoint extends Endpoint {
 		if ('type' in options && options.type) {
 			params.type = options.type
 		}
-		return this.client.getPagedItems<Device>(undefined, params)
+		return this.client.getPagedItems<Device>(undefined, params,
+			{headerOverrides: HEADER_OVERRIDES})
 	}
 
 	/**
@@ -320,9 +360,20 @@ export class DevicesEndpoint extends Endpoint {
 	/**
 	 * Returns a description of the specified device
 	 * @param id UUID of the device
+	 * @param options optional includeHealth and includeStatus parameters.
+	 * If the includeHealth option is set to true then the response will also contain
+	 * the health status of each device (i.e. if it is online or offline). If the includeStatus option is set to true
+	 * then the response will also include the status of all attributes (i.e. value and timestamp)
 	 */
-	public get(id: string): Promise<Device> {
-		return this.client.get<Device>(id)
+	public get(id: string, options: DeviceGetOptions = {}): Promise<Device> {
+		const params: HttpClientParams = {}
+		if ('includeHealth' in options && options.includeHealth !== undefined) {
+			params.includeHealth = options.includeHealth.toString()
+		}
+		if ('includeStatus' in options && options.includeStatus !== undefined) {
+			params.includeStatus = options.includeStatus.toString()
+		}
+		return this.client.get<Device>(id, params,{headerOverrides: HEADER_OVERRIDES})
 	}
 
 	/**
@@ -382,8 +433,8 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param data the new device profile
 	 */
 	public updateProfile(id: string, data: DeviceProfileUpdate): Promise<Device> {
-		return this.client.request<Device>('put',`${id}/profile`, data, undefined,
-			{headerOverrides: {Accept: 'application/vnd.smartthings+json;v=20170916'}})
+		return this.client.put<Device>(`${id}/profile`, data, undefined,
+			{headerOverrides: HEADER_OVERRIDES})
 	}
 
 	/**
