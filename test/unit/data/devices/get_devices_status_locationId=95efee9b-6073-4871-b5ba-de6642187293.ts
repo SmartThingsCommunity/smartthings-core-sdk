@@ -8,6 +8,7 @@ const request = {
 	},
 	'params': {
 		'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
+		'includeStatus': 'true',
 	},
 }
 const response = {

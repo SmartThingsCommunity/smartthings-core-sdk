@@ -163,31 +163,31 @@ export class EndpointClient {
 		}
 	}
 
-	public async get<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams): Promise<T> {
-		return this.request('get', path, undefined, params)
+	public async get<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+		return this.request('get', path, undefined, params, options)
 	}
 
-	public post<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams): Promise<T> {
-		return this.request('post', path, data, params)
+	public post<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+		return this.request('post', path, data, params, options)
 	}
 
-	public put<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams): Promise<T> {
-		return this.request('put', path, data, params)
+	public put<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+		return this.request('put', path, data, params, options)
 	}
 
-	public patch<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams): Promise<T> {
-		return this.request('patch', path, data, params)
+	public patch<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+		return this.request('patch', path, data, params, options)
 	}
 
-	public delete<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams): Promise<T> {
-		return this.request('delete', path, undefined, params)
+	public delete<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+		return this.request('delete', path, undefined, params, options)
 	}
 
-	public async getPagedItems<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams): Promise<T[]> {
-		let list = await this.get<ItemsList>(path, params)
+	public async getPagedItems<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList>): Promise<T[]> {
+		let list = await this.get<ItemsList>(path, params, options)
 		const result = list.items
 		while (list._links && list._links.next) {
-			list = await this.get<ItemsList>(list._links.next.href)
+			list = await this.get<ItemsList>(list._links.next.href, undefined, options)
 			result.push(...list.items)
 		}
 		return result
