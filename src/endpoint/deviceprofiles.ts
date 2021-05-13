@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
-import { LocaleReference, Owner, Status, SuccessStatusValue } from '../types'
+import { LocaleReference, Status, SuccessStatusValue } from '../types'
 import { CapabilityReference } from './devices'
 
 
@@ -22,21 +22,49 @@ export enum DeviceProfileStatus {
 	PUBLISHED = 'PUBLISHED'
 }
 
-export interface DeviceProfileRequest {
-	name?: string
-	components?: DeviceComponentRequest[]
-	metadata?: { [key: string]: string }
+export type PreferenceType = 'integer' | 'number' | 'boolean' | 'string' | 'enumeration'
+
+export interface DeviceProfilePreferenceDefinition {
+	minimum?: number
+	maximum?: number
+	minLength?: number
+	maxLength?: number
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	default: any
+	stringType?: 'text' | 'password' | 'paragraph'
+	options?: { [key: string]: string }
+}
+
+export interface DeviceProfilePreferenceCore {
+	title: string
+	description?: string
+	required?: boolean
+	preferenceType: PreferenceType
+}
+export interface DeviceProfilePreferenceRequest extends DeviceProfilePreferenceCore {
+	explicit?: boolean
+	definition: DeviceProfilePreferenceDefinition
+	preferenceId?: string
 }
 
 export interface DeviceProfileUpdateRequest {
 	components?: DeviceComponentRequest[]
 	metadata?: { [key: string]: string }
+	preferences?: DeviceProfilePreferenceRequest[]
 }
 
-export interface DeviceProfile extends DeviceProfileRequest {
+export interface DeviceProfileCreateRequest extends DeviceProfileUpdateRequest {
+	name?: string
+}
+export type DeviceProfileRequest = DeviceProfileCreateRequest
+
+export interface DeviceProfilePreference extends DeviceProfilePreferenceCore {
+	id?: string
+}
+
+export interface DeviceProfile extends DeviceProfileCreateRequest {
 	id: string
 	name: string
-	owner: Owner
 	components: DeviceComponent[]
 	metadata?: { [key: string]: string }
 	status: DeviceProfileStatus
@@ -94,7 +122,7 @@ export class DeviceProfilesEndpoint extends Endpoint {
 	 * Create a device profile
 	 * @param data device profile definition
 	 */
-	public create(data: DeviceProfileRequest): Promise<DeviceProfile> {
+	public create(data: DeviceProfileCreateRequest): Promise<DeviceProfile> {
 		return this.client.post(undefined, data)
 	}
 
@@ -127,7 +155,7 @@ export class DeviceProfilesEndpoint extends Endpoint {
 	/**
 	 * Retrieve the translations for the specified locale
 	 * @param id UUID of the device profile
-	 * @param tag locale tag, e.g. 'en'm 'es', or 'ko'
+	 * @param tag locale tag, e.g. 'en', 'es', or 'ko'
 	 */
 	public getTranslations(id: string, tag: string): Promise<DeviceProfileTranslations> {
 		return this.client.get(`${id}/i18n/${tag}`)
@@ -145,7 +173,7 @@ export class DeviceProfilesEndpoint extends Endpoint {
 	/**
 	 * Retrieve the translations for the specified locale
 	 * @param id UUID of the device profile
-	 * @param tag locale tag, e.g. 'en'm 'es', or 'ko'
+	 * @param tag locale tag, e.g. 'en', 'es', or 'ko'
 	 */
 	public async deleteTranslations(id: string, tag: string): Promise<Status> {
 		await this.client.delete(`${id}/i18n/${tag}`)

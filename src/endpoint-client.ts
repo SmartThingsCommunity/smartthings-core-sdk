@@ -134,24 +134,37 @@ export class EndpointClient {
 			}
 			throw new Error('skipping request; dry run mode')
 		}
-		let response
 		try {
-			response = await axios.request(axiosConfig)
+			const response = await axios.request(axiosConfig)
+			if (this.logger.isTraceEnabled()) {
+				this.logger.trace(`axios response ${response.status}: data=${JSON.stringify(response.data)}`)
+			}
 			return response.data
 		} catch (error) {
+			if (this.logger.isTraceEnabled()) {
+				if (error.response) {
+					// server responded with non-200 response code
+					this.logger.trace(`axios response ${error.response.status}: data=${JSON.stringify(error.response.data)}`)
+				} else if (error.request) {
+					// server never responded
+					this.logger.trace(`no response from server for request ${JSON.stringify(error.request)}`)
+				} else {
+					this.logger.trace(`error making request: ${error.message}`)
+				}
+			}
 			if (error.response && error.response.status === 401 && this.config.authenticator.refresh) {
 				if (this.config.authenticator.acquireRefreshMutex) {
 					const release = await this.config.authenticator.acquireRefreshMutex()
 					try {
 						await this.config.authenticator.refresh(axiosConfig, this.config)
-						response = await axios.request(axiosConfig)
+						const response = await axios.request(axiosConfig)
 						return response.data
 					} finally {
 						release()
 					}
 				} else {
 					await this.config.authenticator.refresh(axiosConfig, this.config)
-					response = await axios.request(axiosConfig)
+					const response = await axios.request(axiosConfig)
 					return response.data
 				}
 			}
