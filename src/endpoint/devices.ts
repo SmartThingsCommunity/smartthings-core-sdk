@@ -481,7 +481,7 @@ export class DevicesEndpoint extends Endpoint {
 	}
 
 	/**
-	 * Gets the attribute values of the specified ccomponent capability
+	 * Gets the attribute values of the specified component capability
 	 * @deprecated use getCapabilityStatus instead
 	 */
 	public getCapabilityState(id: string, componentId: string, capabilityId: string): Promise<CapabilityStatus> {
