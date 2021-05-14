@@ -2,7 +2,7 @@ import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { ConfigEntry} from './installedapps'
 import { Links, Status, SuccessStatusValue } from '../types'
-import {PresentationDevicePresentation} from './presentation'
+import { PresentationDevicePresentation } from './presentation'
 
 
 const HEADER_OVERRIDES = {Accept: 'application/vnd.smartthings+json;v=20170916'}
@@ -203,6 +203,20 @@ export interface CommandRequest {
 
 export interface CommandList {
 	commands: Command[]
+}
+
+export type PreferenceType = 'integer' | 'number' | 'boolean' | 'string' | 'enumeration'
+
+export interface DevicePreferenceEntry {
+	preferenceType: PreferenceType
+	value: string | number | boolean
+}
+
+export interface DevicePreferenceResponse {
+	/**
+	 * Map of PreferenceId to its stored values
+	 */
+	values?: { [key: string]: DevicePreferenceEntry}
 }
 
 export interface DeviceListOptions {
@@ -622,6 +636,15 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public getPresentation(deviceId: string): Promise<PresentationDevicePresentation> {
 		return this.client.get<PresentationDevicePresentation>('/presentation', { deviceId })
+	}
+
+	/**
+	 * Get the preference values of the device
+	 * @param deviceId UUID of the device
+	 */
+	public getPreferences(deviceId: string): Promise<DevicePreferenceResponse> {
+		return this.client.get<DevicePreferenceResponse>(`${deviceId}/preferences`, undefined,
+			{headerOverrides: HEADER_OVERRIDES})
 	}
 
 	/**
