@@ -1,7 +1,7 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 import { LocaleReference, Status, SuccessStatusValue } from '../types'
-import { CapabilityReference } from './devices'
+import { CapabilityReference, PreferenceType } from './devices'
 
 
 export interface DeviceComponentRequest {
@@ -21,8 +21,6 @@ export enum DeviceProfileStatus {
 	DEVELOPMENT = 'DEVELOPMENT',
 	PUBLISHED = 'PUBLISHED'
 }
-
-export type PreferenceType = 'integer' | 'number' | 'boolean' | 'string' | 'enumeration'
 
 export interface DeviceProfilePreferenceDefinition {
 	minimum?: number

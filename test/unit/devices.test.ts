@@ -3,7 +3,8 @@ import axios from '../../__mocks__/axios'
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
-	Device, DeviceStatus, DeviceHealth, SuccessStatusValue, Status, ConfigValueType, DeviceIntegrationType,
+	Device, DeviceStatus, DeviceHealth, DevicePreferenceResponse,
+	SuccessStatusValue, Status, ConfigValueType, DeviceIntegrationType,
 } from '../../src'
 import {expectedRequest} from './helpers/utils'
 
@@ -27,6 +28,7 @@ import create from './data/devices/post_devices'
 import create2 from './data/devices/post_devices_2'
 import update from './data/devices/put_devices'
 import updateProfile from './data/devices/put_devices_profile'
+import getPreferences from './data/devices/get_preferences'
 
 
 const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
@@ -361,5 +363,12 @@ describe('Devices',  () => {
 		const response: Status = await client.devices.createEvents('385931b6-0121-4848-bcc8-54cb76436de1', events)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(createEvents.request))
 		expect(response).toBe(SuccessStatusValue)
+	})
+
+	it('getPreferences', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getPreferences.response }))
+		const response: DevicePreferenceResponse = await client.devices.getPreferences('385931b6-0121-4848-bcc8-54cb76436de1')
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getPreferences.request))
+		expect(response).toBe(getPreferences.response)
 	})
 })
