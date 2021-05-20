@@ -18,6 +18,47 @@ const client = new SmartThingsClient(authenticator, {})
 
 const testNamespace = 'testNamespace'
 
+const data = {
+	'tag': 'fr',
+	'label': 'Output Modulation',
+	'attributes': {
+		'outputModulation': {
+			'label': 'La modulation de sortie',
+			'description': 'Power supply output modulation, i.e. AC frequency or DC',
+			'displayTemplate': '{{attribute}} de {{device.label}} est de {{value}}',
+			'i18n': {
+				'value': {
+					'50hz': {
+						'label': '50 Hz',
+					},
+					'60hz': {
+						'label': '60 Hz',
+					},
+					'400hz': {
+						'label': '400 Hz',
+					},
+					'dc': {
+						'label': 'DC',
+					},
+				},
+			},
+		},
+	},
+	'commands': {
+		'setOutputModulation': {
+			'label': 'Set Output Modulation',
+			'description': 'Set the output modulation to the specified value',
+			'arguments': {
+				'outputModulation': {
+					'i18n': {},
+					'label': 'Output Modulation',
+					'description': 'The desired output modulation',
+				},
+			},
+		},
+	},
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function expectedRequest(path?: string, params?: any, data?: any, method = 'get'): any {
 	return {
@@ -141,49 +182,39 @@ describe('Capabilities',  () => {
 	it('Create a new translation', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putTranslations }))
 
-		const data = {
-			'tag': 'fr',
-			'label': 'Output Modulation',
-			'attributes': {
-				'outputModulation': {
-					'label': 'La modulation de sortie',
-					'description': 'Power supply output modulation, i.e. AC frequency or DC',
-					'displayTemplate': '{{attribute}} de {{device.label}} est de {{value}}',
-					'i18n': {
-						'value': {
-							'50hz': {
-								'label': '50 Hz',
-							},
-							'60hz': {
-								'label': '60 Hz',
-							},
-							'400hz': {
-								'label': '400 Hz',
-							},
-							'dc': {
-								'label': 'DC',
-							},
-						},
-					},
-				},
-			},
-			'commands': {
-				'setOutputModulation': {
-					'label': 'Set Output Modulation',
-					'description': 'Set the output modulation to the specified value',
-					'arguments': {
-						'outputModulation': {
-							'i18n': {},
-							'label': 'Output Modulation',
-							'description': 'The desired output modulation',
-						},
-					},
-				},
-			},
-		}
-
-		const response = await client.capabilities.upsertTranslations('bobflorian.outputModulation', 1, data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/bobflorian.outputModulation/1/i18n/fr', undefined, data, 'put'))
+		const response = await client.capabilities.createTranslations('bobflorian.outputModulation', 1, data)
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/bobflorian.outputModulation/1/i18n', undefined, data, 'post'))
 		expect(response).toBe(putTranslations)
+	})
+
+	describe('upsert', () => {
+		it('is happy with create when it works', async () => {
+			axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putTranslations }))
+
+			const response = await client.capabilities.upsertTranslations('bobflorian.outputModulation', 1, data)
+			expect(axios.request).toHaveBeenCalledTimes(1)
+			expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/bobflorian.outputModulation/1/i18n', undefined, data, 'post'))
+			expect(response).toBe(putTranslations)
+		})
+
+		it('calls update when create fails because of pre-existing translation', async () => {
+			axios.request
+				.mockRejectedValueOnce({ message: '... Localization already exists ...' })
+				.mockResolvedValueOnce({ status: 200, data: putTranslations })
+
+			const response = await client.capabilities.upsertTranslations('bobflorian.outputModulation', 1, data)
+			expect(axios.request).toHaveBeenCalledTimes(2)
+			expect(axios.request).toHaveBeenCalledWith(expectedRequest('capabilities/bobflorian.outputModulation/1/i18n', undefined, data, 'post'))
+			expect(response).toBe(putTranslations)
+		})
+
+		it('passed on other creation errors', async () => {
+			const error = Error('something bad happened')
+			axios.request.mockRejectedValueOnce(error)
+
+			const promise = client.capabilities.upsertTranslations('bobflorian.outputModulation', 1, data)
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(promise).rejects.toThrow(error)
+		})
 	})
 })

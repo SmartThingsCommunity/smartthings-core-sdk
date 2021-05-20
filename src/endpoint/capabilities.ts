@@ -1,7 +1,6 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
-import {LocaleReference, Status, SuccessStatusValue} from '../types'
-import {DeviceProfileTranslations} from './deviceprofiles'
+import { LocaleReference, Status, SuccessStatusValue } from '../types'
 
 
 export enum CapabilitySchemaPropertyName {
@@ -678,7 +677,7 @@ export interface CapabilityLocalizationI18n {
 	/**
 	 * The localized substitution for the argument value
 	 */
-	label?: string
+	label: string
 }
 
 export interface CapabilityLocalizationArguments {
@@ -734,7 +733,7 @@ export interface CapabilityLocalizationAttributes {
 	/**
 	 * Map of state property (value, unit, etc..) to localization mapping
 	 */
-	i18n?: { [key: string]: { [key: string]: undefined } }
+	i18n?: { [key: string]: { [key: string]: CapabilityLocalizationI18n & { description?: string } } }
 }
 
 export interface CapabilityLocalization {
@@ -829,11 +828,31 @@ export class CapabilitiesEndpoint extends Endpoint {
 	/**
 	 *
 	 * @param capabilityId ID of the capability
-	 * @param tag locale tag, e.g. 'en'm 'es', or 'ko'
+	 * @param tag locale tag, e.g. 'en', 'es', or 'ko'
 	 * @param capabilityVersion version number of the capability, starting with 1
 	 */
-	public getTranslations(capabilityId: string, capabilityVersion: number, tag: string): Promise<DeviceProfileTranslations> {
+	public getTranslations(capabilityId: string, capabilityVersion: number, tag: string): Promise<CapabilityLocalization> {
 		return this.client.get(`${capabilityId}/${capabilityVersion}/i18n/${tag}`)
+	}
+
+	/**
+	 * Create the translations for a capability
+	 * @param capabilityId ID of the capability
+	 * @param capabilityVersion version number of the capability, starting with 1
+	 * @param data translations
+	 */
+	public createTranslations(capabilityId: string, capabilityVersion: number, data: CapabilityLocalization): Promise<CapabilityLocalization> {
+		return this.client.post(`${capabilityId}/${capabilityVersion}/i18n`, data)
+	}
+
+	/**
+	 * Update the translations for a capability
+	 * @param capabilityId ID of the capability
+	 * @param capabilityVersion version number of the capability, starting with 1
+	 * @param data translations
+	 */
+	public updateTranslations(capabilityId: string, capabilityVersion: number, data: CapabilityLocalization): Promise<CapabilityLocalization> {
+		return this.client.put(`${capabilityId}/${capabilityVersion}/i18n/${data.tag}`, data)
 	}
 
 	/**
@@ -842,15 +861,22 @@ export class CapabilitiesEndpoint extends Endpoint {
 	 * @param capabilityVersion version number of the capability, starting with 1
 	 * @param data translations
 	 */
-	public upsertTranslations(capabilityId: string, capabilityVersion: number, data: DeviceProfileTranslations): Promise<DeviceProfileTranslations> {
-		return this.client.put(`${capabilityId}/${capabilityVersion}/i18n/${data.tag}`, data)
+	public async upsertTranslations(capabilityId: string, capabilityVersion: number, data: CapabilityLocalization): Promise<CapabilityLocalization> {
+		try {
+			return await this.createTranslations(capabilityId, capabilityVersion, data)
+		} catch (error) {
+			if (error.message?.includes('Localization already exists')) {
+				return this.updateTranslations(capabilityId, capabilityVersion, data)
+			}
+			throw error
+		}
 	}
 
 	/**
 	 * Retrieve the translations for the specified locale
 	 * @param capabilityId ID of the capability
 	 * @param capabilityVersion version number of the capability, starting with 1
-	 * @param tag locale tag, e.g. 'en'm 'es', or 'ko'
+	 * @param tag locale tag, e.g. 'en', 'es', or 'ko'
 	 */
 	public deleteTranslations(capabilityId: string, capabilityVersion: number, tag: string): Promise<Status> {
 		return this.client.delete(`${capabilityId}/${capabilityVersion}/i18n/${tag}`)
