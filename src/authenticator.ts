@@ -16,16 +16,34 @@ export interface Authenticator {
 	refresh?(requestConfig: AxiosRequestConfig, clientConfig: EndpointClientConfig): Promise<void>
 	acquireRefreshMutex?(): Promise<MutexInterface.Releaser>
 
+	/**
+	 * Performs required authentication steps to add credentials to the axios config, typically via Bearer Auth headers.
+	 * Expected to call other functions such as @see refresh as needed to return valid credentials.
+	 *
+	 * @param requestConfig AxiosRequestConfig to add credentials to and return otherwise unmodified
+	 */
 	authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig>
+
+	/**
+	 * Performs required authentication steps and returns credentials as a string value
+	 * Expected to perform any required steps (such as token refresh) needed to return valid credentials.
+	 *
+	 * @returns {string} valid auth token
+	 */
+	authenticateGeneric?(): Promise<string>
 }
 
 
 /**
- * For use on endpoints that don't need any authentication.
+ * For use in tests or on endpoints that don't need any authentication.
  */
 export class NoOpAuthenticator implements Authenticator {
 	authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
 		return Promise.resolve(requestConfig)
+	}
+
+	authenticateGeneric(): Promise<string> {
+		return Promise.resolve('')
 	}
 }
 
@@ -47,6 +65,10 @@ export class BearerTokenAuthenticator implements Authenticator {
 				Authorization: `Bearer ${this.token}`,
 			},
 		})
+	}
+
+	authenticateGeneric(): Promise<string> {
+		return Promise.resolve(this.token)
 	}
 }
 

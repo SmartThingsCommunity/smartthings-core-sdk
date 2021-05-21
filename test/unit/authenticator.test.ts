@@ -24,26 +24,39 @@ class TokenStore implements RefreshTokenStore {
 	}
 }
 describe('Authenticators', () => {
+	const config = { url: 'https://api.smartthings.com', headers: { Test: 'test' } }
 
 	it('NoOpAuthenticator authenticate', async () => {
-		const config = { url: 'https://api.smartthings.com' }
 		const authenticator = new NoOpAuthenticator()
 		const data = await authenticator.authenticate(config)
 
 		expect(data).toBe(config)
 	})
 
+	it('NoOpAuthenticator generic authenticate', async () => {
+		const authenticator = new NoOpAuthenticator()
+		const token = await authenticator.authenticateGeneric()
+
+		expect(token).toBe('')
+	})
+
 	it('BearerTokenAuthenticator authenticate', async () => {
-		const config = { url: 'https://api.smartthings.com' }
 		const authenticator = new BearerTokenAuthenticator('xxxyyyzzz')
 		const data = await authenticator.authenticate(config)
 
 		expect(data.url).toBe(config.url)
 		expect(data.headers.Authorization).toBe('Bearer xxxyyyzzz')
+		expect(data.headers.Test).toBe('test')
+	})
+
+	it('BearerTokenAuthenticator generic authenticate', async () => {
+		const authenticator = new BearerTokenAuthenticator('xxxyyyzzz')
+		const token = await authenticator.authenticateGeneric()
+
+		expect(token).toBe('xxxyyyzzz')
 	})
 
 	it('RefreshTokenAuthenticator authenticate', async () => {
-		const config = { url: 'https://api.smartthings.com' }
 		const tokenStore = new TokenStore()
 		const authenticator = new RefreshTokenAuthenticator('xxxyyy111', tokenStore)
 		const data = await authenticator.authenticate(config)
@@ -66,7 +79,6 @@ describe('Authenticators', () => {
 			),
 		)
 
-		const config = { url: 'https://api.smartthings.com', headers: {} }
 		const tokenStore = new TokenStore()
 		const authenticator = new RefreshTokenAuthenticator('xxxyyy111', tokenStore)
 		const endpointConfig = { urlProvider: defaultSmartThingsURLProvider, authenticator }
@@ -99,7 +111,6 @@ describe('Authenticators', () => {
 			),
 		)
 
-		const config = { url: 'https://api.smartthings.com', headers: {} }
 		const tokenStore = new TokenStore()
 		const authenticator = new RefreshTokenAuthenticator('xxxyyy111', tokenStore)
 		const endpointConfig = { urlProvider: defaultSmartThingsURLProvider, authenticator }
@@ -116,7 +127,6 @@ describe('Authenticators', () => {
 	})
 
 	it('SequentialRefreshTokenAuthenticator authenticate', async () => {
-		const config = { url: 'https://api.smartthings.com' }
 		const tokenStore = new TokenStore()
 		const mutex = new Mutex()
 		const authenticator = new SequentialRefreshTokenAuthenticator('xxxyyy222', tokenStore, mutex)
@@ -140,7 +150,6 @@ describe('Authenticators', () => {
 			),
 		)
 
-		const config = { url: 'https://api.smartthings.com', headers: {} }
 		const tokenStore = new TokenStore()
 		const mutex = new Mutex()
 		const authenticator = new SequentialRefreshTokenAuthenticator('xxxyyy222', tokenStore, mutex)
