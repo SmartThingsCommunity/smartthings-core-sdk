@@ -214,9 +214,9 @@ export interface DevicePreferenceEntry {
 
 export interface DevicePreferenceResponse {
 	/**
-	 * Map of PreferenceId to its stored values
+	 * Map of preference name to its stored value
 	 */
-	values?: { [key: string]: DevicePreferenceEntry}
+	values: Partial<Record<string, DevicePreferenceEntry>>
 }
 
 export interface DeviceListOptions {
