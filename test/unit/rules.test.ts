@@ -16,7 +16,7 @@ import deleteRule from './data/rules/delete_rules_dcaa574b-9f2f-4082-a1ed-81b265
 
 
 const client = new SmartThingsClient(
-	new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d'),
+	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'),
 	{locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
 
 describe('Rules',  () => {

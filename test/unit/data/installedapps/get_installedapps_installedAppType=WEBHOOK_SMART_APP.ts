@@ -4,10 +4,10 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+		'Authorization': 'Bearer 00000000-0000-0000-0000-000000000000',
 	},
 	'params': {
-		'installedAppType': ['WEBHOOK_SMART_APP','LAMBDA_SMART_APP'],
+		'installedAppType': ['WEBHOOK_SMART_APP', 'LAMBDA_SMART_APP'],
 	},
 }
 const response = {
@@ -48,4 +48,4 @@ const response = {
 		'previous': null,
 	},
 }
-export default {request, response}
+export default { request, response }

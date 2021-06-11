@@ -20,7 +20,7 @@ import deleteModeExplicit  from './data/modes/delete_locations_b4db3e54-14f3-4bf
 import setCurrent from './data/modes/put_locations_95efee9b-6073-4871-b5ba-de6642187293_modes_current'
 
 
-const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
+const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 const client = new SmartThingsClient(authenticator, {locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
 
 

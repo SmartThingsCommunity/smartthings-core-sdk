@@ -12,58 +12,64 @@ import {
 	Status,
 	SuccessStatusValue,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
-import list from './data/apps/get_apps'
-import listAutomations from './data/apps/get_apps_automation'
-import listLambdaAutomations from './data/apps/get_apps_lambda_automations'
-import listWebhooks from './data/apps/get_apps_webhook'
-import listTags from './data/apps/get_apps_tags'
-import get from './data/apps/get_apps_sdktest-234-1582991474199'
-import post from './data/apps/post_apps_requireConfirmation=false&signatureType=APP_RSA'
-import putSignature from './data/apps/put_apps_a01c0ba4-3ac2-4a5c-9628-c43e394c1ea2_signature-type'
-import putOAuth from './data/apps/put_apps_sdktest-234-1582991474199_oauth'
-import oauthGenerate from './data/apps/post_apps_sdktest-234-1582991474199_oauth_generate'
-import deleteApp from './data/apps/delete_apps_sdktest-234-1582991474199'
+import { expectedRequest } from './helpers/utils'
+import { delete_apps_sdktest_234_1582991474199 as deleteApp } from './data/apps/delete'
+import {
+	get_apps as list,
+	get_apps_automation as listAutomations,
+	get_apps_lambda_automations as listLambdaAutomations,
+	get_apps_sdktest_234_1582991474199 as get,
+	get_apps_tags as listTags,
+	get_apps_webhook as listWebhooks,
+} from './data/apps/get'
+import {
+	post_apps_requireConfirmation_false_signatureType_APP_RSA as post,
+	post_apps_sdktest_234_1582991474199_oauth_generate as oauthGenerate,
+} from './data/apps/post'
+import {
+	put_apps_a01c0ba4_3ac2_4a5c_9628_c43e394c1ea2_signature_type as putSignature,
+	put_apps_sdktest_234_1582991474199_oauth as putOAuth,
+} from './data/apps/put'
 
 
-const client = new SmartThingsClient(new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d'))
+const client = new SmartThingsClient(new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'))
 
-describe('Apps',  () => {
+describe('Apps', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})
 
 	it('List', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listAutomations.response}))
-		const response: App[] = await client.apps.list({classification: AppClassification.AUTOMATION})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listAutomations.response }))
+		const response: App[] = await client.apps.list({ classification: AppClassification.AUTOMATION })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listAutomations.request))
 		expect(response).toBe(listAutomations.response.items)
 	})
 
 	it('List Automations', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response}))
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response }))
 		const response: App[] = await client.apps.list()
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(list.request))
 		expect(response).toBe(list.response.items)
 	})
 
 	it('List Webhooks', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listWebhooks.response}))
-		const response: App[] = await client.apps.list({appType: AppType.WEBHOOK_SMART_APP})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listWebhooks.response }))
+		const response: App[] = await client.apps.list({ appType: AppType.WEBHOOK_SMART_APP })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listWebhooks.request))
 		expect(response).toBe(listWebhooks.response.items)
 	})
 
 	it('List Lambda Automations', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listLambdaAutomations.response}))
-		const response: App[] = await client.apps.list({appType: AppType.LAMBDA_SMART_APP, classification: AppClassification.AUTOMATION})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listLambdaAutomations.response }))
+		const response: App[] = await client.apps.list({ appType: AppType.LAMBDA_SMART_APP, classification: AppClassification.AUTOMATION })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listLambdaAutomations.request))
 		expect(response).toBe(listLambdaAutomations.response.items)
 	})
 
 	it('List Tags', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listTags.response}))
-		const response: App[] = await client.apps.list({tag: {industry: 'energy', region: 'North America'}})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listTags.response }))
+		const response: App[] = await client.apps.list({ tag: { industry: 'energy', region: 'North America' } })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listTags.request))
 		expect(response).toBe(listTags.response.items)
 	})
@@ -107,6 +113,6 @@ describe('Apps',  () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deleteApp.response }))
 		const response: Count = await client.apps.delete('sdktest-234-1582991474199')
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(deleteApp.request))
-		expect(response).toEqual({count: 1})
+		expect(response).toEqual({ count: 1 })
 	})
 })

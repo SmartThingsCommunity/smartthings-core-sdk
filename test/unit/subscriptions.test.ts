@@ -14,7 +14,7 @@ import create from './data/subscriptions/post_installedapps_subscriptions'
 
 
 const client = new SmartThingsClient(
-	new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d'),
+	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'),
 	{locationId: '95efee9b-6073-4871-b5ba-de6642187293', installedAppId: '5336bd07-435f-4b6c-af1d-fddba55c1c24'})
 
 describe('Subscriptions',  () => {

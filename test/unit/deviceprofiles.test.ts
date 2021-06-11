@@ -19,7 +19,7 @@ import putTranslations from './data/deviceprofiles/put_deviceprofiles_3acbf2fc-6
 import deleteTranslations from './data/deviceprofiles/delete_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n_fr'
 
 
-const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
+const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 const client = new SmartThingsClient(authenticator, {})
 
 
