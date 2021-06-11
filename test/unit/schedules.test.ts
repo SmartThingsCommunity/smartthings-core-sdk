@@ -14,7 +14,7 @@ import postOnce from './data/schedules/post_once'
 
 
 const client = new SmartThingsClient(
-	new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d'),
+	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'),
 	{locationId: '0bcbe542-d340-42a9-b00a-a2067170810e', installedAppId: '39d84b7a-edf8-4213-b256-122d90a94b3e'})
 
 describe('Schedules',  () => {

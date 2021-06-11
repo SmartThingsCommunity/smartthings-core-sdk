@@ -14,11 +14,11 @@ import execute from './data/scenes/post_scenes_13a63ff0-587e-45d2-8c4e-b40525f20
 
 
 const client = new SmartThingsClient(
-	new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d'),
+	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'),
 	{locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
 
 const nonIsaClient = new SmartThingsClient(
-	new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d'))
+	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'))
 
 describe('Scenes',  () => {
 	afterEach(() => {

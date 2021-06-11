@@ -15,7 +15,7 @@ import {
 	SuccessStatusValue,
 	TokenInformation,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
+import { expectedRequest } from './helpers/utils'
 
 
 import list from './data/installedapps/get_installedapps'
@@ -41,11 +41,11 @@ import listConfigs from './data/installedapps/get_installedapps_e09af197-4a51-42
 import tokenInfo from './data/installedapps/get_installedapps_me'
 
 
-const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
+const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 const client = new SmartThingsClient(authenticator, {})
 
 
-describe('Installed Apps',  () => {
+describe('Installed Apps', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})
@@ -60,7 +60,7 @@ describe('Installed Apps',  () => {
 
 	it('list in location', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listInLocation.response }))
-		const response: InstalledApp[] = await client.installedApps.list({locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
+		const response: InstalledApp[] = await client.installedApps.list({ locationId: '95efee9b-6073-4871-b5ba-de6642187293' })
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listInLocation.request))
 		expect(response).toBe(listInLocation.response.items)
@@ -72,7 +72,8 @@ describe('Installed Apps',  () => {
 			installedAppType: [
 				InstalledAppType.WEBHOOK_SMART_APP,
 				InstalledAppType.LAMBDA_SMART_APP,
-			]})
+			],
+		})
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listOfAType.request))
 		expect(response).toBe(listOfAType.response.items)
@@ -146,55 +147,57 @@ describe('Installed Apps',  () => {
 
 	it('update config', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateConfig.response }))
-		const response: InstalledAppConfiguration = await client.installedApps.updateConfiguration('e09af197-4a51-42d9-8fd9-a39a67049d4a', {config: {
-			'triggerSwitch': [
-				{
-					'valueType': ConfigValueType.DEVICE,
-					'deviceConfig': {
-						'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
-						'componentId': 'main',
-						'permissions': [
-							'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-						],
+		const response: InstalledAppConfiguration = await client.installedApps.updateConfiguration('e09af197-4a51-42d9-8fd9-a39a67049d4a', {
+			config: {
+				'triggerSwitch': [
+					{
+						'valueType': ConfigValueType.DEVICE,
+						'deviceConfig': {
+							'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
+							'componentId': 'main',
+							'permissions': [
+								'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
+							],
+						},
 					},
-				},
-			],
-			'targetSwitch': [
-				{
-					'valueType': ConfigValueType.DEVICE,
-					'deviceConfig': {
-						'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
-						'componentId': 'main',
-						'permissions': [
-							'r:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-						],
+				],
+				'targetSwitch': [
+					{
+						'valueType': ConfigValueType.DEVICE,
+						'deviceConfig': {
+							'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
+							'componentId': 'main',
+							'permissions': [
+								'r:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
+								'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
+							],
+						},
 					},
-				},
-				{
-					'valueType': ConfigValueType.DEVICE,
-					'deviceConfig': {
-						'deviceId': '8cfb5b5f-1683-4459-932c-9493c63da626',
-						'componentId': 'main',
-						'permissions': [
-							'r:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
-							'x:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
-						],
+					{
+						'valueType': ConfigValueType.DEVICE,
+						'deviceConfig': {
+							'deviceId': '8cfb5b5f-1683-4459-932c-9493c63da626',
+							'componentId': 'main',
+							'permissions': [
+								'r:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
+								'x:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
+							],
+						},
 					},
-				},
-				{
-					'valueType': ConfigValueType.DEVICE,
-					'deviceConfig': {
-						'deviceId': '46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-						'componentId': 'main',
-						'permissions': [
-							'r:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-							'x:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-						],
+					{
+						'valueType': ConfigValueType.DEVICE,
+						'deviceConfig': {
+							'deviceId': '46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
+							'componentId': 'main',
+							'permissions': [
+								'r:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
+								'x:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
+							],
+						},
 					},
-				},
-			],
-		}})
+				],
+			},
+		})
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateConfig.request))
 		expect(response).toBe(updateConfig.response)
 	})

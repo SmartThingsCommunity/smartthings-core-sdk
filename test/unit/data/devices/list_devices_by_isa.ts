@@ -4,9 +4,9 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/vnd.smartthings+json;v=20170916',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+		'Authorization': 'Bearer 00000000-0000-0000-0000-000000000000',
 	},
-	'params': {'installedAppId': 'f2b6aff2-832b-4d00-8d31-04b16d8f37c7'},
+	'params': { 'installedAppId': 'f2b6aff2-832b-4d00-8d31-04b16d8f37c7' },
 }
 const response = {
 	items: [

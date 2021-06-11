@@ -17,7 +17,7 @@ import update from './data/locations/put_locations_152b4d07-88fb-450d-896c-a8289
 import deleteLocation  from './data/locations/delete_locations_152b4d07-88fb-450d-896c-a82896efd83f'
 
 
-const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
+const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 const client = new SmartThingsClient(authenticator, {locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
 
 

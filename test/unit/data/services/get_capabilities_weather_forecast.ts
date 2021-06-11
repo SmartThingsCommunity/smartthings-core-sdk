@@ -4,7 +4,7 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer c486f217-e128-4915-a5c9-947603f2f1c1',
+		'Authorization': 'Bearer 00000000-0000-0000-0000-000000000000',
 	},
 	'params': {
 		'name': 'weather,forecast',

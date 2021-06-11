@@ -31,7 +31,7 @@ import updateProfile from './data/devices/put_devices_profile'
 import getPreferences from './data/devices/get_preferences'
 
 
-const authenticator = new BearerTokenAuthenticator('52991afa-66e8-4af0-8d85-5c568ed5ba7d')
+const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 const locationId ='95efee9b-6073-4871-b5ba-de6642187293'
 const installedAppId ='6f5ea629-4c05-4a90-a244-cc129b0a80c3'
 const isaClient = new SmartThingsClient(authenticator, {locationId, installedAppId})

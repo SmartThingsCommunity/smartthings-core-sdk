@@ -110,4 +110,12 @@ module.exports = {
 		// Require modules with a single export to use a default export
 		'import/prefer-default-export': 'off', // we want everything to be named
 	},
+	"overrides": [
+		{
+			"files": ["test/**"],
+			"rules": {
+				"@typescript-eslint/camelcase": "off"
+			}
+		}
+	],
 }

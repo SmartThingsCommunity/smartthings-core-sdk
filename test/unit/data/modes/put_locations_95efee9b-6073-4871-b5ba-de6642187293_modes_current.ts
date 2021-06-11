@@ -4,7 +4,7 @@ const request = {
 	'headers': {
 		'Content-Type': 'application/json;charset=utf-8',
 		'Accept': 'application/json',
-		'Authorization': 'Bearer 52991afa-66e8-4af0-8d85-5c568ed5ba7d',
+		'Authorization': 'Bearer 00000000-0000-0000-0000-000000000000',
 	},
 	'data': {
 		'modeId': '7b7ca378-03ed-419d-93c1-76d3bb41c8b3',
