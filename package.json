@@ -45,8 +45,8 @@
 		"prettier": "^2.0.4",
 		"semantic-release": "^17.4.2",
 		"ts-jest": "^26.3.0",
-		"typedoc": "^0.17.4",
-		"typescript": "^3.8.3"
+		"typedoc": "^0.20.36",
+		"typescript": "^3.9.9"
 	},
 	"scripts": {
 		"format": "eslint --ext .ts src test --fix",
@@ -57,8 +57,8 @@
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
-		"docs-gen": "typedoc --out docs src",
-		"json-docs-gen": "typedoc --json dist/docs.json --mode modules src",
+		"docs-gen": "typedoc --out docs src/index.ts",
+		"json-docs-gen": "typedoc --json dist/docs.json src/index.ts",
 		"prepare": "npm run build",
 		"prepublishOnly": "npm test && npm run lint",
 		"preversion": "npm run lint",
