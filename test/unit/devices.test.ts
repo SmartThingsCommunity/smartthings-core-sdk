@@ -1,44 +1,46 @@
 import axios from '../../__mocks__/axios'
-
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
 	Device, DeviceStatus, DeviceHealth, DevicePreferenceResponse,
 	SuccessStatusValue, Status, ConfigValueType, DeviceIntegrationType,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
-
-
-import listPage1 from './data/devices/get_devices'
-import listPage2 from './data/devices/get_devices_page_1_max_200'
-import locationList from './data/devices/get_devices_locationId=95efee9b-6073-4871-b5ba-de6642187293'
-import healthLocationList from './data/devices/get_devices_health_locationId=95efee9b-6073-4871-b5ba-de6642187293'
-import statusLocationList from './data/devices/get_devices_status_locationId=95efee9b-6073-4871-b5ba-de6642187293'
-import get from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1'
-import getStatus from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_status'
-import getCapabilityStatus from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_components_main_capabilities_colorTemperature_status'
-import getComponent1Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet1_status'
-import getComponent2Status from './data/devices/get_devices_46c38b7c-81bc-4e65-80be-dddf1fdd45b8_components_outlet2_status'
-import getHealth from './data/devices/get_devices_385931b6-0121-4848-bcc8-54cb76436de1_health'
-import listDevicesExtraParams from './data/devices/list_devices_by_type'
-import listByIsa from './data/devices/list_devices_by_isa'
-import createEvents from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_events'
-import turnOn1 from './data/devices/post_devices_385931b6-0121-4848-bcc8-54cb76436de1_commands'
-import create from './data/devices/post_devices'
-import create2 from './data/devices/post_devices_2'
-import update from './data/devices/put_devices'
-import updateProfile from './data/devices/put_devices_profile'
-import getPreferences from './data/devices/get_preferences'
+import { expectedRequest } from './helpers/utils'
+import {
+	get_devices as listPage1,
+	get_devices_page_1_max_200 as listPage2,
+	get_devices_locationId_95efee9b_6073_4871_b5ba_de6642187293 as locationList,
+	get_devices_health_locationId_95efee9b_6073_4871_b5ba_de6642187293 as healthLocationList,
+	get_devices_status_locationId_95efee9b_6073_4871_b5ba_de6642187293 as statusLocationList,
+	get_devices_385931b6_0121_4848_bcc8_54cb76436de1 as get,
+	get_devices_385931b6_0121_4848_bcc8_54cb76436de1_status as getStatus,
+	get_devices_385931b6_0121_4848_bcc8_54cb76436de1_components_main_capabilities_colorTemperature_status as getCapabilityStatus,
+	get_devices_46c38b7c_81bc_4e65_80be_dddf1fdd45b8_components_outlet1_status as getComponent1Status,
+	get_devices_46c38b7c_81bc_4e65_80be_dddf1fdd45b8_components_outlet2_status as getComponent2Status,
+	get_devices_385931b6_0121_4848_bcc8_54cb76436de1_health as getHealth,
+	list_devices_by_type as listDevicesExtraParams,
+	list_devices_by_isa as listByIsa,
+	get_preferences as getPreferences,
+} from './data/devices/get'
+import {
+	post_devices_385931b6_0121_4848_bcc8_54cb76436de1_events as createEvents,
+	post_devices_385931b6_0121_4848_bcc8_54cb76436de1_commands as turnOn1,
+	post_devices as create,
+	post_devices_2 as create2,
+} from './data/devices/post'
+import {
+	put_devices as update,
+	put_devices_profile as updateProfile,
+} from './data/devices/put'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
-const locationId ='95efee9b-6073-4871-b5ba-de6642187293'
-const installedAppId ='6f5ea629-4c05-4a90-a244-cc129b0a80c3'
-const isaClient = new SmartThingsClient(authenticator, {locationId, installedAppId})
+const locationId = '95efee9b-6073-4871-b5ba-de6642187293'
+const installedAppId = '6f5ea629-4c05-4a90-a244-cc129b0a80c3'
+const isaClient = new SmartThingsClient(authenticator, { locationId, installedAppId })
 const client = new SmartThingsClient(authenticator, {})
 
-
-describe('Devices',  () => {
+describe('Devices', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})
@@ -65,43 +67,43 @@ describe('Devices',  () => {
 	})
 
 	it('list for an explicit location', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response}))
-		const response: Device[] = await client.devices.list({locationId: locationId})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response }))
+		const response: Device[] = await client.devices.list({ locationId: locationId })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
 		expect(response).toBe(locationList.response.items)
 	})
 
 	it('list for an implicit location', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response}))
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response }))
 		const response: Device[] = await isaClient.devices.list()
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
 		expect(response).toBe(locationList.response.items)
 	})
 
 	it('list with health', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: healthLocationList.response}))
-		const response: Device[] = await isaClient.devices.list({includeHealth: true})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: healthLocationList.response }))
+		const response: Device[] = await isaClient.devices.list({ includeHealth: true })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(healthLocationList.request))
 		expect(response).toBe(healthLocationList.response.items)
 	})
 
 	it('list with status', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: statusLocationList.response}))
-		const response: Device[] = await isaClient.devices.list({includeStatus: true})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: statusLocationList.response }))
+		const response: Device[] = await isaClient.devices.list({ includeStatus: true })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(statusLocationList.request))
 		expect(response).toBe(statusLocationList.response.items)
 	})
 
 	it('list for an implicit location 2', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response}))
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response }))
 		const response: Device[] = await isaClient.devices.listInLocation()
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
 		expect(response).toBe(locationList.response.items)
 	})
 
 	it('list for an installed app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listByIsa.response}))
-		const response: Device[] = await client.devices.list({installedAppId: 'f2b6aff2-832b-4d00-8d31-04b16d8f37c7'})
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listByIsa.response }))
+		const response: Device[] = await client.devices.list({ installedAppId: 'f2b6aff2-832b-4d00-8d31-04b16d8f37c7' })
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listByIsa.request))
 		expect(response).toBe(listByIsa.response.items)
 	})
@@ -279,12 +281,14 @@ describe('Devices',  () => {
 
 	it('postCommands', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const response: Status = await client.devices.postCommands('385931b6-0121-4848-bcc8-54cb76436de1', {commands: [{
-			component: 'main',
-			capability: 'switch',
-			command: 'on',
-			arguments: [],
-		}]})
+		const response: Status = await client.devices.postCommands('385931b6-0121-4848-bcc8-54cb76436de1', {
+			commands: [{
+				component: 'main',
+				capability: 'switch',
+				command: 'on',
+				arguments: [],
+			}],
+		})
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
 		expect(response).toBe(SuccessStatusValue)
 	})

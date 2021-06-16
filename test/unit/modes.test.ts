@@ -1,30 +1,34 @@
 import axios from '../../__mocks__/axios'
-
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
 	Mode,
 	SuccessStatusValue, Status,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
-
-
-import list from './data/modes/get_locations_95efee9b-6073-4871-b5ba-de6642187293_modes'
-import listExplicit from './data/modes/get_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_modes'
-import getCurrent from './data/modes/get_locations_95efee9b-6073-4871-b5ba-de6642187293_modes_current'
-import explicitGet from './data/modes/get_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_modes_current'
-import create from './data/modes/post_locations_95efee9b-6073-4871-b5ba-de6642187293_modes'
-import update from './data/modes/put_locations_95efee9b-6073-4871-b5ba-de6642187293_modes'
-import deleteMode  from './data/modes/delete_locations_95efee9b-6073-4871-b5ba-de6642187293_modes'
-import deleteModeExplicit  from './data/modes/delete_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_modes'
-import setCurrent from './data/modes/put_locations_95efee9b-6073-4871-b5ba-de6642187293_modes_current'
+import { expectedRequest } from './helpers/utils'
+import {
+	get_locations_95efee9b_6073_4871_b5ba_de6642187293_modes as list,
+	get_locations_b4db3e54_14f3_4bf4_b217_b8583757d446_modes as listExplicit,
+	get_locations_95efee9b_6073_4871_b5ba_de6642187293_modes_current as getCurrent,
+	get_locations_b4db3e54_14f3_4bf4_b217_b8583757d446_modes_current as explicitGet,
+} from './data/modes/get'
+import {
+	post_locations_95efee9b_6073_4871_b5ba_de6642187293_modes as create,
+} from './data/modes/post'
+import {
+	put_locations_95efee9b_6073_4871_b5ba_de6642187293_modes as update,
+	put_locations_95efee9b_6073_4871_b5ba_de6642187293_modes_current as setCurrent,
+} from './data/modes/put'
+import {
+	delete_locations_95efee9b_6073_4871_b5ba_de6642187293_modes as deleteMode,
+	delete_locations_b4db3e54_14f3_4bf4_b217_b8583757d446_modes as deleteModeExplicit,
+} from './data/modes/delete'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
-const client = new SmartThingsClient(authenticator, {locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
+const client = new SmartThingsClient(authenticator, { locationId: '95efee9b-6073-4871-b5ba-de6642187293' })
 
-
-describe('Modes',  () => {
+describe('Modes', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})

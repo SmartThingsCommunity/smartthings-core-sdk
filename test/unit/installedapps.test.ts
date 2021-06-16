@@ -1,9 +1,6 @@
 import axios from '../../__mocks__/axios'
-
 import {
 	BearerTokenAuthenticator,
-	ConfigValueType,
-	InstallConfigurationStatus,
 	InstalledApp,
 	InstalledAppConfigItem,
 	InstalledAppConfiguration,
@@ -16,34 +13,35 @@ import {
 	TokenInformation,
 } from '../../src'
 import { expectedRequest } from './helpers/utils'
-
-
-import list from './data/installedapps/get_installedapps'
-import listInLocation from './data/installedapps/get_installedapps_locationId=95efee9b-6073-4871-b5ba-de6642187293'
-import listOfAType from './data/installedapps/get_installedapps_installedAppType=WEBHOOK_SMART_APP'
-import listWithAStatus from './data/installedapps/get_installedapps_installedAppStatus=AUTHORIZED'
-import get from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c'
-import getConfigs from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c_configs'
-import getConfigsNoAuth
-	from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c_configs_noauth'
-import getAuthorizedConfigs
-	from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c_configs_configurationStatus_authorized'
-import getAuthorizedConfig
-	from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c_configs_authorized'
-import getRevokedConfig
-	from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c_configs_revoked'
-import getStagedConfig from './data/installedapps/get_installedapps_40593b6d-e062-436a-b17e-86ea3f1d979c_configs_staged'
-import create from './data/installedapps/post_installedapps'
-import update from './data/installedapps/put_installedapps_e09af197-4a51-42d9-8fd9-a39a67049d4a'
-import updateConfig from './data/installedapps/put_installedapps_e09af197-4a51-42d9-8fd9-a39a67049d4a_configs'
-import deleteIsa from './data/installedapps/delete_installedapps_5336bd07-435f-4b6c-af1d-fddba55c1c24'
-import listConfigs from './data/installedapps/get_installedapps_e09af197-4a51-42d9-8fd9-a39a67049d4a_configs_'
-import tokenInfo from './data/installedapps/get_installedapps_me'
+import {
+	get_installedapps as list,
+	get_installedapps_locationId_95efee9b_6073_4871_b5ba_de6642187293 as listInLocation,
+	get_installedapps_installedAppType_WEBHOOK_SMART_APP as listOfAType,
+	get_installedapps_installedAppStatus_AUTHORIZED as listWithAStatus,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c as get,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c_configs as getConfigs,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c_configs_noauth as getConfigsNoAuth,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c_configs_configurationStatus_authorized as getAuthorizedConfigs,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c_configs_authorized as getAuthorizedConfig,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c_configs_revoked as getRevokedConfig,
+	get_installedapps_40593b6d_e062_436a_b17e_86ea3f1d979c_configs_staged as getStagedConfig,
+	get_installedapps_e09af197_4a51_42d9_8fd9_a39a67049d4a_configs_ as listConfigs,
+	get_installedapps_me as tokenInfo,
+} from './data/installedapps/get'
+import {
+	post_installedapps as create,
+} from './data/installedapps/post'
+import {
+	put_installedapps_e09af197_4a51_42d9_8fd9_a39a67049d4a as update,
+	put_installedapps_e09af197_4a51_42d9_8fd9_a39a67049d4a_configs as updateConfig,
+} from './data/installedapps/put'
+import {
+	delete_installedapps_5336bd07_435f_4b6c_af1d_fddba55c1c24 as deleteIsa,
+} from './data/installedapps/delete'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 const client = new SmartThingsClient(authenticator, {})
-
 
 describe('Installed Apps', () => {
 	afterEach(() => {
@@ -99,39 +97,7 @@ describe('Installed Apps', () => {
 
 	it('create', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
-		const response: InstalledAppResponse = await client.installedApps.create({
-			'appId': '1c593873-ef7d-4665-8f0d-e1da25861e02',
-			'locationId': '95efee9b-6073-4871-b5ba-de6642187293',
-			'installedAppType': InstalledAppType.WEBHOOK_SMART_APP,
-			'configurationStatus': InstallConfigurationStatus.DONE,
-			'config': {
-				'triggerSwitch': [
-					{
-						'valueType': ConfigValueType.DEVICE,
-						'deviceConfig': {
-							'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
-							'componentId': 'main',
-							'permissions': [
-								'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-							],
-						},
-					},
-				],
-				'targetSwitch': [
-					{
-						'valueType': ConfigValueType.DEVICE,
-						'deviceConfig': {
-							'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							'componentId': 'main',
-							'permissions': [
-								'r:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-								'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							],
-						},
-					},
-				],
-			},
-		})
+		const response: InstalledAppResponse = await client.installedApps.create(create.request.data)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
 		expect(response).toBe(create.response)
 	})
@@ -147,57 +113,7 @@ describe('Installed Apps', () => {
 
 	it('update config', async () => {
 		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateConfig.response }))
-		const response: InstalledAppConfiguration = await client.installedApps.updateConfiguration('e09af197-4a51-42d9-8fd9-a39a67049d4a', {
-			config: {
-				'triggerSwitch': [
-					{
-						'valueType': ConfigValueType.DEVICE,
-						'deviceConfig': {
-							'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
-							'componentId': 'main',
-							'permissions': [
-								'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-							],
-						},
-					},
-				],
-				'targetSwitch': [
-					{
-						'valueType': ConfigValueType.DEVICE,
-						'deviceConfig': {
-							'deviceId': 'b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							'componentId': 'main',
-							'permissions': [
-								'r:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-								'x:devices:b97058f4-c642-4162-8c2d-15009fdf5bfc',
-							],
-						},
-					},
-					{
-						'valueType': ConfigValueType.DEVICE,
-						'deviceConfig': {
-							'deviceId': '8cfb5b5f-1683-4459-932c-9493c63da626',
-							'componentId': 'main',
-							'permissions': [
-								'r:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
-								'x:devices:8cfb5b5f-1683-4459-932c-9493c63da626',
-							],
-						},
-					},
-					{
-						'valueType': ConfigValueType.DEVICE,
-						'deviceConfig': {
-							'deviceId': '46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-							'componentId': 'main',
-							'permissions': [
-								'r:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-								'x:devices:46c38b7c-81bc-4e65-80be-dddf1fdd45b8',
-							],
-						},
-					},
-				],
-			},
-		})
+		const response: InstalledAppConfiguration = await client.installedApps.updateConfiguration('e09af197-4a51-42d9-8fd9-a39a67049d4a', updateConfig.request.data)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateConfig.request))
 		expect(response).toBe(updateConfig.response)
 	})
