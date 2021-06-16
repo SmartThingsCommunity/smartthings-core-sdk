@@ -1,6 +1,4 @@
-const key = '/pl/useast2/1b-0d-f2-69-ad-fb-1b-c4-4e-ac-5a-1f-f7-b6-dd-a9-c4-e8-c8-98'
-
-const response = '-----BEGIN CERTIFICATE-----\n' +
+export const get_certificate = '-----BEGIN CERTIFICATE-----\n' +
 	'MIIDvDCCAqSgAwIBAgIUGw3yaa37G8ROrFof97bdqcToyJgwDQYJKoZIhvcNAQEL\n' +
 	'BQAwUTEYMAoGA1UEBhMDS09SMAoGA1UEBhMDVVNBMRQwEgYDVQQKEwtTbWFydFRo\n' +
 	'aW5nczEfMB0GA1UEAxMWU21hcnRUaGluZ3MgUGFkbG9jayBDQTAeFw0yMDAzMjAy\n' +
@@ -23,7 +21,7 @@ const response = '-----BEGIN CERTIFICATE-----\n' +
 	'5+a+gr4n9uwdUgA3jzFYdrCIselcE/xDSucXmGg7TFDRfuhLeeQQuIywyjM2Swat\n' +
 	'-----END CERTIFICATE-----'
 
-const result = {
+export const get_certificate_parsed = {
 	'_hashCache': {},
 	'subjects': [
 		{
@@ -260,5 +258,3 @@ const result = {
 		'clientAuth',
 	],
 }
-
-export default {key, response, result}

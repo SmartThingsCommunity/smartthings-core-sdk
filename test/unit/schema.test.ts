@@ -7,16 +7,24 @@ import {
 	SuccessStatusValue, InstalledSchemaApp,
 } from '../../src'
 import { expectedRequest } from './helpers/utils'
-import list from './data/schema/get_schema_apps'
-import get from './data/schema/get_schema_apps_viper_4cb1e740-d415-11e9-8250-8f49824a9876'
-import create from './data/schema/post_schema_apps'
-import update from './data/schema/put_schema_apps_viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53'
-import getAuthorized from './data/schema/get_schema_install_viper_4cb1e740-d415-11e9-8250-8f49824a9876'
-import getUnauthorized from './data/schema/get_schema_install_viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53'
-import listInstalledApps from './data/schema/get_schema_installedapps_location_95efee9b-6073-4871-b5ba-de6642187293'
-import getInstalledApp from './data/schema/get_schema_installedapps_df5dd5f2-7080-4c0b-8bbb-1b64e05ccbd5'
-import deleteInstalledApp from './data/schema/delete_schema_installedapps_b2e93ec5-23e3-45dc-acad-d70c3f044b1d'
-import deleteApp from './data/schema/delete_schema_apps_viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53'
+import {
+	get_schema_apps as list,
+	get_schema_apps_viper_4cb1e740_d415_11e9_8250_8f49824a9876 as get,
+	get_schema_install_viper_4cb1e740_d415_11e9_8250_8f49824a9876 as getAuthorized,
+	get_schema_install_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as getUnauthorized,
+	get_schema_installedapps_location_95efee9b_6073_4871_b5ba_de6642187293 as listInstalledApps,
+	get_schema_installedapps_df5dd5f2_7080_4c0b_8bbb_1b64e05ccbd5 as getInstalledApp,
+} from './data/schema/get'
+import {
+	post_schema_apps as create,
+} from './data/schema/post'
+import {
+	put_schema_apps_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as update,
+} from './data/schema/put'
+import {
+	delete_schema_installedapps_b2e93ec5_23e3_45dc_acad_d70c3f044b1d as deleteInstalledApp,
+	delete_schema_apps_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as deleteApp,
+} from './data/schema/delete'
 
 
 const client = new SmartThingsClient(

@@ -1,27 +1,32 @@
 import axios from '../../__mocks__/axios'
-
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
 	Location, LocationItem,
 	SuccessStatusValue, Status,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
-
-
-import list from './data/locations/get_locations'
-import get from './data/locations/get_locations_95efee9b-6073-4871-b5ba-de6642187293'
-import explicitGet from './data/locations/get_locations_b4db3e54-14f3-4bf4-b217-b8583757d446'
-import create from './data/locations/post_locations'
-import update from './data/locations/put_locations_152b4d07-88fb-450d-896c-a82896efd83f'
-import deleteLocation  from './data/locations/delete_locations_152b4d07-88fb-450d-896c-a82896efd83f'
+import { expectedRequest } from './helpers/utils'
+import {
+	get_locations as list,
+	get_locations_95efee9b_6073_4871_b5ba_de6642187293 as get,
+	get_locations_b4db3e54_14f3_4bf4_b217_b8583757d446 as explicitGet,
+} from './data/locations/get'
+import {
+	post_locations as create,
+} from './data/locations/post'
+import {
+	put_locations_152b4d07_88fb_450d_896c_a82896efd83f as update,
+} from './data/locations/put'
+import {
+	delete_locations_152b4d07_88fb_450d_896c_a82896efd83f as deleteLocation,
+} from './data/locations/delete'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
-const client = new SmartThingsClient(authenticator, {locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
+const client = new SmartThingsClient(authenticator, { locationId: '95efee9b-6073-4871-b5ba-de6642187293' })
 
 
-describe('Locations',  () => {
+describe('Locations', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})

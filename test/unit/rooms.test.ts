@@ -1,5 +1,4 @@
 import axios from '../../__mocks__/axios'
-
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
@@ -7,25 +6,30 @@ import {
 	Room,
 	SuccessStatusValue, Status,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
-
-
-import list from './data/rooms/get_locations_95efee9b-6073-4871-b5ba-de6642187293_rooms'
-import listExplicit from './data/rooms/get_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_rooms'
-import get from './data/rooms/get_locations_95efee9b-6073-4871-b5ba-de6642187293_rooms_717ce958'
-import explicitGet from './data/rooms/get_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_rooms_717ce958'
-import listDevices from './data/rooms/get_locations_95efee9b-6073-4871-b5ba-de6642187293_rooms_717ce958_devices'
-import create from './data/rooms/post_locations_95efee9b-6073-4871-b5ba-de6642187293_rooms'
-import update from './data/rooms/put_locations_95efee9b-6073-4871-b5ba-de6642187293_rooms_f32f1b48'
-import deleteRoom  from './data/rooms/delete_locations_95efee9b-6073-4871-b5ba-de6642187293_rooms'
-import deleteRoomExplicit from './data/rooms/delete_locations_b4db3e54-14f3-4bf4-b217-b8583757d446_rooms'
+import { expectedRequest } from './helpers/utils'
+import {
+	get_locations_95efee9b_6073_4871_b5ba_de6642187293_rooms as list,
+	get_locations_b4db3e54_14f3_4bf4_b217_b8583757d446_rooms as listExplicit,
+	get_locations_95efee9b_6073_4871_b5ba_de6642187293_rooms_717ce958 as get,
+	get_locations_b4db3e54_14f3_4bf4_b217_b8583757d446_rooms_717ce958 as explicitGet,
+	get_locations_95efee9b_6073_4871_b5ba_de6642187293_rooms_717ce958_devices as listDevices,
+} from './data/rooms/get'
+import {
+	post_locations_95efee9b_6073_4871_b5ba_de6642187293_rooms as create,
+} from './data/rooms/post'
+import {
+	put_locations_95efee9b_6073_4871_b5ba_de6642187293_rooms_f32f1b48 as update,
+} from './data/rooms/put'
+import {
+	delete_locations_95efee9b_6073_4871_b5ba_de6642187293_rooms as deleteRoom,
+	delete_locations_b4db3e54_14f3_4bf4_b217_b8583757d446_rooms as deleteRoomExplicit,
+} from './data/rooms/delete'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
-const client = new SmartThingsClient(authenticator, {locationId: '95efee9b-6073-4871-b5ba-de6642187293'})
+const client = new SmartThingsClient(authenticator, { locationId: '95efee9b-6073-4871-b5ba-de6642187293' })
 
-
-describe('Rooms',  () => {
+describe('Rooms', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})

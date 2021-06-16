@@ -1,22 +1,30 @@
 import axios from '../../__mocks__/axios'
-
 import {
 	BearerTokenAuthenticator,
 	SmartThingsClient,
-	DeviceProfile, DeviceProfileStatus, SuccessStatusValue, Status,
+	DeviceProfile,
+	DeviceProfileStatus,
+	SuccessStatusValue,
+	Status,
 } from '../../src'
 import {expectedRequest} from './helpers/utils'
-
-
-import list from './data/deviceprofiles/get_deviceprofiles'
-import get from './data/deviceprofiles/get_deviceprofiles_96406249-c14c-4d0e-8dd2-f62fbe381e78'
-import create from './data/deviceprofiles/post_deviceprofiles'
-import update from './data/deviceprofiles/put_deviceprofiles_149476cd-3ca9-4e62-ba40-a399e558b2bf'
-import updateStatus from './data/deviceprofiles/post_deviceprofiles_149476cd-3ca9-4e62-ba40-a399e558b2bf_status'
-import deleteProfile  from './data/deviceprofiles/delete_deviceprofiles_149476cd-3ca9-4e62-ba40-a399e558b2bf'
-import getLocales from './data/deviceprofiles/get_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n'
-import putTranslations from './data/deviceprofiles/put_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n_fr'
-import deleteTranslations from './data/deviceprofiles/delete_deviceprofiles_3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb_i18n_fr'
+import {
+	get_deviceprofiles as list,
+	get_deviceprofiles_96406249_c14c_4d0e_8dd2_f62fbe381e78 as get,
+	get_deviceprofiles_3acbf2fc_6be2_4be0_aeb5_c10f4ff357bb_i18n as getLocales,
+} from './data/deviceprofiles/get'
+import {
+	post_deviceprofiles as create,
+	post_deviceprofiles_149476cd_3ca9_4e62_ba40_a399e558b2bf_status as updateStatus,
+} from './data/deviceprofiles/post'
+import {
+	put_deviceprofiles_149476cd_3ca9_4e62_ba40_a399e558b2bf as update,
+	put_deviceprofiles_3acbf2fc_6be2_4be0_aeb5_c10f4ff357bb_i18n_fr as putTranslations,
+} from './data/deviceprofiles/put'
+import {
+	delete_deviceprofiles_149476cd_3ca9_4e62_ba40_a399e558b2bf as deleteProfile,
+	delete_deviceprofiles_3acbf2fc_6be2_4be0_aeb5_c10f4ff357bb_i18n_fr as deleteTranslations,
+} from './data/deviceprofiles/delete'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
