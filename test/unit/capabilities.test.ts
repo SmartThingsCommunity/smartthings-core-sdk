@@ -159,8 +159,7 @@ describe('Capabilities', () => {
 			axios.request.mockRejectedValueOnce(error)
 
 			const promise = client.capabilities.upsertTranslations('bobflorian.outputModulation', 1, putTranslations)
-			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(promise).rejects.toThrow(error)
+			await expect(promise).rejects.toThrow(error)
 		})
 	})
 })
