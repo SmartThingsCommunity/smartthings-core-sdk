@@ -11,6 +11,7 @@ export * from './pagination'
 
 export * from './endpoint/apps'
 export * from './endpoint/capabilities'
+export * from './endpoint/devicepreferences'
 export * from './endpoint/deviceprofiles'
 export * from './endpoint/devices'
 export * from './endpoint/installedapps'

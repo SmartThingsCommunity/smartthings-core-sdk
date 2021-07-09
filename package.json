@@ -53,6 +53,7 @@
 		"lint": "eslint --ext .ts src test",
 		"test": "jest",
 		"test-coverage": "jest --coverage",
+		"test-watch": "jest --watch",
 		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",

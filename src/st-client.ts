@@ -4,6 +4,7 @@ import { Authenticator } from './authenticator'
 import { RESTClient, RESTClientConfig } from './rest-client'
 import { AppsEndpoint } from './endpoint/apps'
 import { CapabilitiesEndpoint } from './endpoint/capabilities'
+import { DevicePreferencesEndpoint } from './endpoint/devicepreferences'
 import { DeviceProfilesEndpoint } from './endpoint/deviceprofiles'
 import { DevicesEndpoint } from './endpoint/devices'
 import { HistoryEndpoint } from './endpoint/history'
@@ -25,6 +26,7 @@ import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoin
 export class SmartThingsClient extends RESTClient {
 	public readonly apps: AppsEndpoint
 	public readonly capabilities: CapabilitiesEndpoint
+	public readonly devicePreferences: DevicePreferencesEndpoint
 	public readonly deviceProfiles: DeviceProfilesEndpoint
 	public readonly devices: DevicesEndpoint
 	public readonly history: HistoryEndpoint
@@ -46,6 +48,7 @@ export class SmartThingsClient extends RESTClient {
 
 		this.apps = new AppsEndpoint(this.config)
 		this.capabilities = new CapabilitiesEndpoint(this.config)
+		this.devicePreferences = new DevicePreferencesEndpoint(this.config)
 		this.deviceProfiles = new DeviceProfilesEndpoint(this.config)
 		this.devices = new DevicesEndpoint(this.config)
 		this.history = new HistoryEndpoint(this.config)
