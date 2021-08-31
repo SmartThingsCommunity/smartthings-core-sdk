@@ -17,6 +17,7 @@ import {
 } from './data/schema/get'
 import {
 	post_schema_apps as create,
+	post_oauth_update as updateOauth,
 } from './data/schema/post'
 import {
 	put_schema_apps_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as update,
@@ -79,6 +80,13 @@ describe('Schema', () => {
 		})
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(update.request))
 		expect(response).toEqual(SuccessStatusValue)
+	})
+
+	it('Regenerate OAuth', async () => {
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateOauth.response }))
+		const response: SchemaApp = await client.schema.regenerateOauth('viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53')
+		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateOauth.request))
+		expect(response).toEqual(updateOauth.response)
 	})
 
 	it('Get authorized page', async () => {

@@ -257,6 +257,15 @@ export class SchemaEndpoint extends Endpoint {
 	}
 
 	/**
+	 * Re-generate the OAuth clientId and clientSecret for an ST Schema connector. The old clientId and clientSecret
+	 * will no longer be valid after this operation.
+	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
+	 */
+	public regenerateOauth(id: string): Promise<SchemaCreateResponse> {
+		return this.client.post<SchemaCreateResponse>('oauth/stclient/credentials', {endpointAppId: id})
+	}
+
+	/**
 	 * Delete an ST Schema connector
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 */
