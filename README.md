@@ -76,6 +76,8 @@ and retry the original request.
 
 * notifications - Operations to send push notifications to SmartThings mobile app.  Link to code interface [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/blob/master/src/endpoint/notifications.ts#L83), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Notifications3)
 
+* organizations - Operations to list and get organizations. Link to code interface [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/blob/master/src/endpoint/organizations.ts#L38).
+
 * presentation - Operation on device configurations and presentations. Link to code interface [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/blob/master/src/endpoint/presentation.ts#L189).
 
 * rooms - Operations related to **Rooms**, a grouping of devices within a location.  Link to code interface [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/blob/master/src/endpoint/rooms.ts#L27), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Rooms)

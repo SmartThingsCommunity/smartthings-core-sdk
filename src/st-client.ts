@@ -12,6 +12,7 @@ import { InstalledAppsEndpoint } from './endpoint/installedapps'
 import { ModesEndpoint } from './endpoint/modes'
 import { LocationsEndpoint } from './endpoint/locations'
 import { NotificationsEndpoint } from './endpoint/notifications'
+import { OrganizationsEndpoint } from './endpoint/organizations'
 import { PresentationEndpoint } from './endpoint/presentation'
 import { RoomsEndpoint } from './endpoint/rooms'
 import { RulesEndpoint } from './endpoint/rules'
@@ -33,6 +34,7 @@ export class SmartThingsClient extends RESTClient {
 	public readonly installedApps: InstalledAppsEndpoint
 	public readonly modes: ModesEndpoint
 	public readonly notifications: NotificationsEndpoint
+	public readonly organizations: OrganizationsEndpoint
 	public readonly locations: LocationsEndpoint
 	public readonly presentation: PresentationEndpoint
 	public readonly rooms: RoomsEndpoint
@@ -56,6 +58,7 @@ export class SmartThingsClient extends RESTClient {
 		this.locations = new LocationsEndpoint(this.config)
 		this.modes = new ModesEndpoint(this.config)
 		this.notifications = new NotificationsEndpoint(this.config)
+		this.organizations = new OrganizationsEndpoint(this.config)
 		this.presentation = new PresentationEndpoint(this.config)
 		this.rooms = new RoomsEndpoint(this.config)
 		this.rules = new RulesEndpoint(this.config)
