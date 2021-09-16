@@ -74,7 +74,10 @@ describe('Endpoint Client',  () => {
 	})
 
 	test('request with header overrides', async () => {
-		const headerOverrides = { 'Content-Type': 'overridden content type'}
+		const headerOverrides = {
+			'Content-Type': 'overridden content type',
+			'X-ST-Organization': '00000000-0000-0000-0000-000000000008',
+		}
 		const response = await client.request('POST', 'mypath', { name: 'Bob' }, undefined, { headerOverrides })
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -85,6 +88,7 @@ describe('Endpoint Client',  () => {
 				'Accept': 'application/json',
 				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
+				'X-ST-Organization': '00000000-0000-0000-0000-000000000008',
 			},
 			'data': { name: 'Bob' },
 			'params': undefined,
