@@ -60,6 +60,22 @@ export interface EndpointClientRequestOptions <T> {
 	dryRunReturnValue?: T
 }
 
+/**
+ * Convert to string and scrub sensitive values like auth tokens
+ * Meant to be used before logging the request
+ */
+function scrubConfig(config: AxiosRequestConfig): string {
+	const message = JSON.stringify(config)
+	const bearerRegex = /"(Bearer [0-9a-f]{8})[0-9a-f-]{28}"/i
+
+	if (bearerRegex.test(message)) {
+		return message.replace(bearerRegex, '"$1-xxxx-xxxx-xxxx-xxxxxxxxxxxx"')
+	} else { // assume there is some other auth format and redact the entire header value
+		const authHeaderRegex = /"(Authorization":")([\s\S]*)"/i
+		return message.replace(authHeaderRegex, '"$1(redacted)"')
+	}
+}
+
 export class EndpointClient {
 	private logger: Logger
 
@@ -126,7 +142,7 @@ export class EndpointClient {
 		axiosConfig = await this.config.authenticator.authenticate(axiosConfig)
 
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug(`making axios request: ${JSON.stringify(axiosConfig)}`)
+			this.logger.debug(`making axios request: ${scrubConfig(axiosConfig)}`)
 		}
 		if (options?.dryRun) {
 			if (options.dryRunReturnValue) {
