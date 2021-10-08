@@ -3,13 +3,19 @@ import { Mutex } from 'async-mutex'
 
 import {
 	AuthData,
+	Authenticator,
+	BearerTokenAuthenticator,
+	NoLogLogger,
 	RefreshData,
 	RefreshTokenAuthenticator,
 	RefreshTokenStore,
 	SequentialRefreshTokenAuthenticator,
 } from '../../src'
-import { defaultSmartThingsURLProvider, EndpointClient } from '../../src/endpoint-client'
+import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig } from '../../src/endpoint-client'
+import { AxiosRequestConfig } from 'axios'
 
+
+jest.mock('axios')
 
 class TokenStore implements RefreshTokenStore {
 	public authData?: AuthData
@@ -23,10 +29,11 @@ class TokenStore implements RefreshTokenStore {
 }
 
 const tokenStore = new TokenStore()
+const token = 'authToken'
 
 const config = {
 	'urlProvider': defaultSmartThingsURLProvider,
-	'authenticator': new RefreshTokenAuthenticator('asdfghjkl', tokenStore),
+	'authenticator': new RefreshTokenAuthenticator(token, tokenStore),
 	'baseURL': 'https://api.smartthings.com',
 	'authURL': 'https://auth.smartthings.com',
 	'headers': {
@@ -39,8 +46,15 @@ const config = {
 const client = new EndpointClient('basepath', config)
 
 describe('Endpoint Client',  () => {
-	it('request', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	beforeAll(() => {
+		axios.request.mockResolvedValue({ status: 200, data: { status: 'ok' } })
+	})
+
+	afterEach(() => {
+		jest.clearAllMocks()
+	})
+
+	test('request', async () => {
 		const response = await client.request('GET', 'mypath')
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -49,7 +63,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': undefined,
@@ -57,11 +71,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('request with header overrides', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('request with header overrides', async () => {
 		const headerOverrides = { 'Content-Type': 'overridden content type'}
 		const response = await client.request('POST', 'mypath', { name: 'Bob' }, undefined, { headerOverrides })
 		expect(axios.request).toHaveBeenCalledTimes(1)
@@ -71,7 +83,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'overridden content type',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': { name: 'Bob' },
@@ -79,11 +91,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('get', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('get', async () => {
 		const response = await client.get('path2')
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -92,7 +102,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': undefined,
@@ -100,11 +110,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('get with query params', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('get with query params', async () => {
 		const response = await client.get('mypath', { locationId: 'XXX' })
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -113,7 +121,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': undefined,
@@ -123,11 +131,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('get absolute path', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('get absolute path', async () => {
 		const response = await client.get('/base2/thispath')
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -136,7 +142,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': undefined,
@@ -144,11 +150,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('get absolute url', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('get absolute url', async () => {
 		const response = await client.get('https://api.smartthings.com/foo/bar')
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -157,7 +161,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': undefined,
@@ -165,11 +169,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('post', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('post', async () => {
 		const response = await client.post('myotherpath', { name: 'Bill' })
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -178,7 +180,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': {
@@ -188,11 +190,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('put', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('put', async () => {
 		const response = await client.put('myotherpath', { name: 'Bill' })
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -201,7 +201,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': {
@@ -211,11 +211,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('patch', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('patch', async () => {
 		const response = await client.patch('path3', { name: 'Joe' })
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -224,7 +222,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': {
@@ -234,11 +232,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('delete', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: { status: 'ok' } }))
+	test('delete', async () => {
 		const response = await client.delete('path3')
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith({
@@ -247,7 +243,7 @@ describe('Endpoint Client',  () => {
 			'headers': {
 				'Content-Type': 'application/json;charset=utf-8',
 				'Accept': 'application/json',
-				'Authorization': 'Bearer asdfghjkl',
+				'Authorization': `Bearer ${token}`,
 				'X-ST-CORRELATION': 'AAABBBCCC',
 			},
 			'data': undefined,
@@ -255,10 +251,9 @@ describe('Endpoint Client',  () => {
 			'paramsSerializer': expect.anything(),
 		})
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('expired token request', async () => {
+	test('expired token request', async () => {
 		axios.request
 			.mockImplementationOnce(() => Promise.reject(
 				{ response: {status: 401, data: 'Unauthorized'} }))
@@ -270,14 +265,13 @@ describe('Endpoint Client',  () => {
 		const response = await client.get('mypath')
 		expect(axios.request).toHaveBeenCalledTimes(3)
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('expired token request with mutex', async () => {
+	test('expired token request with mutex', async () => {
 		// TODO -- actually test mutex??
 		const mutex = new Mutex()
 		const mutexConfig = {
-			'authenticator': new SequentialRefreshTokenAuthenticator('asdfghjkl', tokenStore, mutex),
+			'authenticator': new SequentialRefreshTokenAuthenticator(token, tokenStore, mutex),
 			'baseURL': 'https://api.smartthings.com',
 			'authURL': 'https://auth.smartthings.com',
 			'headers': {
@@ -299,10 +293,9 @@ describe('Endpoint Client',  () => {
 		const response = await mutexClient.get('mypath')
 		expect(axios.request).toHaveBeenCalledTimes(3)
 		expect(response.status).toBe('ok')
-		axios.request.mockReset()
 	})
 
-	it('get 404', async () => {
+	test('get 404', async () => {
 		axios.request.mockImplementationOnce(() => Promise.reject({response: { status: 404, data: 'Not Found' }}))
 		let threwError = false
 		try {
@@ -313,10 +306,9 @@ describe('Endpoint Client',  () => {
 		}
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(threwError).toBe(true)
-		axios.request.mockReset()
 	})
 
-	it('get refresh fail', async () => {
+	test('get refresh fail', async () => {
 		axios.request
 			.mockImplementationOnce(() => Promise.reject({response: { status: 401, data: 'Unauthorized' }}))
 			.mockImplementationOnce(() => Promise.reject({response: { status: 500, data: 'Server error' }}))
@@ -330,6 +322,51 @@ describe('Endpoint Client',  () => {
 		}
 		expect(axios.request).toHaveBeenCalledTimes(2)
 		expect(threwError).toBe(true)
-		axios.request.mockReset()
+	})
+
+	describe('request logging', () => {
+		jest.spyOn(NoLogLogger.prototype, 'isDebugEnabled').mockReturnValue(true)
+		const debugSpy = jest.spyOn(NoLogLogger.prototype, 'debug')
+
+		it('partially redacts bearer token in request log', async () => {
+			const bearerToken = '00000000-0000-0000-0000-000000000000'
+			const config: EndpointClientConfig = {
+				authenticator: new BearerTokenAuthenticator(bearerToken),
+				logger: new NoLogLogger,
+			}
+			const bearerClient = new EndpointClient('basePath', config)
+
+			await bearerClient.get('')
+
+			expect(debugSpy).toBeCalled()
+			expect(debugSpy).not.toBeCalledWith(expect.stringContaining(bearerToken))
+			expect(debugSpy).toBeCalledWith(expect.stringContaining('Bearer 00000000'))
+		})
+
+		it('fully redacts Auth header when Bearer is not present', async () => {
+			const basicAuth = Buffer.from('username:password', 'ascii').toString('base64')
+			class BasicAuthenticator implements Authenticator {
+				authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
+					return Promise.resolve({
+						...requestConfig,
+						headers: {
+							...requestConfig.headers,
+							Authorization: `Basic ${basicAuth}`,
+						},
+					})
+				}
+			}
+			const config: EndpointClientConfig = {
+				authenticator: new BasicAuthenticator,
+				logger: new NoLogLogger,
+			}
+			const basicClient = new EndpointClient('basePath', config)
+
+			await basicClient.get('')
+
+			expect(debugSpy).toBeCalled()
+			expect(debugSpy).not.toBeCalledWith(expect.stringContaining(basicAuth))
+			expect(debugSpy).toBeCalledWith(expect.stringContaining('Authorization":"(redacted)"'))
+		})
 	})
 })
