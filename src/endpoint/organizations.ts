@@ -4,7 +4,7 @@ import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 
 export interface OrganizationUpdateRequest {
 	label?: string
-	warehouseGroupId: string
+	warehouseGroupId?: string
 }
 
 export interface OrganizationCreateRequest extends OrganizationUpdateRequest {

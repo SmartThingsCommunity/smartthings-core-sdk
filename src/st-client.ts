@@ -21,7 +21,7 @@ import { SubscriptionsEndpoint } from './endpoint/subscriptions'
 import { SchedulesEndpoint } from './endpoint/schedules'
 import { SchemaEndpoint } from './endpoint/schema'
 import { ServicesEndpoint } from './endpoint/services'
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
+import { SmartThingsURLProvider, defaultSmartThingsURLProvider, HttpClientHeaders } from './endpoint-client'
 
 
 export class SmartThingsClient extends RESTClient {
@@ -72,6 +72,10 @@ export class SmartThingsClient extends RESTClient {
 	public setLocation(id: string): SmartThingsClient {
 		this.config.locationId = id
 		return this
+	}
+
+	public clone(headers?: HttpClientHeaders): SmartThingsClient {
+		return new SmartThingsClient(this.config.authenticator, {...this.config, headers})
 	}
 }
 
