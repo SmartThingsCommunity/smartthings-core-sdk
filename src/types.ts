@@ -46,5 +46,12 @@ export interface IconImage {
 }
 
 export interface LocaleReference {
-	tag: string
+	/** The tag of the locale as defined in [RFC bcp47](http://www.rfc-editor.org/rfc/bcp/bcp47.txt). */
+	tag: LocaleTag
 }
+
+/**
+ * The tag of the locale as defined in [RFC bcp47](http://www.rfc-editor.org/rfc/bcp/bcp47.txt).
+ * @example en
+ */
+export type LocaleTag = string

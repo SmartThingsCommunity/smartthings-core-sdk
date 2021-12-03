@@ -1,120 +1,143 @@
-import axios from '../../__mocks__/axios'
+import { NoOpAuthenticator } from '../../src/authenticator'
+import { EndpointClient } from '../../src/endpoint-client'
+import { DevicePreference, DevicePreferenceCreate, DevicePreferencesEndpoint, PreferenceLocalization } from '../../src/endpoint/devicepreferences'
 
-import { NoOpAuthenticator, SmartThingsClient } from '../../src'
 
-import { integerPreference, minimalIntegerPreference, preferencesList } from './data/devicepreferences/get'
-import { buildRequest } from './helpers/utils'
-import { integerPreferenceCreate } from './data/devicepreferences/post'
+jest.mock('../../src/endpoint-client')
 
+const MOCK_PREFERENCE_L10N = {} as PreferenceLocalization
+const MOCK_PREFERENCE_LIST = [] as DevicePreference[]
+const MOCK_PREFERENCE = {} as DevicePreference
+const MOCK_PREFERENCE_CREATE = {} as DevicePreferenceCreate
 
 describe('devicepreferences', () => {
 	const authenticator = new NoOpAuthenticator()
-	const client = new SmartThingsClient(authenticator, {})
+	const devicepreferences = new DevicePreferencesEndpoint({ authenticator })
+
+	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
+	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')
+	const postSpy = jest.spyOn(EndpointClient.prototype, 'post')
+	const putSpy = jest.spyOn(EndpointClient.prototype, 'put')
 
 	const error = Error('something bad happened')
+	const preferenceId = 'preferenceId'
 
 	afterEach(() => {
-		axios.request.mockReset()
+		jest.clearAllMocks()
 	})
 
 	test('list', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: preferencesList }))
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_PREFERENCE_LIST)
 
-		const response = await client.devicePreferences.list()
+		const response = await devicepreferences.list()
 
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences', {}))
-		expect(response).toBe(preferencesList.items)
+		expect(response).toStrictEqual(MOCK_PREFERENCE_LIST)
 	})
 
 	test('list with namespace', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: preferencesList }))
+		const namespace = 'namespace'
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_PREFERENCE_LIST)
 
-		const response = await client.devicePreferences.list('my-namespace')
+		const response = await devicepreferences.list(namespace)
 
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences', { namespace: 'my-namespace'}))
-		expect(response).toBe(preferencesList.items)
+		expect(getPagedItemsSpy).toBeCalledWith('', expect.objectContaining({ namespace }))
+		expect(response).toStrictEqual(MOCK_PREFERENCE_LIST)
 	})
 
 	test('list failure', async () => {
-		axios.request.mockRejectedValueOnce(error)
+		getPagedItemsSpy.mockRejectedValueOnce(error)
 
-		const promise = client.devicePreferences.list()
+		const promise = devicepreferences.list()
 
 		await expect(promise).rejects.toThrow(error)
-
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences', {}))
-	})
-
-	test('get minimal', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: minimalIntegerPreference }))
-
-		const response = await client.devicePreferences.get('my-id')
-
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences/my-id'))
-		expect(response).toBe(minimalIntegerPreference)
 	})
 
 	test('get', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: integerPreference }))
+		getSpy.mockResolvedValueOnce(MOCK_PREFERENCE)
 
-		const response = await client.devicePreferences.get('my-id')
+		const response = await devicepreferences.get(preferenceId)
 
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences/my-id'))
-		expect(response).toBe(integerPreference)
+		expect(getSpy).toBeCalledWith(preferenceId)
+		expect(response).toStrictEqual(MOCK_PREFERENCE)
 	})
 
 	test('get failure', async () => {
-		axios.request.mockRejectedValueOnce(error)
+		getSpy.mockRejectedValueOnce(error)
 
-		const promise = client.devicePreferences.get('my-id')
+		const promise = devicepreferences.get(preferenceId)
 
 		await expect(promise).rejects.toThrow(error)
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences/my-id'))
 	})
 
 	test('create', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: integerPreference }))
+		postSpy.mockResolvedValueOnce(MOCK_PREFERENCE)
 
-		const response = await client.devicePreferences.create(integerPreferenceCreate)
+		const response = await devicepreferences.create(MOCK_PREFERENCE_CREATE)
 
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences', undefined, integerPreferenceCreate, 'post'))
-		expect(response).toBe(integerPreference)
+		expect(postSpy).toBeCalledWith(undefined, MOCK_PREFERENCE_CREATE)
+		expect(response).toStrictEqual(MOCK_PREFERENCE)
 	})
 
 	test('create failure', async () => {
-		axios.request.mockRejectedValueOnce(error)
+		postSpy.mockRejectedValueOnce(error)
 
-		const promise = client.devicePreferences.create(integerPreferenceCreate)
+		const promise = devicepreferences.create(MOCK_PREFERENCE_CREATE)
 
 		await expect(promise).rejects.toThrow(error)
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences', undefined, integerPreferenceCreate, 'post'))
 	})
 
 	test('update', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: integerPreference }))
+		putSpy.mockResolvedValueOnce(MOCK_PREFERENCE)
 
-		const response = await client.devicePreferences.update('my-id', minimalIntegerPreference)
+		const response = await devicepreferences.update(preferenceId, MOCK_PREFERENCE)
 
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences/my-id', undefined, minimalIntegerPreference, 'put'))
-		expect(response).toBe(integerPreference)
+		expect(putSpy).toBeCalledWith(preferenceId, MOCK_PREFERENCE)
+		expect(response).toStrictEqual(MOCK_PREFERENCE)
 	})
 
 	test('update failure', async () => {
-		axios.request.mockRejectedValueOnce(error)
+		putSpy.mockRejectedValueOnce(error)
 
-		const promise = client.devicePreferences.update('my-id', minimalIntegerPreference)
+		const promise = devicepreferences.update(preferenceId, MOCK_PREFERENCE)
 
 		await expect(promise).rejects.toThrow(error)
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith(buildRequest('devicepreferences/my-id', undefined, minimalIntegerPreference, 'put'))
+	})
+
+	describe('localizations', () => {
+		const localeTag = 'localeTag'
+
+		test('create', async () => {
+			postSpy.mockResolvedValueOnce(MOCK_PREFERENCE_L10N)
+
+			const response = await devicepreferences.createLocalization(preferenceId, MOCK_PREFERENCE_L10N)
+
+			expect(postSpy).toBeCalledWith(`${preferenceId}/i18n`, MOCK_PREFERENCE_L10N)
+			expect(response).toStrictEqual(MOCK_PREFERENCE)
+		})
+
+		test('create failure', async () => {
+			postSpy.mockRejectedValueOnce(error)
+
+			const promise = devicepreferences.createLocalization(preferenceId, MOCK_PREFERENCE_L10N)
+
+			await expect(promise).rejects.toThrow(error)
+		})
+
+		test('get', async () => {
+			getSpy.mockResolvedValueOnce(MOCK_PREFERENCE_L10N)
+
+			const response = await devicepreferences.getLocalization(preferenceId, localeTag)
+
+			expect(getSpy).toBeCalledWith(`${preferenceId}/i18n/${localeTag}`)
+			expect(response).toStrictEqual(MOCK_PREFERENCE_L10N)
+		})
+
+		test('get failure', async () => {
+			getSpy.mockRejectedValueOnce(error)
+
+			const promise = devicepreferences.getLocalization(preferenceId, localeTag)
+
+			await expect(promise).rejects.toThrow(error)
+		})
 	})
 })
