@@ -1,7 +1,14 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
+import { LocaleTag } from '../types'
 import { PreferenceType } from './devices'
 
+
+/**
+ * The ID of the preference
+ * @pattern ^[[a-z]*([A-Z][a-z]*)*]{1,36}$
+ */
+export type PreferenceId = string
 
 export interface DevicePreferenceCore {
 	/**
@@ -132,9 +139,33 @@ export type DevicePreferenceCreate = DevicePreferenceBase & {
 }
 
 export type DevicePreference = DevicePreferenceBase  & {
-	preferenceId: string
+	preferenceId: PreferenceId
 }
 
+export interface PreferenceLocalization {
+	/** The tag of the locale as defined in [RFC bcp47](http://www.rfc-editor.org/rfc/bcp/bcp47.txt). */
+	tag: LocaleTag
+
+	/**
+	 * A localized label for the Preference
+	 * @example Sensibilité au mouvement
+	 */
+	label: string
+
+	/**
+	 * A localized description of the Preference
+	 * @example Sensibilité au mouvement
+	 */
+	description?: string
+
+	/**
+	 * Map of an option name to localizations. Options can only be provided
+	 * to localize Enumeration type Preferences, and are required for Enumerations.
+	 * The number of options in a Preference Localization must match the number
+	 * of options in the Preference.
+	 */
+	options?: Record<string, { label: string }>
+}
 
 export class DevicePreferencesEndpoint extends Endpoint {
 	constructor(config: EndpointClientConfig) {
@@ -145,7 +176,7 @@ export class DevicePreferencesEndpoint extends Endpoint {
 		return this.client.getPagedItems<DevicePreference>('', namespace ? { namespace } : {})
 	}
 
-	public get(id: string): Promise<DevicePreference> {
+	public get(id: PreferenceId): Promise<DevicePreference> {
 		return this.client.get(id)
 	}
 
@@ -154,7 +185,15 @@ export class DevicePreferencesEndpoint extends Endpoint {
 		return this.client.post(undefined, devicePreference)
 	}
 
-	public update(id: string, devicePreferences: DevicePreference): Promise<DevicePreference> {
-		return this.client.put(id, devicePreferences)
+	public update(id: PreferenceId, devicePreference: DevicePreference): Promise<DevicePreference> {
+		return this.client.put(id, devicePreference)
+	}
+
+	public createLocalization(preferenceId: PreferenceId, localization: PreferenceLocalization): Promise<PreferenceLocalization> {
+		return this.client.post(`${preferenceId}/i18n`, localization)
+	}
+
+	public getLocalization(preferenceId: PreferenceId, locale: LocaleTag): Promise<PreferenceLocalization> {
+		return this.client.get(`${preferenceId}/i18n/${locale}`)
 	}
 }
