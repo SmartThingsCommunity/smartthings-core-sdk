@@ -103,13 +103,13 @@ describe('devicepreferences', () => {
 		await expect(promise).rejects.toThrow(error)
 	})
 
-	describe('localizations', () => {
+	describe('translations', () => {
 		const localeTag = 'localeTag'
 
 		test('create', async () => {
 			postSpy.mockResolvedValueOnce(MOCK_PREFERENCE_L10N)
 
-			const response = await devicepreferences.createLocalization(preferenceId, MOCK_PREFERENCE_L10N)
+			const response = await devicepreferences.createTranslations(preferenceId, MOCK_PREFERENCE_L10N)
 
 			expect(postSpy).toBeCalledWith(`${preferenceId}/i18n`, MOCK_PREFERENCE_L10N)
 			expect(response).toStrictEqual(MOCK_PREFERENCE)
@@ -118,7 +118,7 @@ describe('devicepreferences', () => {
 		test('create failure', async () => {
 			postSpy.mockRejectedValueOnce(error)
 
-			const promise = devicepreferences.createLocalization(preferenceId, MOCK_PREFERENCE_L10N)
+			const promise = devicepreferences.createTranslations(preferenceId, MOCK_PREFERENCE_L10N)
 
 			await expect(promise).rejects.toThrow(error)
 		})
@@ -126,7 +126,7 @@ describe('devicepreferences', () => {
 		test('get', async () => {
 			getSpy.mockResolvedValueOnce(MOCK_PREFERENCE_L10N)
 
-			const response = await devicepreferences.getLocalization(preferenceId, localeTag)
+			const response = await devicepreferences.getTranslations(preferenceId, localeTag)
 
 			expect(getSpy).toBeCalledWith(`${preferenceId}/i18n/${localeTag}`)
 			expect(response).toStrictEqual(MOCK_PREFERENCE_L10N)
@@ -135,7 +135,7 @@ describe('devicepreferences', () => {
 		test('get failure', async () => {
 			getSpy.mockRejectedValueOnce(error)
 
-			const promise = devicepreferences.getLocalization(preferenceId, localeTag)
+			const promise = devicepreferences.getTranslations(preferenceId, localeTag)
 
 			await expect(promise).rejects.toThrow(error)
 		})
