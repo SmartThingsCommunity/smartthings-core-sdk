@@ -189,11 +189,11 @@ export class DevicePreferencesEndpoint extends Endpoint {
 		return this.client.put(id, devicePreference)
 	}
 
-	public createLocalization(preferenceId: PreferenceId, localization: PreferenceLocalization): Promise<PreferenceLocalization> {
+	public createTranslations(preferenceId: PreferenceId, localization: PreferenceLocalization): Promise<PreferenceLocalization> {
 		return this.client.post(`${preferenceId}/i18n`, localization)
 	}
 
-	public getLocalization(preferenceId: PreferenceId, locale: LocaleTag): Promise<PreferenceLocalization> {
+	public getTranslations(preferenceId: PreferenceId, locale: LocaleTag): Promise<PreferenceLocalization> {
 		return this.client.get(`${preferenceId}/i18n/${locale}`)
 	}
 }
