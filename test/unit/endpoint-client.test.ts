@@ -10,6 +10,7 @@ import {
 	RefreshTokenAuthenticator,
 	RefreshTokenStore,
 	SequentialRefreshTokenAuthenticator,
+	NoOpAuthenticator,
 } from '../../src'
 import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig } from '../../src/endpoint-client'
 import { AxiosRequestConfig } from 'axios'
@@ -362,7 +363,7 @@ describe('Endpoint Client',  () => {
 			}
 			const config: EndpointClientConfig = {
 				authenticator: new BasicAuthenticator,
-				logger: new NoLogLogger,
+				logger: new NoLogLogger(),
 			}
 			const basicClient = new EndpointClient('basePath', config)
 
@@ -371,6 +372,43 @@ describe('Endpoint Client',  () => {
 			expect(debugSpy).toBeCalled()
 			expect(debugSpy).not.toBeCalledWith(expect.stringContaining(basicAuth))
 			expect(debugSpy).toBeCalledWith(expect.stringContaining('Authorization":"(redacted)"'))
+		})
+
+		describe('getPagedItems', () => {
+			const getMock = jest.fn()
+			const client = new EndpointClient('paged-thing', {
+				authenticator: new NoOpAuthenticator(),
+				logger: new NoLogLogger(),
+			})
+			client.get = getMock
+
+			const item1 = { name: 'item-1' }
+			const item2 = { name: 'item-2' }
+
+			it('uses single get when full results returned in one go', async () => {
+				getMock.mockResolvedValueOnce({
+					items: [item1, item2],
+				})
+
+				expect(await client.getPagedItems()).toEqual([item1, item2])
+
+				expect(getMock).toHaveBeenCalledTimes(1)
+				expect(getMock).toHaveBeenCalledWith(undefined, undefined, undefined)
+			})
+
+			it('combines multiple pages', async () => {
+				const params = { paramName: 'param-value' }
+				const options = { dryRun: false }
+				getMock
+					.mockResolvedValueOnce({ items: [item1], _links: { next: { href: 'next-url' } } })
+					.mockResolvedValueOnce({ items: [item2] })
+
+				expect(await client.getPagedItems('first-url', params, options)).toEqual([item1, item2])
+
+				expect(getMock).toHaveBeenCalledTimes(2)
+				expect(getMock).toHaveBeenCalledWith('first-url', params, options)
+				expect(getMock).toHaveBeenCalledWith('next-url', undefined, options)
+			})
 		})
 	})
 })

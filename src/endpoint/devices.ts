@@ -5,7 +5,7 @@ import { Links, Status, SuccessStatusValue } from '../types'
 import { PresentationDevicePresentation } from './presentation'
 
 
-const HEADER_OVERRIDES = {Accept: 'application/vnd.smartthings+json;v=20170916'}
+const HEADER_OVERRIDES = { Accept: 'application/vnd.smartthings+json;v=20170916' }
 
 export interface CapabilityReference {
 	id: string
@@ -13,16 +13,82 @@ export interface CapabilityReference {
 	status?: CapabilityStatus
 }
 
+export interface DeviceProfileReference {
+	id?: string
+}
+
+/**
+ * Included for backwards compatibility (renamed to match API docs).
+ * For new code, use DeviceProfileReference.
+ *
+ * @deprecated
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ProfileIdentifier extends DeviceProfileReference {}
+
+export type CategoryType = 'manufacturer' | 'user'
+
+export interface DeviceCategory {
+	name: string
+	categoryType: CategoryType
+}
+
+export interface Restrictions {
+	/**
+	 * integer
+	 */
+	tier: number
+
+	/**
+	 * integer
+	 */
+	historyRetentionTTLDays?: number
+
+	/**
+	 * default: false
+	 */
+	visibleWhenRestricted?: boolean
+}
+
 export interface Component {
-	id?: string // <^[-_!.~'()*0-9a-zA-Z]{1,36}$>
-	label?: string
+	id: string // <^[-_!.~'()*0-9a-zA-Z]{1,36}$>
 	capabilities: CapabilityReference[]
+	categories: DeviceCategory[]
+	label?: string
+	restrictions?: Restrictions
+	icon?: string
 }
 
 export interface AppDeviceDetails {
-	installedAppId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
-	externalId?: string // <= 64 characters
-	profileId?: string
+	/**
+	 * The ID of the installed app that integrates this device.
+	 *
+	 * <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
+	 */
+	installedAppId?: string
+	/**
+	 * A field to store an ID from a system external to SmartThings.
+	 *
+	 * <= 64 characters
+	 */
+	externalId?: string
+
+	profile?: DeviceProfileReference
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface BleDeviceDetails {
+	// The API defines this object without properties.
+}
+
+export interface BleD2DDeviceDetails {
+	encryptionKey?: string
+	cipher?: string
+	advertisingId?: string
+	identifier?: string
+	configurationVersion?: string
+	configurationUrl?: string
+	metadata?: object
 }
 
 export enum DeviceNetworkSecurityLevel {
@@ -42,11 +108,39 @@ export enum DeviceNetworkSecurityLevel {
 export interface DthDeviceDetails {
 	deviceTypeId: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	deviceTypeName: string
-	deviceNetworkType?: string
 	completedSetup: boolean
-	networkSecurityLevel?: DeviceNetworkSecurityLevel
+	deviceNetworkType?: string
+	executingLocally?: boolean
 	hubId?: string
 	installedGroovyAppId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	networkSecurityLevel?: DeviceNetworkSecurityLevel
+}
+
+export type ProvisioningState = 'PROVISIONED' | 'TYPED' | 'DRIVER_SWITCH' | 'NONFUNCTIONAL'
+export interface LanDeviceDetails {
+	networkId?: string
+	driverId?: string
+	executingLocally?: boolean
+	hubId?: string
+	provisioningState?: ProvisioningState
+}
+
+export interface ZigbeeDeviceDetails {
+	eui?: string
+	networkId?: string
+	driverId?: string
+	executingLocally?: boolean
+	hubId?: string
+	provisioningState?: ProvisioningState
+}
+
+export interface ZwaveDeviceDetails {
+	networkId?: string
+	driverId?: string
+	executingLocally?: boolean
+	hubId?: string
+	networkSecurityLevel?: DeviceNetworkSecurityLevel
+	provisioningState?: ProvisioningState
 }
 
 export interface IrDeviceDetails {
@@ -54,9 +148,28 @@ export interface IrDeviceDetails {
 	profileId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
 	ocfDeviceType?: string
 	irCode?: string
-	functionCodes?: { default: string }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	functionCodes?: { default?: string; [name: string]: any }
 	childDevices?: IrDeviceDetails[]
 	metadata?: object
+}
+
+export interface OcfDeviceDetails {
+	deviceId?: string
+	ocfDeviceType?: string
+	name?: string
+	specVersion?: string
+	verticalDomainSpecVersion?: string
+	manufacturerName?: string
+	modelNumber?: string
+	platformVersion?: string
+	platformOS?: string
+	hwVersion?: string
+	firmwareVersion?: string
+	vendorId?: string
+	vendorResourceClientServerVersion?: string
+	locale?: string
+	lastSignupTime?: string
 }
 
 export interface ViperDeviceDetails {
@@ -81,10 +194,10 @@ export enum DeviceIntegrationType {
 	VIDEO = 'VIDEO',
 	VIPER = 'VIPER',
 	WATCH = 'WATCH',
-}
-
-export interface ProfileIdentifier {
-	id: string
+	GROUP = 'GROUP',
+	LAN = 'LAN',
+	ZIGBEE = 'ZIGBEE',
+	ZWAVE = 'ZWAVE',
 }
 
 export interface HealthState {
@@ -93,49 +206,99 @@ export interface HealthState {
 }
 
 export interface Device {
-	deviceId?: string
+	deviceId: string
+	presentationId: string
+	manufacturerName: string
+	type: DeviceIntegrationType
+	restrictionTier: number // integer
 	name?: string
 	label?: string
-	manufacturerName?: string
-	presentationId?: string
 	deviceManufacturerCode?: string
 	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	eventId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	ownerId?: string
 	roomId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	/**
+	 * @deprecated please use dth.deviceTypeId instead
+	 */
 	deviceTypeId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	components?: Component[]
+	createTime?: string
+	parentDeviceId?: string
 	childDevices?: Device[]
-	profile?: ProfileIdentifier
+	profile?: DeviceProfileReference
 	app?: AppDeviceDetails
+	ble?: BleDeviceDetails
+	bleD2D?: BleD2DDeviceDetails
 	dth?: DthDeviceDetails
+	lan?: LanDeviceDetails
+	zigbee?: ZigbeeDeviceDetails
+	zwave?: ZwaveDeviceDetails
 	ir?: IrDeviceDetails
 	irOcf?: IrDeviceDetails
+	ocf?: OcfDeviceDetails
 	viper?: ViperDeviceDetails
-	type?: DeviceIntegrationType
-	restrictionTier?: number
-	healthState?: HealthState
+}
+
+export interface UpdateDeviceComponent {
+	id: string
+	categories: string[]
+	icon?: string
 }
 
 export interface DeviceUpdate {
 	label?: string
+	locationId?: string
+	roomId?: string
+	components?: UpdateDeviceComponent[]
 }
 
 export interface DeviceProfileUpdate {
 	profileId: string
 }
 
-export interface DeviceCreate {
-	label?: string
-	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
-	app?: AppDeviceDetails
-	profileId?: undefined
+export interface CreateAppDeviceDetails {
+	profileId: string
+	/**
+	 * installedAppId is required but the user can set a default when instantiating
+	 * SmartThingsClient so we don't required it here.
+	 *
+	 * <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
+	 */
+	installedAppId?: string
+
+	/**
+	 * A field to store an ID from a system external to SmartThings.
+	 *
+	 * <= 64 characters
+	 */
+	externalId?: string
 }
 
-export interface AlternateDeviceCreate {
-	label?: string
+export interface DeviceCreateBase {
+	app?: CreateAppDeviceDetails
+	/**
+	 * locationId is required but the user can set a default when instantiating
+	 * SmartThingsClient so we don't required it here.
+	 */
 	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	label?: string
+	roomId?: string
+}
+export interface DeviceCreate extends DeviceCreateBase {
+	app: CreateAppDeviceDetails
+}
+
+export interface AlternateDeviceCreate extends DeviceCreateBase {
 	installedAppId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
-	externalId?: string // <= 64 characters
-	profileId?: string
+
+	/**
+	 * A field to store an ID from a system external to SmartThings.
+	 *
+	 * <= 64 characters
+	 */
+	externalId?: string
+	profileId: string
 	app?: undefined
 }
 
@@ -161,13 +324,14 @@ export interface ComponentStatus {
 
 export interface DeviceStatus {
 	components?: { [componentId: string]: ComponentStatus }
+	healthState?: HealthState
 }
 
 export interface DeviceEvent {
+	value: unknown
 	component: string
 	capability: string
 	attribute: string
-	value: unknown
 	unit?: string
 	data?: { [name: string]: object }
 }
@@ -189,9 +353,9 @@ export interface DeviceHealth {
 }
 
 export interface Command {
-	component: string
 	capability: string
 	command: string
+	component?: string
 	arguments?: (object | string | number)[]
 }
 
@@ -203,6 +367,17 @@ export interface CommandRequest {
 
 export interface CommandList {
 	commands: Command[]
+}
+
+export type CommandStatus = 'ACCEPTED' | 'COMPLETED' | 'FAILED'
+
+export interface CommandResult {
+	id: string
+	status: CommandStatus
+}
+
+export interface CommandResponse {
+	results: CommandResult[]
 }
 
 export type PreferenceType = 'integer' | 'number' | 'boolean' | 'string' | 'enumeration'
@@ -226,11 +401,6 @@ export interface DeviceListOptions {
 	capability?: string | string[]
 
 	/**
-	 * Whether to AND or OR the capability IDs when more than one is specified
-	 */
-	capabilitiesMode?: 'and' | 'or'
-
-	/**
 	 * Location UUID or array of location UUIDs
 	 */
 	locationId?: string | string[]
@@ -239,6 +409,23 @@ export interface DeviceListOptions {
 	 * Device UUID or array of device UUIDs
 	 */
 	deviceId?: string | string[]
+
+	/**
+	 * Whether to AND or OR the capability IDs when more than one is specified
+	 */
+	capabilitiesMode?: 'and' | 'or'
+
+	/**
+	 * Restricted Devices are hidden by default. This option will reveal them. Device status will
+	 * not be provided if the token does not have sufficient access level to view the device status
+	 * even if includeStatus parameter is set to true.
+	 */
+	includeRestricted?: boolean
+
+	/**
+	 * Only list Devices accessible by the given integer accessLevel.
+	 */
+	accessLevel?: number
 
 	/**
 	 * UUID of an installed app instance
@@ -307,9 +494,6 @@ export class DevicesEndpoint extends Endpoint {
 		if ('capability' in options && options.capability) {
 			params.capability = options.capability
 		}
-		if ('capabilitiesMode' in options && options.capabilitiesMode) {
-			params.capabilitiesMode = options.capabilitiesMode
-		}
 		if ('locationId' in options && options.locationId) {
 			params.locationId = options.locationId
 		} else if (this.client.config.locationId) {
@@ -317,6 +501,15 @@ export class DevicesEndpoint extends Endpoint {
 		}
 		if ('deviceId' in options && options.deviceId) {
 			params.deviceId = options.deviceId
+		}
+		if ('capabilitiesMode' in options && options.capabilitiesMode) {
+			params.capabilitiesMode = options.capabilitiesMode
+		}
+		if ('includeRestricted' in options && options.includeRestricted !== undefined) {
+			params.includeRestricted = options.includeRestricted.toString()
+		}
+		if ('accessLevel' in options && options.accessLevel) {
+			params.accessLevel = options.accessLevel
 		}
 		if ('includeHealth' in options && options.includeHealth !== undefined) {
 			params.includeHealth = options.includeHealth.toString()
@@ -337,7 +530,7 @@ export class DevicesEndpoint extends Endpoint {
 			params.type = options.type
 		}
 		return this.client.getPagedItems<Device>(undefined, params,
-			{headerOverrides: HEADER_OVERRIDES})
+			{ headerOverrides: HEADER_OVERRIDES })
 	}
 
 	/**
@@ -347,7 +540,7 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public listInLocation(): Promise<Device[]> {
 		if (this.client.config.locationId) {
-			return this.list({locationId: this.client.config.locationId})
+			return this.list({ locationId: this.client.config.locationId })
 		}
 		return Promise.reject(Error('Location ID not defined'))
 	}
@@ -366,7 +559,7 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public findByCapability(capability: string): Promise<Device[]> {
 		if (this.client.config.locationId) {
-			return this.list({locationId: this.locationId(), capability: capability})
+			return this.list({ locationId: this.locationId(), capability: capability })
 		}
 		return Promise.reject(Error('Location ID not defined'))
 	}
@@ -387,15 +580,16 @@ export class DevicesEndpoint extends Endpoint {
 		if ('includeStatus' in options && options.includeStatus !== undefined) {
 			params.includeStatus = options.includeStatus.toString()
 		}
-		return this.client.get<Device>(id, params,{headerOverrides: HEADER_OVERRIDES})
+		return this.client.get<Device>(id, params, { headerOverrides: HEADER_OVERRIDES })
 	}
 
 	/**
 	 * Deletes the specified device
 	 * @param id UUID of the device
 	 */
-	public delete(id: string): Promise<Device> {
-		return this.client.delete<Device>(id)
+	public async delete(id: string): Promise<Status> {
+		await this.client.delete<Device>(id)
+		return SuccessStatusValue
 	}
 
 
@@ -404,20 +598,22 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param definition the device definition. If the client configuration specifies a locationId and installedAppId
 	 * then these values don't need to be included in the definition.
 	 */
-	public create(definition: DeviceCreate | AlternateDeviceCreate): Promise<Device> {
-		let data
+	public async create(definition: DeviceCreate | AlternateDeviceCreate): Promise<Device> {
+		let data: DeviceCreate
 		if (definition.app) {
 			data = {
 				label: definition.label,
+				roomId: definition.roomId,
 				locationId: this.locationId(definition.locationId),
 				app: {
-					installedAppId: this.installedAppId(),
 					...definition.app,
+					installedAppId: this.installedAppId(definition.app.installedAppId),
 				},
 			}
 		} else if (definition.profileId) {
 			data = {
 				label: definition.label,
+				roomId: definition.roomId,
 				locationId: this.locationId(definition.locationId),
 				app: {
 					installedAppId: this.installedAppId(definition.installedAppId),
@@ -425,6 +621,8 @@ export class DevicesEndpoint extends Endpoint {
 					externalId: definition.externalId,
 				},
 			}
+		} else {
+			throw Error('Invalid device creation data')
 		}
 
 		return this.client.post<Device>('', data)
@@ -448,7 +646,7 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public updateProfile(id: string, data: DeviceProfileUpdate): Promise<Device> {
 		return this.client.put<Device>(`${id}/profile`, data, undefined,
-			{headerOverrides: HEADER_OVERRIDES})
+			{ headerOverrides: HEADER_OVERRIDES })
 	}
 
 	/**
@@ -524,9 +722,8 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param id UUID of the device
 	 * @param commands list of commands
 	 */
-	public async executeCommands(id: string, commands: Command[]): Promise<Status> {
-		await this.client.post(`${id}/commands`, { commands })
-		return SuccessStatusValue
+	public async executeCommands(id: string, commands: Command[]): Promise<CommandResponse> {
+		return this.client.post(`${id}/commands`, { commands })
 	}
 
 	/**
@@ -534,18 +731,16 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param id UUID of the device
 	 * @param command a single device command
 	 */
-	public async executeCommand(id: string, command: Command): Promise<Status> {
-		await this.executeCommands(id, [command])
-		return SuccessStatusValue
+	public async executeCommand(id: string, command: Command): Promise<CommandResponse> {
+		return this.executeCommands(id, [command])
 	}
 
 	/**
 	 * Sends the specified commands to the device
 	 * @deprecated use executeCommands instead
 	 */
-	public async postCommands(id: string, commands: CommandList): Promise<Status> {
-		await this.client.post(`${id}/commands`, commands)
-		return SuccessStatusValue
+	public async postCommands(id: string, commands: CommandList): Promise<CommandResponse> {
+		return this.client.post(`${id}/commands`, commands)
 	}
 
 	/**
@@ -558,9 +753,10 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param command the command name. Required when a capability ID has been specified in the previous parameter
 	 * @param args list of arguments. Required when a capability ID has been specified and the command has arguments
 	 */
-	public async sendCommand(item: ConfigEntry, capabilityIdOrCmdList: string | CommandRequest[], command?: string, args?: (object | string | number)[]): Promise<Status> {
+	public async sendCommand(item: ConfigEntry, capabilityIdOrCmdList: string | CommandRequest[],
+			command?: string, args?: (object | string | number)[]): Promise<CommandResponse> {
 		let commands
-		const {deviceConfig} = item
+		const { deviceConfig } = item
 		if (deviceConfig) {
 			if (Array.isArray(capabilityIdOrCmdList)) {
 				commands = capabilityIdOrCmdList.map(it => {
@@ -582,9 +778,7 @@ export class DevicesEndpoint extends Endpoint {
 				]
 			}
 
-			const body = {commands}
-			await this.client.post(`${deviceConfig.deviceId}/commands`, body)
-			return SuccessStatusValue
+			return this.client.post(`${deviceConfig.deviceId}/commands`, { commands })
 		}
 		return Promise.reject(Error('Device config not found'))
 	}
@@ -600,8 +794,8 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param args list of arguments. Required when a capability ID has been specified and the command has arguments
 	 */
 	public sendCommands(items: ConfigEntry[], capabilityIdOrCmdList: string | CommandRequest[],
-			command: string, args?: (object | string | number)[]): Promise<Status[]> {
-		const results = []
+			command: string, args?: (object | string | number)[]): Promise<CommandResponse[]> {
+		const results: Promise<CommandResponse>[] = []
 		if (items) {
 			for (const it of items) {
 				results.push(this.sendCommand(it, capabilityIdOrCmdList, command, args))
@@ -644,7 +838,7 @@ export class DevicesEndpoint extends Endpoint {
 	 */
 	public getPreferences(deviceId: string): Promise<DevicePreferenceResponse> {
 		return this.client.get<DevicePreferenceResponse>(`${deviceId}/preferences`, undefined,
-			{headerOverrides: HEADER_OVERRIDES})
+			{ headerOverrides: HEADER_OVERRIDES })
 	}
 
 	/**

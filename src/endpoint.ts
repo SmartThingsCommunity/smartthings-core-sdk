@@ -6,7 +6,7 @@ export class Endpoint {
 
 	}
 
-	protected locationId(id?: string): string {
+	locationId(id?: string): string {
 		const result = id || this.client.config.locationId
 		if (result) {
 			return result
@@ -14,7 +14,7 @@ export class Endpoint {
 		throw Error('Location ID not defined')
 	}
 
-	protected installedAppId(id?: string): string {
+	installedAppId(id?: string): string {
 		const result = id || this.client.config.installedAppId
 		if (result) {
 			return result
