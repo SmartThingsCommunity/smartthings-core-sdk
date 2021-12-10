@@ -1,378 +1,541 @@
-import axios from '../../__mocks__/axios'
-import {
-	BearerTokenAuthenticator,
-	SmartThingsClient,
-	Device, DeviceStatus, DeviceHealth, DevicePreferenceResponse,
-	SuccessStatusValue, Status, ConfigValueType, DeviceIntegrationType,
-} from '../../src'
-import { expectedRequest } from './helpers/utils'
-import {
-	get_devices as listPage1,
-	get_devices_page_1_max_200 as listPage2,
-	get_devices_locationId_95efee9b_6073_4871_b5ba_de6642187293 as locationList,
-	get_devices_health_locationId_95efee9b_6073_4871_b5ba_de6642187293 as healthLocationList,
-	get_devices_status_locationId_95efee9b_6073_4871_b5ba_de6642187293 as statusLocationList,
-	get_devices_385931b6_0121_4848_bcc8_54cb76436de1 as get,
-	get_devices_385931b6_0121_4848_bcc8_54cb76436de1_status as getStatus,
-	get_devices_385931b6_0121_4848_bcc8_54cb76436de1_components_main_capabilities_colorTemperature_status as getCapabilityStatus,
-	get_devices_46c38b7c_81bc_4e65_80be_dddf1fdd45b8_components_outlet1_status as getComponent1Status,
-	get_devices_46c38b7c_81bc_4e65_80be_dddf1fdd45b8_components_outlet2_status as getComponent2Status,
-	get_devices_385931b6_0121_4848_bcc8_54cb76436de1_health as getHealth,
-	list_devices_by_type as listDevicesExtraParams,
-	list_devices_by_isa as listByIsa,
-	get_preferences as getPreferences,
-} from './data/devices/get'
-import {
-	post_devices_385931b6_0121_4848_bcc8_54cb76436de1_events as createEvents,
-	post_devices_385931b6_0121_4848_bcc8_54cb76436de1_commands as turnOn1,
-	post_devices as create,
-	post_devices_2 as create2,
-} from './data/devices/post'
-import {
-	put_devices as update,
-	put_devices_profile as updateProfile,
-} from './data/devices/put'
+import { CommandRequest, CommandList, Command, DeviceHealthState, DeviceProfileUpdate,
+	DeviceUpdate, DevicesEndpoint, Device, DeviceEvent, DevicePreferenceResponse, DeviceCreate,
+	CommandResponse}  from '../../src/endpoint/devices'
+import { ConfigEntry, ConfigValueType } from '../../src/endpoint/installedapps'
+import { BearerTokenAuthenticator } from '../../src/authenticator'
+import { EndpointClient } from '../../src/endpoint-client'
+import { SuccessStatusValue } from '../../src/types'
+import { PresentationDevicePresentation } from '../../src/endpoint/presentation'
 
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
-const locationId = '95efee9b-6073-4871-b5ba-de6642187293'
-const installedAppId = '6f5ea629-4c05-4a90-a244-cc129b0a80c3'
-const isaClient = new SmartThingsClient(authenticator, { locationId, installedAppId })
-const client = new SmartThingsClient(authenticator, {})
 
 describe('Devices', () => {
 	afterEach(() => {
-		axios.request.mockReset()
+		jest.clearAllMocks()
 	})
 
-	it('list with multiple pages', async () => {
-		const expectedList = [...listPage1.response.items, ...listPage2.response.items]
-		axios.request
-			.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listPage1.response }))
-			.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listPage2.response }))
+	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
+	const postSpy = jest.spyOn(EndpointClient.prototype, 'post')
+	const putSpy = jest.spyOn(EndpointClient.prototype, 'put')
+	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
+	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')
 
-		const response: Device[] = await client.devices.list()
+	const locationIdMock = jest.fn<string, [string | undefined]>()
+		.mockReturnValue('location-id')
+	const installedAppIdMock = jest.fn<string, [string | undefined]>()
+		.mockReturnValue('installed-app-id')
 
-		expect(axios.request).toHaveBeenCalledTimes(2)
-		expect(axios.request).toHaveBeenNthCalledWith(1, expectedRequest(listPage1.request))
-		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(listPage2.request))
-		expect(response).toMatchObject(expectedList)
-	})
+	const devices = new DevicesEndpoint({ authenticator })
+	devices.locationId = locationIdMock
+	devices.installedAppId = installedAppIdMock
 
-	it('list with type', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listDevicesExtraParams.response }))
-		const response: Device[] = await client.devices.list({ type: DeviceIntegrationType.HUB })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listDevicesExtraParams.request))
-		expect(response).toBe(listDevicesExtraParams.response.items)
-	})
+	const devicesList = [{ listed: 'device' }] as unknown as Device[]
 
-	it('list for an explicit location', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response }))
-		const response: Device[] = await client.devices.list({ locationId: locationId })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
-		expect(response).toBe(locationList.response.items)
-	})
+	describe('list', () => {
+		getPagedItemsSpy.mockResolvedValue(devicesList)
 
-	it('list for an implicit location', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response }))
-		const response: Device[] = await isaClient.devices.list()
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
-		expect(response).toBe(locationList.response.items)
-	})
+		it('works without options', async () => {
+			expect(await devices.list()).toBe(devicesList)
 
-	it('list with health', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: healthLocationList.response }))
-		const response: Device[] = await isaClient.devices.list({ includeHealth: true })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(healthLocationList.request))
-		expect(response).toBe(healthLocationList.response.items)
-	})
-
-	it('list with status', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: statusLocationList.response }))
-		const response: Device[] = await isaClient.devices.list({ includeStatus: true })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(statusLocationList.request))
-		expect(response).toBe(statusLocationList.response.items)
-	})
-
-	it('list for an implicit location 2', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: locationList.response }))
-		const response: Device[] = await isaClient.devices.listInLocation()
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(locationList.request))
-		expect(response).toBe(locationList.response.items)
-	})
-
-	it('list for an installed app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listByIsa.response }))
-		const response: Device[] = await client.devices.list({ installedAppId: 'f2b6aff2-832b-4d00-8d31-04b16d8f37c7' })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listByIsa.request))
-		expect(response).toBe(listByIsa.response.items)
-	})
-
-	it('get', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: get.response }))
-		const response: Device = await client.devices.get('385931b6-0121-4848-bcc8-54cb76436de1')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(get.request))
-		expect(response).toBe(get.response)
-	})
-
-	it('getStatus', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getStatus.response }))
-		const response: DeviceStatus = await client.devices.getStatus('385931b6-0121-4848-bcc8-54cb76436de1')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getStatus.request))
-		expect(response).toBe(getStatus.response)
-	})
-
-	it('getCapabilityStatus', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getCapabilityStatus.response }))
-		const response: DeviceStatus = await client.devices.getCapabilityStatus('385931b6-0121-4848-bcc8-54cb76436de1', 'main', 'colorTemperature')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getCapabilityStatus.request))
-		expect(response).toBe(getCapabilityStatus.response)
-	})
-
-	it('getComponent1Status', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getComponent1Status.response }))
-		const response: DeviceStatus = await client.devices.getComponentStatus('46c38b7c-81bc-4e65-80be-dddf1fdd45b8', 'outlet1')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getComponent1Status.request))
-		expect(response).toBe(getComponent1Status.response)
-	})
-
-	it('getComponent2Status', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getComponent2Status.response }))
-		const response: DeviceStatus = await client.devices.getComponentStatus('46c38b7c-81bc-4e65-80be-dddf1fdd45b8', 'outlet2')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getComponent2Status.request))
-		expect(response).toBe(getComponent2Status.response)
-	})
-
-	it('getHealth', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getHealth.response }))
-		const response: DeviceHealth = await client.devices.getHealth('385931b6-0121-4848-bcc8-54cb76436de1')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getHealth.request))
-		expect(response).toBe(getHealth.response)
-	})
-
-	it('create', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
-		const data = {
-			'label': 'Living room light',
-			'app': {
-				'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
-				'externalId': 'Th13390',
-			},
-		}
-		const response: Device = await isaClient.devices.create(data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
-		expect(response).toBe(create.response)
-	})
-
-	it('create explicit', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create2.response }))
-		const data = {
-			'label': 'Living room light',
-			'locationId': 'c54591e2-a3f3-419a-8526-ce3ff9c3b0f8',
-			'app': {
-				'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
-				'externalId': 'Th13390',
-				'installedAppId': '871ae474-8341-418e-ace1-1d72ec22311d',
-			},
-		}
-		const response: Device = await isaClient.devices.create(data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create2.request))
-		expect(response).toBe(create2.response)
-	})
-
-	it('create alternate', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
-		const data = {
-			'label': 'Living room light',
-			'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
-			'externalId': 'Th13390',
-		}
-		const response: Device = await isaClient.devices.create(data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
-		expect(response).toBe(create.response)
-	})
-
-	it('create alternate explicit', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create2.response }))
-		const data = {
-			'label': 'Living room light',
-			'profileId': '6f5ea629-4c05-4a90-a244-cc129b0a80c3',
-			'externalId': 'Th13390',
-			'locationId': 'c54591e2-a3f3-419a-8526-ce3ff9c3b0f8',
-			'installedAppId': '871ae474-8341-418e-ace1-1d72ec22311d',
-		}
-		const response: Device = await isaClient.devices.create(data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create2.request))
-		expect(response).toBe(create2.response)
-	})
-
-	it('update name', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: update.response }))
-		const data = {
-			'label': 'Living room light',
-		}
-		const response: Device = await isaClient.devices.update('6f5ea629-4c05-4a90-a244-cc129b0a80c3', data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(update.request))
-		expect(response).toStrictEqual(create.response)
-	})
-
-	it('update profileId', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateProfile.response }))
-		const data = {
-			'profileId': '2b11d686-11e2-41f9-bff2-8aa40d9b944a',
-		}
-		const response: Device = await isaClient.devices.updateProfile('6f5ea629-4c05-4a90-a244-cc129b0a80c3', data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateProfile.request))
-		expect(response).toStrictEqual(updateProfile.response)
-	})
-
-	it('executeCommand', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const response: Status = await client.devices.executeCommand('385931b6-0121-4848-bcc8-54cb76436de1', {
-			component: 'main',
-			capability: 'switch',
-			command: 'on',
-			arguments: [],
+			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
+			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, {},
+				{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
 		})
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response).toBe(SuccessStatusValue)
-	})
 
-	it('executeCommands', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const response: Status = await client.devices.executeCommands('385931b6-0121-4848-bcc8-54cb76436de1', [{
-			component: 'main',
-			capability: 'switch',
-			command: 'on',
-			arguments: [],
-		}])
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response).toBe(SuccessStatusValue)
-	})
+		it('includes configured locationId', async () => {
+			const devices = new DevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
+			expect(await devices.list()).toBe(devicesList)
 
-	it('executeCommands', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const response: Status = await client.devices.executeCommands('385931b6-0121-4848-bcc8-54cb76436de1', [{
-			component: 'main',
-			capability: 'switch',
-			command: 'on',
-			arguments: [],
-		}])
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response).toBe(SuccessStatusValue)
-	})
-
-	it('executeCommands', async () => {
-		const reason = { message: 'something went wrong', name: 'Error' }
-		axios.request.mockImplementationOnce(() => Promise.reject(reason))
-		expect.assertions(2)
-		try {
-			await client.devices.executeCommands('385931b6-0121-4848-bcc8-54cb76436de1', [{
-				component: 'main',
-				capability: 'switch',
-				command: 'on',
-				arguments: [],
-			}])
-		} catch (error) {
-			expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-			expect(error).toBe(reason)
-		}
-	})
-
-	it('postCommands', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const response: Status = await client.devices.postCommands('385931b6-0121-4848-bcc8-54cb76436de1', {
-			commands: [{
-				component: 'main',
-				capability: 'switch',
-				command: 'on',
-				arguments: [],
-			}],
+			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
+			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, { locationId: 'configured-location-id' },
+				{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
 		})
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response).toBe(SuccessStatusValue)
+
+		it.each([
+			['capability', 'search-capability', { capability: 'search-capability' }],
+			['locationId', 'wanted-locationId', { locationId: 'wanted-locationId' }],
+			['deviceId', 'desired-deviceId', { deviceId: 'desired-deviceId' }],
+			['capabilitiesMode', 'my-capabilitiesMode', { capabilitiesMode: 'my-capabilitiesMode' }],
+			['includeRestricted', 's-includeRestricted', { includeRestricted: 's-includeRestricted' }],
+			['accessLevel', 'search-accessLevel', { accessLevel: 'search-accessLevel' }],
+			['includeHealth', true, { includeHealth: 'true' }],
+			['includeStatus', true, { includeStatus: 'true' }],
+			['installedAppId', 'search-installedAppId', { installedAppId: 'search-installedAppId' }],
+			['max', 'search-max', { max: 'search-max' }],
+			['page', 'search-page', { page: 'search-page' }],
+			['type', 'search-type', { type: 'search-type' }],
+		])('handles %s', async (searchKey, searchValue, expectedParams) => {
+			expect(await devices.list({ [searchKey]: searchValue })).toBe(devicesList)
+
+			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
+			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, expectedParams,
+				{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
+		})
 	})
 
-	it('sendCommands', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const configEntry = {
-			'valueType': ConfigValueType.DEVICE,
-			'deviceConfig': {
-				'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
-				'componentId': 'main',
-				'permissions': [
-					'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-					'x:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-				],
+	describe('listInLocation', () => {
+		it('works on happy path', async () => {
+			const devices = new DevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
+			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(devicesList)
+
+			expect(await devices.listInLocation()).toBe(devicesList)
+
+			expect(listSpy).toHaveBeenCalledTimes(1)
+			expect(listSpy).toHaveBeenCalledWith({ locationId: 'configured-location-id' })
+		})
+
+		it('throws Exception when no locationId configured', async () => {
+			await expect(devices.listInLocation()).rejects.toThrow('Location ID not defined')
+		})
+	})
+
+	test('listAll', async () => {
+		const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(devicesList)
+
+		expect(await devices.listAll()).toBe(devicesList)
+
+		expect(listSpy).toHaveBeenCalledTimes(1)
+		expect(listSpy).toHaveBeenCalledWith()
+	})
+
+	describe('findByCapability', () => {
+		it('works on happy path', async () => {
+			const devices = new DevicesEndpoint({ authenticator, locationId: 'unused-in-test' })
+			devices.locationId = locationIdMock
+			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(devicesList)
+
+			expect(await devices.findByCapability('capability')).toBe(devicesList)
+
+			expect(listSpy).toHaveBeenCalledTimes(1)
+			expect(listSpy).toHaveBeenCalledWith({ locationId: 'location-id', capability: 'capability' })
+			expect(locationIdMock).toHaveBeenCalledTimes(1)
+			expect(locationIdMock).toHaveBeenCalledWith()
+		})
+
+		it('throws Exception when no locationId configured', async () => {
+			await expect(devices.findByCapability('capability')).rejects.toThrow('Location ID not defined')
+		})
+	})
+
+	describe('get', () => {
+		it('works without options', async () => {
+			const device = { my: 'device' }
+			getSpy.mockResolvedValueOnce(device)
+
+			expect(await devices.get('device-id')).toBe(device)
+
+			expect(getSpy).toHaveBeenCalledTimes(1)
+			expect(getSpy).toHaveBeenCalledWith('device-id', {},
+				{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
+		})
+
+		it('handles includeHealth', async () => {
+			const device = { my: 'device' }
+			getSpy.mockResolvedValueOnce(device)
+
+			expect(await devices.get('device-id', { includeHealth: true })).toBe(device)
+
+			expect(getSpy).toHaveBeenCalledTimes(1)
+			expect(getSpy).toHaveBeenCalledWith('device-id', { includeHealth: 'true' },
+				{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
+		})
+
+		it('handles includeStatus', async () => {
+			const device = { my: 'device' }
+			getSpy.mockResolvedValueOnce(device)
+
+			expect(await devices.get('device-id', { includeStatus: true })).toBe(device)
+
+			expect(getSpy).toHaveBeenCalledTimes(1)
+			expect(getSpy).toHaveBeenCalledWith('device-id', { includeStatus: 'true' },
+				{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
+		})
+	})
+
+	test('delete', async () => {
+		expect(await devices.delete('id-to-delete')).toBe(SuccessStatusValue)
+
+		expect(deleteSpy).toHaveBeenCalledTimes(1)
+		expect(deleteSpy).toHaveBeenCalledWith('id-to-delete')
+	})
+
+	describe('create', () => {
+		const expectedData = {
+			label: 'Living room light',
+			locationId: 'location-id',
+			app: {
+				profileId: 'profile-id',
+				installedAppId: 'installed-app-id',
+				externalId: 'Th13390',
 			},
 		}
-		const response: Status[] = await client.devices.sendCommands([configEntry], 'switch', 'on')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response.length).toEqual(1)
-		expect(response[0]).toBe(SuccessStatusValue)
+
+		it('creates app based on `DeviceCreate` type', async () => {
+			const device = { new: 'device' }
+			postSpy.mockResolvedValueOnce(device)
+
+			const deviceCreate = {
+				label: 'Living room light',
+				app: {
+					profileId: 'profile-id',
+					externalId: 'Th13390',
+				},
+			}
+
+			expect(await devices.create(deviceCreate)).toBe(device)
+
+			expect(locationIdMock).toHaveBeenCalledTimes(1)
+			expect(locationIdMock).toHaveBeenCalledWith(undefined)
+			expect(installedAppIdMock).toHaveBeenCalledTimes(1)
+			expect(installedAppIdMock).toHaveBeenCalledWith(undefined)
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('', expectedData)
+		})
+
+		it('creates app based on `AlternateDeviceCreate` type', async () => {
+			const device = { new: 'device' }
+			postSpy.mockResolvedValueOnce(device)
+
+			const deviceCreate = {
+				label: 'Living room light',
+				profileId: 'profile-id',
+				locationId: 'other-location-id',
+				installedAppId: 'other-installed-app-id',
+				externalId: 'Th13390',
+			}
+
+			expect(await devices.create(deviceCreate)).toBe(device)
+
+			expect(locationIdMock).toHaveBeenCalledTimes(1)
+			expect(locationIdMock).toHaveBeenCalledWith('other-location-id')
+			expect(installedAppIdMock).toHaveBeenCalledTimes(1)
+			expect(installedAppIdMock).toHaveBeenCalledWith('other-installed-app-id')
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('', expectedData)
+		})
+
+		it('throws exception for blatantly invalid input', async () => {
+			await expect(devices.create({} as DeviceCreate)).rejects.toThrow('Invalid device creation data')
+
+			expect(postSpy).toHaveBeenCalledTimes(0)
+		})
 	})
 
-	it('sendCommand', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const configEntry = {
-			'valueType': ConfigValueType.DEVICE,
-			'deviceConfig': {
-				'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
-				'componentId': 'main',
-				'permissions': [
-					'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-					'x:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-				],
-			},
-		}
-		const response: Status = await client.devices.sendCommand(configEntry, 'switch', 'on', [])
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response).toBe(SuccessStatusValue)
+	test('update', async () => {
+		const deviceUpdate = { device: 'update' } as unknown as DeviceUpdate
+		const updated = { updated: 'device' }
+		putSpy.mockResolvedValueOnce(updated)
+
+		expect(await devices.update('device-id', deviceUpdate)).toBe(updated)
+
+		expect(putSpy).toHaveBeenCalledTimes(1)
+		expect(putSpy).toHaveBeenCalledWith('device-id', deviceUpdate)
 	})
 
-	it('sendCommand list', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: turnOn1.response }))
-		const configEntry = {
-			'valueType': ConfigValueType.DEVICE,
-			'deviceConfig': {
-				'deviceId': '385931b6-0121-4848-bcc8-54cb76436de1',
-				'componentId': 'main',
-				'permissions': [
-					'r:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-					'x:devices:385931b6-0121-4848-bcc8-54cb76436de1',
-				],
-			},
-		}
-		const cmdList = [
-			{
-				capability: 'switch',
-				command: 'on',
-			},
-		]
-		const response: Status = await client.devices.sendCommand(configEntry, cmdList, 'on', [])
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(turnOn1.request))
-		expect(response).toBe(SuccessStatusValue)
+	test('updateProfile', async () => {
+		const deviceProfileUpdate = { device: 'profile update' } as unknown as DeviceProfileUpdate
+		const updated = { updated: 'device' }
+		putSpy.mockResolvedValueOnce(updated)
+
+		expect(await devices.updateProfile('device-id', deviceProfileUpdate)).toBe(updated)
+
+		expect(putSpy).toHaveBeenCalledTimes(1)
+		expect(putSpy).toHaveBeenCalledWith('device-id/profile', deviceProfileUpdate, undefined,
+			{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
 	})
 
-	it('createEvents', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: createEvents.response }))
-		const events = [
-			{
-				'component': 'main',
-				'capability': 'switchLevel',
-				'attribute': 'level',
-				'value': 0,
-			},
-		]
-		const response: Status = await client.devices.createEvents('385931b6-0121-4848-bcc8-54cb76436de1', events)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(createEvents.request))
-		expect(response).toBe(SuccessStatusValue)
+	test('getStatus', async () => {
+		const status = { component: 'status' }
+		getSpy.mockResolvedValueOnce(status)
+
+		expect(await devices.getStatus('device-id')).toBe(status)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/status')
 	})
 
-	it('getPreferences', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getPreferences.response }))
-		const response: DevicePreferenceResponse = await client.devices.getPreferences('385931b6-0121-4848-bcc8-54cb76436de1')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getPreferences.request))
-		expect(response).toBe(getPreferences.response)
+	test('getState', async () => {
+		const status = { component: 'status' }
+		getSpy.mockResolvedValueOnce(status)
+
+		expect(await devices.getState('device-id')).toBe(status)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/status')
+	})
+
+	test('getComponentStatus', async () => {
+		const status = { component: 'status' }
+		getSpy.mockResolvedValueOnce(status)
+
+		expect(await devices.getComponentStatus('device-id', 'component-id')).toBe(status)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/status')
+	})
+
+	test('getComponentState', async () => {
+		const status = { component: 'status' }
+		getSpy.mockResolvedValueOnce(status)
+
+		expect(await devices.getComponentState('device-id', 'component-id')).toBe(status)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/status')
+	})
+
+	test('getCapabilityStatus', async () => {
+		const status = { capability: 'status' }
+		getSpy.mockResolvedValueOnce(status)
+
+		expect(await devices.getCapabilityStatus('device-id', 'component-id', 'capability-id')).toBe(status)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/capabilities/capability-id/status')
+	})
+
+	test('getCapabilityState', async () => {
+		const status = { capability: 'status' }
+		getSpy.mockResolvedValueOnce(status)
+
+		expect(await devices.getCapabilityState('device-id', 'component-id', 'capability-id')).toBe(status)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/capabilities/capability-id/status')
+	})
+
+	describe('getHealth', () => {
+		it('works on happy path', async () => {
+			const deviceHealth = { deviceId: 'device-id-for-health' }
+			getSpy.mockResolvedValueOnce(deviceHealth)
+
+			expect(await devices.getHealth('device-id')).toBe(deviceHealth)
+
+			expect(getSpy).toHaveBeenCalledTimes(1)
+			expect(getSpy).toHaveBeenCalledWith('device-id/health')
+		})
+
+		it('converts 404 to unknown status', async () => {
+			getSpy.mockRejectedValueOnce({ statusCode: 404 })
+
+			expect(await devices.getHealth('device-id'))
+				.toEqual({ deviceId: 'device-id', state: DeviceHealthState.UNKNOWN })
+
+			expect(getSpy).toHaveBeenCalledTimes(1)
+			expect(getSpy).toHaveBeenCalledWith('device-id/health')
+		})
+
+		it('passes on non-404 error', async () => {
+			const error = Error('other error')
+			getSpy.mockRejectedValueOnce(error)
+
+			await expect(devices.getHealth('device-id')).rejects.toThrow(error)
+
+			expect(getSpy).toHaveBeenCalledTimes(1)
+			expect(getSpy).toHaveBeenCalledWith('device-id/health')
+		})
+	})
+
+	const commandResponse = { results: [{ id: 'result' }] } as CommandResponse
+	describe('executeCommands', () => {
+		it('works on happy path', async () => {
+			const command = { command: 'command-1' } as Command
+			postSpy.mockResolvedValueOnce(commandResponse)
+
+			expect(await devices.executeCommands('device-id', [command])).toBe(commandResponse)
+
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] })
+		})
+
+		it('passes on exceptions', async () => {
+			const command = { command: 'command-1' } as Command
+			const error = Error('something went wrong')
+			postSpy.mockRejectedValueOnce(error)
+
+			await expect(devices.executeCommands('device-id', [command])).rejects.toThrow(error)
+
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] })
+		})
+	})
+
+	test('executeCommand', async () => {
+		// create a new instance of devices so we can spy on it and not affect other tests
+		const devices = new DevicesEndpoint({ authenticator })
+		const executeCommandsSpy = jest.spyOn(devices, 'executeCommands')
+			.mockResolvedValueOnce(commandResponse)
+		const command = { command: 'command-1' } as Command
+
+		expect(await devices.executeCommand('device-id', command)).toBe(commandResponse)
+
+		expect(executeCommandsSpy).toHaveBeenCalledTimes(1)
+		expect(executeCommandsSpy).toHaveBeenCalledWith('device-id', [command])
+	})
+
+	test('postCommands', async () => {
+		const commandList: CommandList = { commands: [{ command: 'command-1' }] } as CommandList
+		postSpy.mockResolvedValueOnce(commandResponse)
+
+		expect(await devices.postCommands('device-id', commandList)).toBe(commandResponse)
+
+		expect(postSpy).toHaveBeenCalledTimes(1)
+		expect(postSpy).toHaveBeenCalledWith('device-id/commands', commandList)
+	})
+
+	describe('sendCommand', () => {
+		it ('processes simple single command', async () => {
+			const deviceConfig = {
+				deviceId: 'device-id',
+				componentId: 'component-id',
+				// permissions is required but the sendCommand does not use it
+				permissions: ['unused-permission'],
+			}
+			const configEntry = { valueType: ConfigValueType.DEVICE, deviceConfig }
+			postSpy.mockResolvedValueOnce(commandResponse)
+
+			expect(await devices.sendCommand(configEntry, 'capability-id', 'command')).toBe(commandResponse)
+			const expectedCommand = {
+				component: 'component-id',
+				capability: 'capability-id',
+				command: 'command',
+				arguments: [],
+			}
+
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [expectedCommand] })
+		})
+
+		it('builds commands from commands list', async () => {
+			const deviceConfig = {
+				deviceId: 'device-id',
+				componentId: 'component-id',
+				permissions: [],
+			}
+			const configEntry = { valueType: ConfigValueType.DEVICE, deviceConfig }
+			const cmdList: CommandRequest[] = [
+				{ capability: 'capability-id-1', command: 'command-1' },
+				{ capability: 'capability-id-2', command: 'command-2', arguments: ['arg1', 'arg2'] },
+			]
+			postSpy.mockResolvedValueOnce(commandResponse)
+
+			expect(await devices.sendCommand(configEntry, cmdList)).toBe(commandResponse)
+			const expectedCommand1 = {
+				component: 'component-id',
+				capability: 'capability-id-1',
+				command: 'command-1',
+				arguments: [],
+			}
+			const expectedCommand2 = {
+				component: 'component-id',
+				capability: 'capability-id-2',
+				command: 'command-2',
+				arguments: ['arg1', 'arg2'],
+			}
+
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [expectedCommand1, expectedCommand2] })
+		})
+
+		it('throws exception if config entry is missing device config', async () => {
+			const configEntry = { valueType: ConfigValueType.DEVICE }
+			await expect(devices.sendCommand(configEntry, 'capability-id', 'command', ['arg']))
+				.rejects.toThrow('Device config not found')
+
+			expect(postSpy).toHaveBeenCalledTimes(0)
+		})
+	})
+
+	describe('sendCommands', () => {
+		const sendCommandSpy = jest.spyOn(devices, 'sendCommand')
+		const configEntry1 = { id: 'config-entry-1' }
+		const configEntry2 = { id: 'config-entry-2' }
+
+		it('does nothing given no config entries', async () => {
+			expect(await devices.sendCommands(undefined as unknown as [], 'capability-id', 'command')).toEqual([])
+
+			expect(sendCommandSpy).toHaveBeenCalledTimes(0)
+		})
+
+		it('uses sendCommand to send commands', async () => {
+			const configEntries = [configEntry1] as unknown as ConfigEntry[]
+			sendCommandSpy.mockResolvedValue(commandResponse)
+
+			expect(await devices.sendCommands(configEntries, 'capability-id', 'command', ['arg']))
+				.toEqual([commandResponse])
+
+			expect(sendCommandSpy).toHaveBeenCalledTimes(1)
+			expect(sendCommandSpy).toHaveBeenCalledWith(configEntry1, 'capability-id', 'command', ['arg'])
+		})
+
+		it('rejects on any failure', async () => {
+			// This reflects how the method currently works but it would be nice if the user could
+			// see how each individual command went.
+			const configEntries = [configEntry1, configEntry2] as unknown as ConfigEntry[]
+			const error = Error('Device config not found')
+			sendCommandSpy.mockResolvedValueOnce(commandResponse)
+			sendCommandSpy.mockRejectedValueOnce(error)
+
+			await expect(devices.sendCommands(configEntries, 'capability-id', 'command'))
+				.rejects.toThrow(error)
+
+			expect(sendCommandSpy).toHaveBeenCalledTimes(2)
+			expect(sendCommandSpy).toHaveBeenCalledWith(configEntry1, 'capability-id', 'command', undefined)
+			expect(sendCommandSpy).toHaveBeenCalledWith(configEntry2, 'capability-id', 'command', undefined)
+		})
+	})
+
+	test('createEvents', async () => {
+		const events: DeviceEvent[] = [{ component: 'main' } as DeviceEvent]
+		postSpy.mockImplementationOnce(async () => {
+			// do nothing
+		})
+
+		const devices = new DevicesEndpoint({ authenticator })
+
+		expect(await devices.createEvents('device-id', events)).toBe(SuccessStatusValue)
+
+		expect(postSpy).toHaveBeenCalledTimes(1)
+		expect(postSpy).toHaveBeenCalledWith('device-id/events', { deviceEvents: events })
+	})
+
+	test('sendEvents', async () => {
+		const events = { deviceEvents: [] }
+		postSpy.mockImplementationOnce(async () => {
+			// do nothing
+		})
+
+		const devices = new DevicesEndpoint({ authenticator })
+
+		await devices.sendEvents('device-id', events)
+
+		expect(postSpy).toHaveBeenCalledTimes(1)
+		expect(postSpy).toHaveBeenCalledWith('device-id/events', events)
+	})
+
+	test('getPresentation', async () => {
+		const expected = {} as PresentationDevicePresentation
+		getSpy.mockResolvedValueOnce(expected)
+
+		const devices = new DevicesEndpoint({ authenticator })
+
+		expect(await devices.getPresentation('device-id')).toBe(expected)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('/presentation', { deviceId: 'device-id' })
+	})
+
+	test('getPreferences', async () => {
+		const expected = {} as DevicePreferenceResponse
+		getSpy.mockResolvedValueOnce(expected)
+
+		const devices = new DevicesEndpoint({ authenticator })
+
+		expect(await devices.getPreferences('device-id')).toBe(expected)
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('device-id/preferences', undefined,
+			{ headerOverrides: { Accept: 'application/vnd.smartthings+json;v=20170916' } })
 	})
 })

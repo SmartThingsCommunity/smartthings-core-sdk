@@ -1,11 +1,10 @@
 import axios from '../../__mocks__/axios'
-import {
-	BearerTokenAuthenticator,
-	SmartThingsClient,
-} from '../../src'
+
+import { BearerTokenAuthenticator } from '../../src/authenticator'
+import { SmartThingsClient } from '../../src/st-client'
 
 
-describe('ST Client', () => {
+describe('SmartThingsClient', () => {
 	afterEach(() => {
 		axios.request.mockReset()
 	})
@@ -45,7 +44,5 @@ describe('ST Client', () => {
 		if (client2.config.headers) {
 			expect(client2.config.headers['X-ST-Organization']).toBe('e639ddd9-8af4-4725-a491-eda77c41dc7b')
 		}
-
 	})
-
 })

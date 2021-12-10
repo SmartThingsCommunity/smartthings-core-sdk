@@ -3,5 +3,6 @@
 		"devicepreferences",
 		"deviceprofiles",
 		"installedapps"
-	]
+	],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }
