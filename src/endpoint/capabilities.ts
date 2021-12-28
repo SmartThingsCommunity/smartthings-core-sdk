@@ -864,7 +864,8 @@ export class CapabilitiesEndpoint extends Endpoint {
 	public async upsertTranslations(capabilityId: string, capabilityVersion: number, data: CapabilityLocalization): Promise<CapabilityLocalization> {
 		try {
 			return await this.createTranslations(capabilityId, capabilityVersion, data)
-		} catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			if (error.message?.includes('Localization already exists')) {
 				return this.updateTranslations(capabilityId, capabilityVersion, data)
 			}

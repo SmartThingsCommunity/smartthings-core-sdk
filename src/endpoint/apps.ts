@@ -257,11 +257,11 @@ export class AppsEndpoint extends Endpoint {
 		const params: HttpClientParams = {}
 		if (data.webhookSmartApp) {
 
-			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			params.requireConfirmation = true
 
-			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			params.signatureType = data.webhookSmartApp.signatureType || 'ST_PADLOCK'
 		}

@@ -463,13 +463,13 @@ describe('Devices', () => {
 			sendCommandSpy.mockResolvedValue(commandResponse)
 
 			expect(await devices.sendCommands(configEntries, 'capability-id', 'command', ['arg']))
-				.toEqual([commandResponse])
+				.toEqual([{ status: 'fulfilled', value: commandResponse }])
 
 			expect(sendCommandSpy).toHaveBeenCalledTimes(1)
 			expect(sendCommandSpy).toHaveBeenCalledWith(configEntry1, 'capability-id', 'command', ['arg'])
 		})
 
-		it('rejects on any failure', async () => {
+		it('reports all failures and results together', async () => {
 			// This reflects how the method currently works but it would be nice if the user could
 			// see how each individual command went.
 			const configEntries = [configEntry1, configEntry2] as unknown as ConfigEntry[]
@@ -477,8 +477,11 @@ describe('Devices', () => {
 			sendCommandSpy.mockResolvedValueOnce(commandResponse)
 			sendCommandSpy.mockRejectedValueOnce(error)
 
-			await expect(devices.sendCommands(configEntries, 'capability-id', 'command'))
-				.rejects.toThrow(error)
+			expect(await devices.sendCommands(configEntries, 'capability-id', 'command'))
+				.toEqual([
+					{ status: 'fulfilled', value: commandResponse },
+					{ status: 'rejected', reason: error },
+				])
 
 			expect(sendCommandSpy).toHaveBeenCalledTimes(2)
 			expect(sendCommandSpy).toHaveBeenCalledWith(configEntry1, 'capability-id', 'command', undefined)

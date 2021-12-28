@@ -2,7 +2,9 @@
 	"cSpell.words": [
 		"devicepreferences",
 		"deviceprofiles",
-		"installedapps"
+		"installedapps",
+		"PENGYOU",
+		"sshpk"
 	],
 	"typescript.tsdk": "node_modules/typescript/lib"
 }
