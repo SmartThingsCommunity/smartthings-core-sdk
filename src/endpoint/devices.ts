@@ -474,7 +474,6 @@ export interface HueSaturation {
 	hue: number
 	saturation: number
 }
-
 export class DevicesEndpoint extends Endpoint {
 	constructor(config: EndpointClientConfig) {
 		super(new EndpointClient('devices', config))
@@ -794,15 +793,11 @@ export class DevicesEndpoint extends Endpoint {
 	 * @param args list of arguments. Required when a capability ID has been specified and the command has arguments
 	 */
 	public sendCommands(items: ConfigEntry[], capabilityIdOrCmdList: string | CommandRequest[],
-			command: string, args?: (object | string | number)[]): Promise<CommandResponse[]> {
-		const results: Promise<CommandResponse>[] = []
-		if (items) {
-			for (const it of items) {
-				results.push(this.sendCommand(it, capabilityIdOrCmdList, command, args))
-			}
-		}
+			command: string, args?: (object | string | number)[]): Promise<PromiseSettledResult<CommandResponse>[]> {
+		const results = (items ?? [])
+			.map(item => this.sendCommand(item, capabilityIdOrCmdList, command, args))
 
-		return Promise.all(results)
+		return Promise.allSettled(results)
 	}
 
 	/**

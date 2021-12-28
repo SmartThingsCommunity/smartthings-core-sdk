@@ -305,7 +305,8 @@ describe('Endpoint Client',  () => {
 		let threwError = false
 		try {
 			await client.get('path2')
-		} catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			expect(error.response.status).toBe(404)
 			threwError = true
 		}
@@ -321,7 +322,8 @@ describe('Endpoint Client',  () => {
 		let threwError = false
 		try {
 			await client.get('path2')
-		} catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			expect(error.response.status).toBe(500)
 			threwError = true
 		}

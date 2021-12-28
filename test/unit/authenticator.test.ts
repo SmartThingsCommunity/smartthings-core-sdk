@@ -117,8 +117,8 @@ describe('Authenticators', () => {
 		let message
 		try {
 			await authenticator.refresh(config, endpointConfig)
-		}
-		catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			message = error.message
 		}
 		expect(axios.request).toHaveBeenCalledTimes(1)

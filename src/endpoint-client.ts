@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import qs from 'qs'
 
 import { Authenticator } from './authenticator'
@@ -111,7 +111,7 @@ export class EndpointClient {
 	}
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-	public async request<T = any, R = AxiosResponse<T>>(method: HttpClientMethod, path?: string,
+	public async request<T = any>(method: HttpClientMethod, path?: string,
 			data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		const headers: HttpClientHeaders = this.config.headers ? { ...this.config.headers } : {}
 
@@ -156,7 +156,7 @@ export class EndpointClient {
 				this.logger.trace(`axios response ${response.status}: data=${JSON.stringify(response.data)}`)
 			}
 			return response.data
-		} catch (error) {
+		} catch (error: any) {
 			if (this.logger.isTraceEnabled()) {
 				if (error.response) {
 					// server responded with non-200 response code
@@ -192,27 +192,27 @@ export class EndpointClient {
 		}
 	}
 
-	public async get<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public async get<T = any>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('get', path, undefined, params, options)
 	}
 
-	public post<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public post<T = any>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('post', path, data, params, options)
 	}
 
-	public put<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public put<T = any>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('put', path, data, params, options)
 	}
 
-	public patch<T = any, R = AxiosResponse<T>>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public patch<T = any>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('patch', path, data, params, options)
 	}
 
-	public delete<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public delete<T = any>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('delete', path, undefined, params, options)
 	}
 
-	public async getPagedItems<T = any, R = AxiosResponse<T>>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList>): Promise<T[]> {
+	public async getPagedItems<T = any>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList>): Promise<T[]> {
 		let list = await this.get<ItemsList>(path, params, options)
 		const result = list.items
 		while (list._links && list._links.next) {

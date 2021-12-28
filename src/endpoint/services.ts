@@ -572,7 +572,8 @@ export class ServicesEndpoint extends Endpoint {
 			await this.client.delete(
 				`${this.locationId(locationId)}/subscriptions/${id}`,
 				{isaId: this.installedAppId(installedAppId)})
-		} catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			if ( !(error.response.status === 400 &&
 				error.response.data.error &&
 				error.response.data.error.message === 'Installed App ID is not found') )
@@ -589,7 +590,8 @@ export class ServicesEndpoint extends Endpoint {
 			await this.client.delete(
 				`${this.locationId(locationId)}/subscriptions`,
 				{isaId: this.installedAppId(installedAppId)})
-		} catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			if ( !(error.response.status === 400 &&
 				error.response.data.error &&
 				error.response.data.error.message === 'Installed App ID is not found') )

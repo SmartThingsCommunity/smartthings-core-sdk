@@ -88,7 +88,8 @@ export class SignatureVerifier {
 			const publicKey = await keyResolver.getKey(parsed.keyId)
 
 			return httpSignature.verifySignature(parsed, publicKey)
-		} catch (error) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
 			if (this.logger) {
 				this.logger.error(error.message | error)
 			}
