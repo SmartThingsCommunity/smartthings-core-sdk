@@ -205,6 +205,10 @@ export interface HealthState {
 	lastUpdatedDate?: string
 }
 
+interface ChildDeviceRef {
+	id: string
+}
+
 export interface Device {
 	deviceId: string
 	presentationId: string
@@ -225,7 +229,7 @@ export interface Device {
 	components?: Component[]
 	createTime?: string
 	parentDeviceId?: string
-	childDevices?: Device[]
+	childDevices?: ChildDeviceRef[]
 	profile?: DeviceProfileReference
 	app?: AppDeviceDetails
 	ble?: BleDeviceDetails
