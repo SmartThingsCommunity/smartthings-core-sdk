@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
-import { LocaleTag } from '../types'
+import { LocaleReference, LocaleTag } from '../types'
 import { PreferenceType } from './devices'
 
 
@@ -195,5 +195,13 @@ export class DevicePreferencesEndpoint extends Endpoint {
 
 	public getTranslations(preferenceId: PreferenceId, locale: LocaleTag): Promise<PreferenceLocalization> {
 		return this.client.get(`${preferenceId}/i18n/${locale}`)
+	}
+
+	public listTranslations(preferenceId: PreferenceId): Promise<LocaleReference[]> {
+		return this.client.get(`${preferenceId}/i18n`)
+	}
+
+	public updateTranslations(preferenceId: PreferenceId, localization: PreferenceLocalization): Promise<PreferenceLocalization> {
+		return this.client.put(`${preferenceId}/i18n/${localization.tag}`, localization)
 	}
 }
