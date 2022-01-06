@@ -1,14 +1,16 @@
 import { NoOpAuthenticator } from '../../src/authenticator'
 import { EndpointClient } from '../../src/endpoint-client'
 import { DevicePreference, DevicePreferenceCreate, DevicePreferencesEndpoint, PreferenceLocalization } from '../../src/endpoint/devicepreferences'
+import { LocaleReference } from '../../src/types'
 
 
 jest.mock('../../src/endpoint-client')
 
-const MOCK_PREFERENCE_L10N = {} as PreferenceLocalization
-const MOCK_PREFERENCE_LIST = [] as DevicePreference[]
-const MOCK_PREFERENCE = {} as DevicePreference
-const MOCK_PREFERENCE_CREATE = {} as DevicePreferenceCreate
+const MOCK_PREFERENCE_L10N = { tag: 'localeTag' } as PreferenceLocalization
+const MOCK_PREFERENCE = { preferenceId: 'preferenceId' } as DevicePreference
+const MOCK_PREFERENCE_LIST = [MOCK_PREFERENCE] as DevicePreference[]
+const MOCK_PREFERENCE_CREATE = { preferenceType: 'type' } as unknown as DevicePreferenceCreate
+const MOCK_LOCALE_LIST = [{ tag: 'tag' }] as LocaleReference[]
 
 describe('devicepreferences', () => {
 	const authenticator = new NoOpAuthenticator()
@@ -112,7 +114,7 @@ describe('devicepreferences', () => {
 			const response = await devicepreferences.createTranslations(preferenceId, MOCK_PREFERENCE_L10N)
 
 			expect(postSpy).toBeCalledWith(`${preferenceId}/i18n`, MOCK_PREFERENCE_L10N)
-			expect(response).toStrictEqual(MOCK_PREFERENCE)
+			expect(response).toStrictEqual(MOCK_PREFERENCE_L10N)
 		})
 
 		test('create failure', async () => {
@@ -136,6 +138,40 @@ describe('devicepreferences', () => {
 			getSpy.mockRejectedValueOnce(error)
 
 			const promise = devicepreferences.getTranslations(preferenceId, localeTag)
+
+			await expect(promise).rejects.toThrow(error)
+		})
+
+		test('list', async () => {
+			getSpy.mockResolvedValueOnce(MOCK_LOCALE_LIST)
+
+			const response = await devicepreferences.listTranslations(preferenceId)
+
+			expect(getSpy).toBeCalledWith(`${preferenceId}/i18n`)
+			expect(response).toStrictEqual(MOCK_LOCALE_LIST)
+		})
+
+		test('list failure', async () => {
+			getSpy.mockRejectedValueOnce(error)
+
+			const promise = devicepreferences.listTranslations(preferenceId)
+
+			await expect(promise).rejects.toThrow(error)
+		})
+
+		test('update', async () => {
+			putSpy.mockResolvedValueOnce(MOCK_PREFERENCE_L10N)
+
+			const response = await devicepreferences.updateTranslations(preferenceId, MOCK_PREFERENCE_L10N)
+
+			expect(putSpy).toBeCalledWith(`${preferenceId}/i18n/${MOCK_PREFERENCE_L10N.tag}`, MOCK_PREFERENCE_L10N)
+			expect(response).toStrictEqual(MOCK_PREFERENCE_L10N)
+		})
+
+		test('update failure', async () => {
+			putSpy.mockRejectedValueOnce(error)
+
+			const promise = devicepreferences.updateTranslations(preferenceId, MOCK_PREFERENCE_L10N)
 
 			await expect(promise).rejects.toThrow(error)
 		})
