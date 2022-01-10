@@ -4,5 +4,4 @@ plugins:
   - "@semantic-release/github"
   - "@semantic-release/npm"
   - "@semantic-release/git"
-preset:
-  - conventionalcommits
+preset: conventionalcommits
