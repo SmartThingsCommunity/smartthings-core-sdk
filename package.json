@@ -27,7 +27,9 @@
 		"underscore": "^1.10.2"
 	},
 	"devDependencies": {
-		"@semantic-release/git": "^9.0.0",
+		"@commitlint/cli": "^16.0.2",
+		"@commitlint/config-conventional": "^16.0.0",
+		"@semantic-release/git": "^10.0.1",
 		"@types/jest": "^26.0.10",
 		"@types/node": "^12.11.7",
 		"@types/qs": "^6.9.1",
@@ -35,6 +37,8 @@
 		"@types/underscore": "^1.9.4",
 		"@typescript-eslint/eslint-plugin": "^5.8.1",
 		"@typescript-eslint/parser": "^5.8.1",
+		"conventional-changelog-conventionalcommits": "^4.6.3",
+		"cz-conventional-changelog": "^3.3.0",
 		"eslint": "^8.5.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-eslint-comments": "^3.2.0",
@@ -42,7 +46,7 @@
 		"eslint-plugin-jest": "^23.8.2",
 		"jest": "^26.4.2",
 		"prettier": "^2.5.1",
-		"semantic-release": "^17.4.2",
+		"semantic-release": "^18.0.1",
 		"ts-jest": "^26.3.0",
 		"typedoc": "^0.20.36",
 		"typescript": "^4.5.4"
