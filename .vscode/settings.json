@@ -6,6 +6,7 @@
 		"deviceprofiles",
 		"installedapps",
 		"PENGYOU",
+		"smartthingspi",
 		"sshpk"
 	],
 	"typescript.tsdk": "node_modules/typescript/lib"
