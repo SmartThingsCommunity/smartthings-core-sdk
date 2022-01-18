@@ -143,16 +143,16 @@ describe('devicepreferences', () => {
 		})
 
 		test('list', async () => {
-			getSpy.mockResolvedValueOnce(MOCK_LOCALE_LIST)
+			getPagedItemsSpy.mockResolvedValueOnce(MOCK_LOCALE_LIST)
 
 			const response = await devicepreferences.listTranslations(preferenceId)
 
-			expect(getSpy).toBeCalledWith(`${preferenceId}/i18n`)
+			expect(getPagedItemsSpy).toBeCalledWith(`${preferenceId}/i18n`)
 			expect(response).toStrictEqual(MOCK_LOCALE_LIST)
 		})
 
 		test('list failure', async () => {
-			getSpy.mockRejectedValueOnce(error)
+			getPagedItemsSpy.mockRejectedValueOnce(error)
 
 			const promise = devicepreferences.listTranslations(preferenceId)
 
