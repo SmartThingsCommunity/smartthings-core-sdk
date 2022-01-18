@@ -198,7 +198,7 @@ export class DevicePreferencesEndpoint extends Endpoint {
 	}
 
 	public listTranslations(preferenceId: PreferenceId): Promise<LocaleReference[]> {
-		return this.client.get(`${preferenceId}/i18n`)
+		return this.client.getPagedItems(`${preferenceId}/i18n`)
 	}
 
 	public updateTranslations(preferenceId: PreferenceId, localization: PreferenceLocalization): Promise<PreferenceLocalization> {
