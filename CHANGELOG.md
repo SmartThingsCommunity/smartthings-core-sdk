@@ -1,3 +1,10 @@
+### [2.1.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v2.1.0...v2.1.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* **devicepreferences:** unwrap paged items in response ([cfd832b](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/cfd832bb1708e6e08b8bda861630eabe915136f4))
+
 ## [2.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v2.0.1...v2.1.0) (2022-01-06)
 
 
@@ -282,4 +289,3 @@ the API was lost.
 ### Features
 
 * Added runOnce scheduling method and fixed subscription bug ([579fb4c](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/579fb4c51bd3a149551facff09eb025a69b74e12))
-
