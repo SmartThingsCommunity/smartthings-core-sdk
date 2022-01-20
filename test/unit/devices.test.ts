@@ -15,20 +15,20 @@ describe('Devices', () => {
 		jest.clearAllMocks()
 	})
 
-	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
-	const postSpy = jest.spyOn(EndpointClient.prototype, 'post')
-	const putSpy = jest.spyOn(EndpointClient.prototype, 'put')
-	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
-	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')
+	const getSpy = jest.spyOn(EndpointClient.prototype, 'get').mockImplementation()
+	const postSpy = jest.spyOn(EndpointClient.prototype, 'post').mockImplementation()
+	const putSpy = jest.spyOn(EndpointClient.prototype, 'put').mockImplementation()
+	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete').mockImplementation()
+	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems').mockImplementation()
 
 	const locationIdMock = jest.fn<string, [string | undefined]>()
 		.mockReturnValue('location-id')
 	const installedAppIdMock = jest.fn<string, [string | undefined]>()
 		.mockReturnValue('installed-app-id')
 
-	const devices = new DevicesEndpoint({ authenticator })
-	devices.locationId = locationIdMock
-	devices.installedAppId = installedAppIdMock
+	const devicesEndpoint = new DevicesEndpoint({ authenticator })
+	devicesEndpoint.locationId = locationIdMock
+	devicesEndpoint.installedAppId = installedAppIdMock
 
 	const devicesList = [{ listed: 'device' }] as unknown as Device[]
 
@@ -36,7 +36,7 @@ describe('Devices', () => {
 		getPagedItemsSpy.mockResolvedValue(devicesList)
 
 		it('works without options', async () => {
-			expect(await devices.list()).toBe(devicesList)
+			expect(await devicesEndpoint.list()).toBe(devicesList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
 			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, {},
@@ -66,7 +66,7 @@ describe('Devices', () => {
 			['page', 'search-page', { page: 'search-page' }],
 			['type', 'search-type', { type: 'search-type' }],
 		])('handles %s', async (searchKey, searchValue, expectedParams) => {
-			expect(await devices.list({ [searchKey]: searchValue })).toBe(devicesList)
+			expect(await devicesEndpoint.list({ [searchKey]: searchValue })).toBe(devicesList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
 			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, expectedParams,
@@ -86,14 +86,14 @@ describe('Devices', () => {
 		})
 
 		it('throws Exception when no locationId configured', async () => {
-			await expect(devices.listInLocation()).rejects.toThrow('Location ID not defined')
+			await expect(devicesEndpoint.listInLocation()).rejects.toThrow('Location ID not defined')
 		})
 	})
 
 	test('listAll', async () => {
-		const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(devicesList)
+		const listSpy = jest.spyOn(devicesEndpoint, 'list').mockResolvedValue(devicesList)
 
-		expect(await devices.listAll()).toBe(devicesList)
+		expect(await devicesEndpoint.listAll()).toBe(devicesList)
 
 		expect(listSpy).toHaveBeenCalledTimes(1)
 		expect(listSpy).toHaveBeenCalledWith()
@@ -114,7 +114,7 @@ describe('Devices', () => {
 		})
 
 		it('throws Exception when no locationId configured', async () => {
-			await expect(devices.findByCapability('capability')).rejects.toThrow('Location ID not defined')
+			await expect(devicesEndpoint.findByCapability('capability')).rejects.toThrow('Location ID not defined')
 		})
 	})
 
@@ -123,7 +123,7 @@ describe('Devices', () => {
 			const device = { my: 'device' }
 			getSpy.mockResolvedValueOnce(device)
 
-			expect(await devices.get('device-id')).toBe(device)
+			expect(await devicesEndpoint.get('device-id')).toBe(device)
 
 			expect(getSpy).toHaveBeenCalledTimes(1)
 			expect(getSpy).toHaveBeenCalledWith('device-id', {},
@@ -134,7 +134,7 @@ describe('Devices', () => {
 			const device = { my: 'device' }
 			getSpy.mockResolvedValueOnce(device)
 
-			expect(await devices.get('device-id', { includeHealth: true })).toBe(device)
+			expect(await devicesEndpoint.get('device-id', { includeHealth: true })).toBe(device)
 
 			expect(getSpy).toHaveBeenCalledTimes(1)
 			expect(getSpy).toHaveBeenCalledWith('device-id', { includeHealth: 'true' },
@@ -145,7 +145,7 @@ describe('Devices', () => {
 			const device = { my: 'device' }
 			getSpy.mockResolvedValueOnce(device)
 
-			expect(await devices.get('device-id', { includeStatus: true })).toBe(device)
+			expect(await devicesEndpoint.get('device-id', { includeStatus: true })).toBe(device)
 
 			expect(getSpy).toHaveBeenCalledTimes(1)
 			expect(getSpy).toHaveBeenCalledWith('device-id', { includeStatus: 'true' },
@@ -154,7 +154,7 @@ describe('Devices', () => {
 	})
 
 	test('delete', async () => {
-		expect(await devices.delete('id-to-delete')).toBe(SuccessStatusValue)
+		expect(await devicesEndpoint.delete('id-to-delete')).toBe(SuccessStatusValue)
 
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('id-to-delete')
@@ -183,7 +183,7 @@ describe('Devices', () => {
 				},
 			}
 
-			expect(await devices.create(deviceCreate)).toBe(device)
+			expect(await devicesEndpoint.create(deviceCreate)).toBe(device)
 
 			expect(locationIdMock).toHaveBeenCalledTimes(1)
 			expect(locationIdMock).toHaveBeenCalledWith(undefined)
@@ -205,7 +205,7 @@ describe('Devices', () => {
 				externalId: 'Th13390',
 			}
 
-			expect(await devices.create(deviceCreate)).toBe(device)
+			expect(await devicesEndpoint.create(deviceCreate)).toBe(device)
 
 			expect(locationIdMock).toHaveBeenCalledTimes(1)
 			expect(locationIdMock).toHaveBeenCalledWith('other-location-id')
@@ -216,7 +216,7 @@ describe('Devices', () => {
 		})
 
 		it('throws exception for blatantly invalid input', async () => {
-			await expect(devices.create({} as DeviceCreate)).rejects.toThrow('Invalid device creation data')
+			await expect(devicesEndpoint.create({} as DeviceCreate)).rejects.toThrow('Invalid device creation data')
 
 			expect(postSpy).toHaveBeenCalledTimes(0)
 		})
@@ -227,7 +227,7 @@ describe('Devices', () => {
 		const updated = { updated: 'device' }
 		putSpy.mockResolvedValueOnce(updated)
 
-		expect(await devices.update('device-id', deviceUpdate)).toBe(updated)
+		expect(await devicesEndpoint.update('device-id', deviceUpdate)).toBe(updated)
 
 		expect(putSpy).toHaveBeenCalledTimes(1)
 		expect(putSpy).toHaveBeenCalledWith('device-id', deviceUpdate)
@@ -238,7 +238,7 @@ describe('Devices', () => {
 		const updated = { updated: 'device' }
 		putSpy.mockResolvedValueOnce(updated)
 
-		expect(await devices.updateProfile('device-id', deviceProfileUpdate)).toBe(updated)
+		expect(await devicesEndpoint.updateProfile('device-id', deviceProfileUpdate)).toBe(updated)
 
 		expect(putSpy).toHaveBeenCalledTimes(1)
 		expect(putSpy).toHaveBeenCalledWith('device-id/profile', deviceProfileUpdate, undefined,
@@ -249,7 +249,7 @@ describe('Devices', () => {
 		const status = { component: 'status' }
 		getSpy.mockResolvedValueOnce(status)
 
-		expect(await devices.getStatus('device-id')).toBe(status)
+		expect(await devicesEndpoint.getStatus('device-id')).toBe(status)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
 		expect(getSpy).toHaveBeenCalledWith('device-id/status')
@@ -259,7 +259,7 @@ describe('Devices', () => {
 		const status = { component: 'status' }
 		getSpy.mockResolvedValueOnce(status)
 
-		expect(await devices.getState('device-id')).toBe(status)
+		expect(await devicesEndpoint.getState('device-id')).toBe(status)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
 		expect(getSpy).toHaveBeenCalledWith('device-id/status')
@@ -269,7 +269,7 @@ describe('Devices', () => {
 		const status = { component: 'status' }
 		getSpy.mockResolvedValueOnce(status)
 
-		expect(await devices.getComponentStatus('device-id', 'component-id')).toBe(status)
+		expect(await devicesEndpoint.getComponentStatus('device-id', 'component-id')).toBe(status)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
 		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/status')
@@ -279,7 +279,7 @@ describe('Devices', () => {
 		const status = { component: 'status' }
 		getSpy.mockResolvedValueOnce(status)
 
-		expect(await devices.getComponentState('device-id', 'component-id')).toBe(status)
+		expect(await devicesEndpoint.getComponentState('device-id', 'component-id')).toBe(status)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
 		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/status')
@@ -289,7 +289,7 @@ describe('Devices', () => {
 		const status = { capability: 'status' }
 		getSpy.mockResolvedValueOnce(status)
 
-		expect(await devices.getCapabilityStatus('device-id', 'component-id', 'capability-id')).toBe(status)
+		expect(await devicesEndpoint.getCapabilityStatus('device-id', 'component-id', 'capability-id')).toBe(status)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
 		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/capabilities/capability-id/status')
@@ -299,7 +299,7 @@ describe('Devices', () => {
 		const status = { capability: 'status' }
 		getSpy.mockResolvedValueOnce(status)
 
-		expect(await devices.getCapabilityState('device-id', 'component-id', 'capability-id')).toBe(status)
+		expect(await devicesEndpoint.getCapabilityState('device-id', 'component-id', 'capability-id')).toBe(status)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
 		expect(getSpy).toHaveBeenCalledWith('device-id/components/component-id/capabilities/capability-id/status')
@@ -310,7 +310,7 @@ describe('Devices', () => {
 			const deviceHealth = { deviceId: 'device-id-for-health' }
 			getSpy.mockResolvedValueOnce(deviceHealth)
 
-			expect(await devices.getHealth('device-id')).toBe(deviceHealth)
+			expect(await devicesEndpoint.getHealth('device-id')).toBe(deviceHealth)
 
 			expect(getSpy).toHaveBeenCalledTimes(1)
 			expect(getSpy).toHaveBeenCalledWith('device-id/health')
@@ -319,7 +319,7 @@ describe('Devices', () => {
 		it('converts 404 to unknown status', async () => {
 			getSpy.mockRejectedValueOnce({ statusCode: 404 })
 
-			expect(await devices.getHealth('device-id'))
+			expect(await devicesEndpoint.getHealth('device-id'))
 				.toEqual({ deviceId: 'device-id', state: DeviceHealthState.UNKNOWN })
 
 			expect(getSpy).toHaveBeenCalledTimes(1)
@@ -330,7 +330,7 @@ describe('Devices', () => {
 			const error = Error('other error')
 			getSpy.mockRejectedValueOnce(error)
 
-			await expect(devices.getHealth('device-id')).rejects.toThrow(error)
+			await expect(devicesEndpoint.getHealth('device-id')).rejects.toThrow(error)
 
 			expect(getSpy).toHaveBeenCalledTimes(1)
 			expect(getSpy).toHaveBeenCalledWith('device-id/health')
@@ -343,7 +343,7 @@ describe('Devices', () => {
 			const command = { command: 'command-1' } as Command
 			postSpy.mockResolvedValueOnce(commandResponse)
 
-			expect(await devices.executeCommands('device-id', [command])).toBe(commandResponse)
+			expect(await devicesEndpoint.executeCommands('device-id', [command])).toBe(commandResponse)
 
 			expect(postSpy).toHaveBeenCalledTimes(1)
 			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] })
@@ -354,7 +354,7 @@ describe('Devices', () => {
 			const error = Error('something went wrong')
 			postSpy.mockRejectedValueOnce(error)
 
-			await expect(devices.executeCommands('device-id', [command])).rejects.toThrow(error)
+			await expect(devicesEndpoint.executeCommands('device-id', [command])).rejects.toThrow(error)
 
 			expect(postSpy).toHaveBeenCalledTimes(1)
 			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] })
@@ -378,7 +378,7 @@ describe('Devices', () => {
 		const commandList: CommandList = { commands: [{ command: 'command-1' }] } as CommandList
 		postSpy.mockResolvedValueOnce(commandResponse)
 
-		expect(await devices.postCommands('device-id', commandList)).toBe(commandResponse)
+		expect(await devicesEndpoint.postCommands('device-id', commandList)).toBe(commandResponse)
 
 		expect(postSpy).toHaveBeenCalledTimes(1)
 		expect(postSpy).toHaveBeenCalledWith('device-id/commands', commandList)
@@ -395,7 +395,7 @@ describe('Devices', () => {
 			const configEntry = { valueType: ConfigValueType.DEVICE, deviceConfig }
 			postSpy.mockResolvedValueOnce(commandResponse)
 
-			expect(await devices.sendCommand(configEntry, 'capability-id', 'command')).toBe(commandResponse)
+			expect(await devicesEndpoint.sendCommand(configEntry, 'capability-id', 'command')).toBe(commandResponse)
 			const expectedCommand = {
 				component: 'component-id',
 				capability: 'capability-id',
@@ -420,7 +420,7 @@ describe('Devices', () => {
 			]
 			postSpy.mockResolvedValueOnce(commandResponse)
 
-			expect(await devices.sendCommand(configEntry, cmdList)).toBe(commandResponse)
+			expect(await devicesEndpoint.sendCommand(configEntry, cmdList)).toBe(commandResponse)
 			const expectedCommand1 = {
 				component: 'component-id',
 				capability: 'capability-id-1',
@@ -440,7 +440,7 @@ describe('Devices', () => {
 
 		it('throws exception if config entry is missing device config', async () => {
 			const configEntry = { valueType: ConfigValueType.DEVICE }
-			await expect(devices.sendCommand(configEntry, 'capability-id', 'command', ['arg']))
+			await expect(devicesEndpoint.sendCommand(configEntry, 'capability-id', 'command', ['arg']))
 				.rejects.toThrow('Device config not found')
 
 			expect(postSpy).toHaveBeenCalledTimes(0)
@@ -448,12 +448,12 @@ describe('Devices', () => {
 	})
 
 	describe('sendCommands', () => {
-		const sendCommandSpy = jest.spyOn(devices, 'sendCommand')
+		const sendCommandSpy = jest.spyOn(devicesEndpoint, 'sendCommand')
 		const configEntry1 = { id: 'config-entry-1' }
 		const configEntry2 = { id: 'config-entry-2' }
 
 		it('does nothing given no config entries', async () => {
-			expect(await devices.sendCommands(undefined as unknown as [], 'capability-id', 'command')).toEqual([])
+			expect(await devicesEndpoint.sendCommands(undefined as unknown as [], 'capability-id', 'command')).toEqual([])
 
 			expect(sendCommandSpy).toHaveBeenCalledTimes(0)
 		})
@@ -462,7 +462,7 @@ describe('Devices', () => {
 			const configEntries = [configEntry1] as unknown as ConfigEntry[]
 			sendCommandSpy.mockResolvedValue(commandResponse)
 
-			expect(await devices.sendCommands(configEntries, 'capability-id', 'command', ['arg']))
+			expect(await devicesEndpoint.sendCommands(configEntries, 'capability-id', 'command', ['arg']))
 				.toEqual([{ status: 'fulfilled', value: commandResponse }])
 
 			expect(sendCommandSpy).toHaveBeenCalledTimes(1)
@@ -477,7 +477,7 @@ describe('Devices', () => {
 			sendCommandSpy.mockResolvedValueOnce(commandResponse)
 			sendCommandSpy.mockRejectedValueOnce(error)
 
-			expect(await devices.sendCommands(configEntries, 'capability-id', 'command'))
+			expect(await devicesEndpoint.sendCommands(configEntries, 'capability-id', 'command'))
 				.toEqual([
 					{ status: 'fulfilled', value: commandResponse },
 					{ status: 'rejected', reason: error },
@@ -505,9 +505,6 @@ describe('Devices', () => {
 
 	test('sendEvents', async () => {
 		const events = { deviceEvents: [] }
-		postSpy.mockImplementationOnce(async () => {
-			// do nothing
-		})
 
 		const devices = new DevicesEndpoint({ authenticator })
 

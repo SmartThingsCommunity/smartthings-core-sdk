@@ -1,76 +1,92 @@
-import axios from '../../__mocks__/axios'
-import {
-	BearerTokenAuthenticator,
-	SmartThingsClient,
-	Rule,
-	Status,
+import { Rule,
 	SuccessStatusValue,
+	RuleRequest,
+	RulesEndpoint,
+	NoOpAuthenticator,
+	ExecuteResponse,
 } from '../../src'
-import { expectedRequest } from './helpers/utils'
-import {
-	get_rules_locationId_95efee9b_6073_4871_b5ba_de6642187293 as list,
-	get_rules_dcaa574b_9f2f_4082_a1ed_81b265c59185 as get,
-} from './data/rules/get'
-import {
-	post_rules_locationId_95efee9b_6073_4871_b5ba_de6642187293 as create,
-	post_rules_execute_437f4243_389a_4299_b5ed_059edbf08b16 as execute,
-} from './data/rules/post'
-import {
-	put_rules_dcaa574b_9f2f_4082_a1ed_81b265c59185 as update,
-} from './data/rules/put'
-import {
-	delete_rules_dcaa574b_9f2f_4082_a1ed_81b265c59185 as deleteRule,
-} from './data/rules/delete'
+import { EndpointClient } from '../../src/endpoint-client'
 
-
-const client = new SmartThingsClient(
-	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'),
-	{ locationId: '95efee9b-6073-4871-b5ba-de6642187293' })
 
 describe('Rules', () => {
 	afterEach(() => {
-		axios.request.mockReset()
+		jest.clearAllMocks()
 	})
 
-	it('List', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response }))
-		const response: Rule[] = await client.rules.list()
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(list.request))
-		expect(response).toBe(list.response.items)
+	const getSpy = jest.spyOn(EndpointClient.prototype, 'get').mockImplementation()
+	const postSpy = jest.spyOn(EndpointClient.prototype, 'post').mockImplementation()
+	const putSpy = jest.spyOn(EndpointClient.prototype, 'put').mockImplementation()
+	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete').mockImplementation()
+	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems').mockImplementation()
+
+	const locationIdMock = jest.fn<string, [string | undefined]>()
+		.mockReturnValue('final-location-id')
+
+	const authenticator = new NoOpAuthenticator()
+	const rulesEndpoint = new RulesEndpoint({ authenticator })
+	rulesEndpoint.locationId = locationIdMock
+
+	const rulesList = [{ id: 'listed-rule' }] as Rule[]
+
+	test('list', async () => {
+		getPagedItemsSpy.mockResolvedValueOnce(rulesList)
+
+		expect(await rulesEndpoint.list('input-location-id')).toBe(rulesList)
+
+		expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, { locationId: 'final-location-id' })
+		expect(locationIdMock).toHaveBeenCalledTimes(1)
+		expect(locationIdMock).toHaveBeenCalledWith('input-location-id')
 	})
 
-	it('Get', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: get.response }))
-		const response: Rule = await client.rules.get('dcaa574b-9f2f-4082-a1ed-81b265c59185')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(get.request))
-		expect(response).toBe(get.response)
+	test('get', async () => {
+		const rule = { id: 'rule-id' }
+		getSpy.mockResolvedValueOnce(rule)
+
+		expect(await rulesEndpoint.get('requested-rule-id', 'input-location-id'))
+
+		expect(getSpy).toHaveBeenCalledWith('requested-rule-id', { locationId: 'final-location-id' })
+		expect(locationIdMock).toHaveBeenCalledTimes(1)
+		expect(locationIdMock).toHaveBeenCalledWith('input-location-id')
 	})
 
-	it('Create', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
-		const response: Rule = await client.rules.create(create.request.data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
-		expect(response).toBe(create.response)
+	test('delete', async () => {
+		expect(await rulesEndpoint.delete('id-to-delete', 'input-location-id')).toBe(SuccessStatusValue)
+
+		expect(deleteSpy).toHaveBeenCalledTimes(1)
+		expect(deleteSpy).toHaveBeenCalledWith('id-to-delete', { locationId: 'final-location-id' })
+		expect(locationIdMock).toHaveBeenCalledTimes(1)
+		expect(locationIdMock).toHaveBeenCalledWith('input-location-id')
 	})
 
-	it('Update', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: update.response }))
-		const response: Rule = await client.rules.update('dcaa574b-9f2f-4082-a1ed-81b265c59185', update.request.data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(update.request))
-		expect(response).toBe(update.response)
+	test('create', async () => {
+		const createRequest = { name: 'rule-to-create' } as RuleRequest
+		const createdRule = { id: 'created-rule' } as Rule
+		postSpy.mockResolvedValueOnce(createdRule)
+
+		expect(await rulesEndpoint.create(createRequest, 'input-location-id')).toBe(createdRule)
+
+		expect(postSpy).toHaveBeenCalledTimes(1)
+		expect(postSpy).toHaveBeenCalledWith(undefined, createRequest, { locationId: 'final-location-id' })
 	})
 
-	it('Execute', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: execute.response }))
-		const response: Status = await client.rules.execute('437f4243-389a-4299-b5ed-059edbf08b16')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(execute.request))
-		expect(response).toEqual(SuccessStatusValue)
+	test('update', async () => {
+		const updateRequest = { name: 'rule-to-update' } as RuleRequest
+		const updatedRule = { id: 'updated-rule' } as Rule
+		putSpy.mockResolvedValueOnce(updatedRule)
+
+		expect(await rulesEndpoint.update('input-rule-id', updateRequest, 'input-location-id')).toBe(updatedRule)
+
+		expect(putSpy).toHaveBeenCalledTimes(1)
+		expect(putSpy).toHaveBeenCalledWith('input-rule-id', updateRequest, { locationId: 'final-location-id' })
 	})
 
-	it('Delete', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deleteRule.response }))
-		const response: Status = await client.rules.delete('dcaa574b-9f2f-4082-a1ed-81b265c59185')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(deleteRule.request))
-		expect(response).toEqual(SuccessStatusValue)
+	test('execute', async () => {
+		const executeResponse = {} as ExecuteResponse
+		postSpy.mockResolvedValue(executeResponse)
+
+		expect(await rulesEndpoint.execute('id-of-rule-to-execute', 'input-location-id')).toBe(executeResponse)
+
+		expect(postSpy).toHaveBeenCalledTimes(1)
+		expect(postSpy).toHaveBeenCalledWith('execute/id-of-rule-to-execute', undefined, { locationId: 'final-location-id' })
 	})
 })
