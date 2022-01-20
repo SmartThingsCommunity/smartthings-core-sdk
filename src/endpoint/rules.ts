@@ -295,6 +295,41 @@ export interface Rule extends RuleRequest {
 	id: string
 }
 
+export type ExecutionResult = 'Success' | 'Failure' | 'Ignored'
+
+export type IfExecutionResult = 'True' | 'False'
+export interface IfActionExecutionResult {
+	result: IfExecutionResult
+}
+export interface LocationActionExecutionResult {
+	result: ExecutionResult
+	locationId: string
+}
+
+export type CommandExecutionResult = 'Success' | 'Failure' | 'Offline'
+export interface CommandActionExecutionResult {
+	result: CommandExecutionResult
+	deviceId: string
+}
+
+export interface SleepActionExecutionResult {
+	result: ExecutionResult
+}
+
+export interface ActionExecutionResult {
+	actionId: string
+	if?: IfActionExecutionResult
+	location?: LocationActionExecutionResult
+	command?: CommandActionExecutionResult[]
+	sleep?: SleepActionExecutionResult
+}
+export interface ExecuteResponse {
+	executionId: string
+	id: string
+	result: string
+	actions?: ActionExecutionResult[]
+}
+
 export class RulesEndpoint extends Endpoint {
 	constructor(config: EndpointClientConfig) {
 		super(new EndpointClient('rules', config))
@@ -308,7 +343,7 @@ export class RulesEndpoint extends Endpoint {
 	 * can be omitted
 	 */
 	public list(locationId?: string): Promise<Rule[]> {
-		return this.client.getPagedItems<Rule>(undefined, {locationId: this.locationId(locationId)})
+		return this.client.getPagedItems<Rule>(undefined, { locationId: this.locationId(locationId) })
 	}
 
 	/**
@@ -318,7 +353,7 @@ export class RulesEndpoint extends Endpoint {
 	 * can be omitted
 	 */
 	public get(id: string, locationId?: string): Promise<Rule> {
-		return this.client.get<Rule>(id, {locationId: this.locationId(locationId)})
+		return this.client.get<Rule>(id, { locationId: this.locationId(locationId) })
 	}
 
 	/**
@@ -328,7 +363,7 @@ export class RulesEndpoint extends Endpoint {
 	 * can be omitted
 	 */
 	public async delete(id: string, locationId?: string): Promise<Status> {
-		await this.client.delete(id, {locationId: this.locationId(locationId)})
+		await this.client.delete(id, { locationId: this.locationId(locationId) })
 		return SuccessStatusValue
 	}
 
@@ -339,7 +374,7 @@ export class RulesEndpoint extends Endpoint {
 	 * can be omitted
 	 */
 	public create(data: RuleRequest, locationId?: string): Promise<Rule> {
-		return this.client.post(undefined, data, {locationId: this.locationId(locationId)})
+		return this.client.post(undefined, data, { locationId: this.locationId(locationId) })
 	}
 
 	/**
@@ -350,7 +385,7 @@ export class RulesEndpoint extends Endpoint {
 	 * can be omitted
 	 */
 	public update(id: string, data: RuleRequest, locationId?: string): Promise<Rule> {
-		return this.client.put(id, data, {locationId: this.locationId(locationId)})
+		return this.client.put(id, data, { locationId: this.locationId(locationId) })
 	}
 
 	/**
@@ -359,8 +394,7 @@ export class RulesEndpoint extends Endpoint {
 	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
 	 * can be omitted
 	 */
-	public async execute(id: string, locationId?: string): Promise<Status> {
-		await this.client.post(`execute/${id}`, undefined, {locationId: this.locationId(locationId)})
-		return SuccessStatusValue
+	public async execute(id: string, locationId?: string): Promise<ExecuteResponse> {
+		return this.client.post(`execute/${id}`, undefined, { locationId: this.locationId(locationId) })
 	}
 }

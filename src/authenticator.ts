@@ -89,8 +89,12 @@ export interface RefreshTokenStore {
 }
 
 /**
- * An authenticator that supports refreshing of the access token using a refresh token by loading the refresh token,
- * client ID, and client secret from a token store, performing the refresh, and storing the new tokens.
+ * An authenticator that supports refreshing of the access token using a refresh token by loading
+ * the refresh token, client ID, and client secret from a token store, performing the refresh, and
+ * storing the new tokens.
+ *
+ * Note that corruption of the refresh token is unlikely but possible if two of the same
+ * authenticators refresh the same token at the same time.
  */
 export class RefreshTokenAuthenticator implements Authenticator {
 	constructor(public token: string, private tokenStore: RefreshTokenStore) {
@@ -129,7 +133,7 @@ export class RefreshTokenAuthenticator implements Authenticator {
 				refreshToken: response.data.refresh_token,
 			}
 			this.token = authData.authToken
-			requestConfig.headers.Authorization = `Bearer ${this.token}`
+			requestConfig.headers = { ...(requestConfig.headers ?? {}), Authorization: `Bearer ${this.token}` }
 			return this.tokenStore.putAuthData(authData)
 		}
 
@@ -137,6 +141,13 @@ export class RefreshTokenAuthenticator implements Authenticator {
 	}
 }
 
+/**
+ * A an authenticator that works like RefreshTokenAuthenticator but which can use a mutex to help
+ * prevent corruption of the refresh token.
+ *
+ * Note that while `acquireRefreshMutex` is provided for you to use the mutex, the mutex is not
+ * automatically used.
+ */
 export class SequentialRefreshTokenAuthenticator extends RefreshTokenAuthenticator {
 	constructor(token: string, tokenStore: RefreshTokenStore, private refreshMutex: MutexInterface) {
 		super(token, tokenStore)
