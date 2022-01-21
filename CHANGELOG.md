@@ -1,3 +1,14 @@
+## [3.0.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v2.1.1...v3.0.0) (2022-01-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* the return type of RulesEndpoint.execute is different
+
+### Bug Fixes
+
+* fix return type of rules execute function; update dependencies ([ecb8e3b](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/ecb8e3bcac200916e8bf21e982768b1ffce275e3))
+
 ### [2.1.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v2.1.0...v2.1.1) (2022-01-18)
 
 
