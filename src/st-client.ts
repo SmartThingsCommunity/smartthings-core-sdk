@@ -6,7 +6,9 @@ import { AppsEndpoint } from './endpoint/apps'
 import { CapabilitiesEndpoint } from './endpoint/capabilities'
 import { DevicePreferencesEndpoint } from './endpoint/devicepreferences'
 import { DeviceProfilesEndpoint } from './endpoint/deviceprofiles'
+import { ChannelsEndpoint } from './endpoint/channels'
 import { DevicesEndpoint } from './endpoint/devices'
+import { DriversEndpoint } from './endpoint/drivers'
 import { HistoryEndpoint } from './endpoint/history'
 import { InstalledAppsEndpoint } from './endpoint/installedapps'
 import { ModesEndpoint } from './endpoint/modes'
@@ -27,9 +29,11 @@ import { SmartThingsURLProvider, defaultSmartThingsURLProvider, HttpClientHeader
 export class SmartThingsClient extends RESTClient {
 	public readonly apps: AppsEndpoint
 	public readonly capabilities: CapabilitiesEndpoint
+	public readonly channels: ChannelsEndpoint
 	public readonly devicePreferences: DevicePreferencesEndpoint
 	public readonly deviceProfiles: DeviceProfilesEndpoint
 	public readonly devices: DevicesEndpoint
+	public readonly drivers: DriversEndpoint
 	public readonly history: HistoryEndpoint
 	public readonly installedApps: InstalledAppsEndpoint
 	public readonly modes: ModesEndpoint
@@ -50,9 +54,11 @@ export class SmartThingsClient extends RESTClient {
 
 		this.apps = new AppsEndpoint(this.config)
 		this.capabilities = new CapabilitiesEndpoint(this.config)
+		this.channels = new ChannelsEndpoint(this.config)
 		this.devicePreferences = new DevicePreferencesEndpoint(this.config)
 		this.deviceProfiles = new DeviceProfilesEndpoint(this.config)
 		this.devices = new DevicesEndpoint(this.config)
+		this.drivers = new DriversEndpoint(this.config)
 		this.history = new HistoryEndpoint(this.config)
 		this.installedApps = new InstalledAppsEndpoint(this.config)
 		this.locations = new LocationsEndpoint(this.config)
@@ -75,7 +81,7 @@ export class SmartThingsClient extends RESTClient {
 	}
 
 	public clone(headers?: HttpClientHeaders): SmartThingsClient {
-		return new SmartThingsClient(this.config.authenticator, {...this.config, headers})
+		return new SmartThingsClient(this.config.authenticator, { ...this.config, headers })
 	}
 }
 
