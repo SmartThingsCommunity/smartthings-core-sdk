@@ -10,7 +10,7 @@ import { PresentationDevicePresentation } from '../../src/endpoint/presentation'
 
 const authenticator = new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000')
 
-describe('Devices', () => {
+describe('DevicesEndpoint', () => {
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
@@ -30,13 +30,13 @@ describe('Devices', () => {
 	devicesEndpoint.locationId = locationIdMock
 	devicesEndpoint.installedAppId = installedAppIdMock
 
-	const devicesList = [{ listed: 'device' }] as unknown as Device[]
+	const deviceList = [{ listed: 'device' }] as unknown as Device[]
 
 	describe('list', () => {
-		getPagedItemsSpy.mockResolvedValue(devicesList)
+		getPagedItemsSpy.mockResolvedValue(deviceList)
 
 		it('works without options', async () => {
-			expect(await devicesEndpoint.list()).toBe(devicesList)
+			expect(await devicesEndpoint.list()).toBe(deviceList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
 			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, {},
@@ -45,7 +45,7 @@ describe('Devices', () => {
 
 		it('includes configured locationId', async () => {
 			const devices = new DevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
-			expect(await devices.list()).toBe(devicesList)
+			expect(await devices.list()).toBe(deviceList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
 			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, { locationId: 'configured-location-id' },
@@ -66,7 +66,7 @@ describe('Devices', () => {
 			['page', 'search-page', { page: 'search-page' }],
 			['type', 'search-type', { type: 'search-type' }],
 		])('handles %s', async (searchKey, searchValue, expectedParams) => {
-			expect(await devicesEndpoint.list({ [searchKey]: searchValue })).toBe(devicesList)
+			expect(await devicesEndpoint.list({ [searchKey]: searchValue })).toBe(deviceList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
 			expect(getPagedItemsSpy).toHaveBeenCalledWith(undefined, expectedParams,
@@ -77,9 +77,9 @@ describe('Devices', () => {
 	describe('listInLocation', () => {
 		it('works on happy path', async () => {
 			const devices = new DevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
-			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(devicesList)
+			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(deviceList)
 
-			expect(await devices.listInLocation()).toBe(devicesList)
+			expect(await devices.listInLocation()).toBe(deviceList)
 
 			expect(listSpy).toHaveBeenCalledTimes(1)
 			expect(listSpy).toHaveBeenCalledWith({ locationId: 'configured-location-id' })
@@ -91,9 +91,9 @@ describe('Devices', () => {
 	})
 
 	test('listAll', async () => {
-		const listSpy = jest.spyOn(devicesEndpoint, 'list').mockResolvedValue(devicesList)
+		const listSpy = jest.spyOn(devicesEndpoint, 'list').mockResolvedValue(deviceList)
 
-		expect(await devicesEndpoint.listAll()).toBe(devicesList)
+		expect(await devicesEndpoint.listAll()).toBe(deviceList)
 
 		expect(listSpy).toHaveBeenCalledTimes(1)
 		expect(listSpy).toHaveBeenCalledWith()
@@ -103,9 +103,9 @@ describe('Devices', () => {
 		it('works on happy path', async () => {
 			const devices = new DevicesEndpoint({ authenticator, locationId: 'unused-in-test' })
 			devices.locationId = locationIdMock
-			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(devicesList)
+			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(deviceList)
 
-			expect(await devices.findByCapability('capability')).toBe(devicesList)
+			expect(await devices.findByCapability('capability')).toBe(deviceList)
 
 			expect(listSpy).toHaveBeenCalledTimes(1)
 			expect(listSpy).toHaveBeenCalledWith({ locationId: 'location-id', capability: 'capability' })

@@ -1,14 +1,10 @@
-import { Rule,
-	SuccessStatusValue,
-	RuleRequest,
-	RulesEndpoint,
-	NoOpAuthenticator,
-	ExecuteResponse,
-} from '../../src'
+import { NoOpAuthenticator } from '../../src/authenticator'
+import { ExecuteResponse, Rule, RuleRequest, RulesEndpoint } from '../../src/endpoint/rules'
 import { EndpointClient } from '../../src/endpoint-client'
+import { SuccessStatusValue } from '../../src/types'
 
 
-describe('Rules', () => {
+describe('RulesEndpoint', () => {
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
@@ -42,7 +38,7 @@ describe('Rules', () => {
 		const rule = { id: 'rule-id' }
 		getSpy.mockResolvedValueOnce(rule)
 
-		expect(await rulesEndpoint.get('requested-rule-id', 'input-location-id'))
+		expect(await rulesEndpoint.get('requested-rule-id', 'input-location-id')).toBe(rule)
 
 		expect(getSpy).toHaveBeenCalledWith('requested-rule-id', { locationId: 'final-location-id' })
 		expect(locationIdMock).toHaveBeenCalledTimes(1)
