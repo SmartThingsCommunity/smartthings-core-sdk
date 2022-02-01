@@ -1,3 +1,10 @@
+## [3.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.0.0...v3.1.0) (2022-02-01)
+
+
+### Features
+
+* add channels and drivers endpoints ([9e5616c](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/9e5616c0ab7ebd1a64b2eeda5bf92fd2991c3fef))
+
 ## [3.0.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v2.1.1...v3.0.0) (2022-01-21)
 
 
