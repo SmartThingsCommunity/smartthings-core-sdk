@@ -227,7 +227,7 @@ export interface IfAction extends Condition {
 	 */
 	id?: string
 	then?: Action[]
-	'_else'?: Action[]
+	'else'?: Action[]
 	subscriptionMode?: SubscriptionMode
 }
 
