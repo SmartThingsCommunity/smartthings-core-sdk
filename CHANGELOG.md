@@ -1,3 +1,10 @@
+### [3.1.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.1.0...v3.1.1) (2022-02-04)
+
+
+### Bug Fixes
+
+* **rules:** correct IfAction 'else' property ([0bd562a](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/0bd562a26cd945b942f0b2823abc671c61fb7581)), closes [#128](https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/128)
+
 ## [3.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.0.0...v3.1.0) (2022-02-01)
 
 
