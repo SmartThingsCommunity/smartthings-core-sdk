@@ -40,6 +40,14 @@ export interface EndpointClientConfig {
 	headers?: HttpClientHeaders
 	locationId?: string
 	installedAppId?: string
+
+	/**
+	 * You can use this to supply a method that can log RFC 2068 warning headers.
+	 *
+	 * The messages are parsed into `WarningFromHeader` but if for any reason that parsing
+	 * fails, the headers are simply returned as a comma-separated string.
+	 */
+	warningLogger?: (warnings: WarningFromHeader[] | string) => void | Promise<void>
 }
 
 export interface ItemsList {
@@ -74,6 +82,42 @@ function scrubConfig(config: AxiosRequestConfig): string {
 		const authHeaderRegex = /"(Authorization":")([\s\S]*)"/i
 		return message.replace(authHeaderRegex, '"$1(redacted)"')
 	}
+}
+
+export interface WarningFromHeader {
+	code: number
+	agent: string
+	text: string
+	date?: string
+}
+
+/**
+ * Parses Axios comma-joined warning headers into individual warnings. If, for any reason, the
+ * header string cannot be parsed, it will be returned unchanged.
+ *
+ * This method does not handle escaped quotes inside quoted strings.
+ */
+export const parseWarningHeader = (header: string): WarningFromHeader[] | string => {
+	if (header === '') {
+		return []
+	}
+
+	const warnings = header.match(/[^, ]+ [^, ]+ "[^"]+"( "[^"]+")?/g)
+	if (!warnings) {
+		return header
+	}
+	let failed = false
+	const retVal = warnings.map(warning => {
+		const fields = warning.match(/^(?<code>\d+) (?<agent>[^ ]+) "(?<text>.*?)"( "(?<date>.*?)")?$/)
+		if (!fields) {
+			failed = true
+			return { code: 1, agent: '-', text: 'unused' }
+		}
+		const { code, agent, text, date } = fields.groups as
+			{ code: string; agent: string; text: string; date?: string }
+		return { code: parseInt(code), agent, text, date }
+	})
+	return failed ? header : retVal
 }
 
 export class EndpointClient {
@@ -154,6 +198,12 @@ export class EndpointClient {
 			const response = await axios.request(axiosConfig)
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace(`axios response ${response.status}: data=${JSON.stringify(response.data)}`)
+			}
+			if (response.headers?.warning && this.config.warningLogger) {
+				// warningLogger allows for return of a promise or just void for flexibility
+				// it's not important to us here that it finish.
+				// eslint-disable-next-line @typescript-eslint/no-floating-promises
+				this.config.warningLogger(parseWarningHeader(response.headers.warning))
 			}
 			return response.data
 		} catch (error: any) {

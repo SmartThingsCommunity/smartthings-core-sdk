@@ -1,5 +1,6 @@
 import { Authenticator } from './authenticator'
-import { EndpointClientConfig, HttpClientHeaders, SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
+import { EndpointClientConfig, HttpClientHeaders, SmartThingsURLProvider,
+	defaultSmartThingsURLProvider, WarningFromHeader } from './endpoint-client'
 import { Logger } from './logger'
 
 
@@ -11,6 +12,7 @@ export interface RESTClientConfig {
 	urlProvider?: SmartThingsURLProvider
 	locationId?: string
 	installedAppId?: string
+	warningLogger?: (warnings: WarningFromHeader[] | string) => void | Promise<void>
 }
 
 
