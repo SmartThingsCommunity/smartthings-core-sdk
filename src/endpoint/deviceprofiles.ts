@@ -46,6 +46,9 @@ export interface DeviceProfilePreferenceRequest extends DeviceProfilePreferenceC
 }
 
 export interface DeviceProfileUpdateRequest {
+	/**
+	 * must have between 1 and 20 components
+	 */
 	components?: DeviceComponentRequest[]
 	metadata?: { [key: string]: string }
 	preferences?: DeviceProfilePreferenceRequest[]

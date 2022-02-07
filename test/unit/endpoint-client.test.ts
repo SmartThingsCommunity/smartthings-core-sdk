@@ -1,274 +1,469 @@
-import axios from '../../__mocks__/axios'
 import { Mutex } from 'async-mutex'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import qs from 'qs'
 
-import {
-	AuthData,
-	Authenticator,
-	BearerTokenAuthenticator,
-	NoLogLogger,
-	RefreshData,
-	RefreshTokenAuthenticator,
-	RefreshTokenStore,
-	SequentialRefreshTokenAuthenticator,
-	NoOpAuthenticator,
-} from '../../src'
-import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig } from '../../src/endpoint-client'
-import { AxiosRequestConfig } from 'axios'
+import { AuthData, Authenticator, BearerTokenAuthenticator, NoOpAuthenticator, RefreshData,
+	RefreshTokenAuthenticator, RefreshTokenStore, SequentialRefreshTokenAuthenticator }
+	from '../../src/authenticator'
+import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig, parseWarningHeader } from '../../src/endpoint-client'
+import { NoLogLogger } from '../../src/logger'
 
 
 jest.mock('axios')
+jest.mock('qs')
 
-class TokenStore implements RefreshTokenStore {
-	public authData?: AuthData
-	getRefreshData(): Promise<RefreshData> {
-		return Promise.resolve({ refreshToken: 'xxx', clientId: 'aaa', clientSecret: 'bbb' })
+describe('parseWarningHeader', () => {
+	it.each([
+		['empty string', '', []],
+		['invalid string', 'invalid warning header', 'invalid warning header'],
+		[
+			'invalid string noticed by inner match',
+			'invalid299 - "warning text"',
+			'invalid299 - "warning text"',
+		],
+		[
+			'single simple warning',
+			'299 - "warning text"',
+			[{ code: 299, agent: '-', text: 'warning text' }],
+		],
+		[
+			'single simple warning with agent',
+			'299 example.com:8080 "warning text"',
+			[{ code: 299, agent: 'example.com:8080', text: 'warning text' }],
+		],
+		[
+			'single simple warning with date',
+			'299 - "warning text" "Mon, 07 Feb 2021 9:28:17 CST"',
+			[{ code: 299, agent: '-', text: 'warning text', date: 'Mon, 07 Feb 2021 9:28:17 CST' }],
+		],
+		[
+			'single warning with commas in message',
+			'299 - "warning, text!" "Mon, 07 Feb 2021 9:28:17 CST"',
+			[{ code: 299, agent: '-', text: 'warning, text!', date: 'Mon, 07 Feb 2021 9:28:17 CST' }],
+		],
+		[
+			'multiple simple warnings',
+			'299 - "warning text",199 - "another warning"',
+			[
+				{ code: 299, agent: '-', text: 'warning text' },
+				{ code: 199, agent: '-', text: 'another warning' },
+			],
+		],
+		[
+			'complex example',
+			'299 - "warning text" "Mon, 07 Feb 2021 9:28:17 CST",299 - "behold, another warning"',
+			[
+				{ code: 299, agent: '-', text: 'warning text', date: 'Mon, 07 Feb 2021 9:28:17 CST' },
+				{ code: 299, agent: '-', text: 'behold, another warning' },
+			],
+		],
+	])('parses %s', (_name, header, expected) => {
+		expect(parseWarningHeader(header)).toEqual(expected)
+	})
+})
+
+describe('EndpointClient',  () => {
+	const mockRequest = axios.request as jest.Mock<Promise<AxiosResponse>, [AxiosRequestConfig]>
+	mockRequest.mockResolvedValue({ status: 200, data: { status: 'ok' } } as AxiosResponse)
+
+	class TokenStore implements RefreshTokenStore {
+		public authData?: AuthData
+		getRefreshData(): Promise<RefreshData> {
+			return Promise.resolve({ refreshToken: 'xxx', clientId: 'aaa', clientSecret: 'bbb' })
+		}
+		putAuthData (data: AuthData): Promise<void> {
+			this.authData = data
+			return Promise.resolve()
+		}
 	}
-	putAuthData (data: AuthData): Promise<void> {
-		this.authData = data
-		return Promise.resolve()
+
+	const tokenStore = new TokenStore()
+	const token = 'authToken'
+
+	let client: EndpointClient
+
+	const configWithoutHeaders = {
+		urlProvider: defaultSmartThingsURLProvider,
+		authenticator: new RefreshTokenAuthenticator(token, tokenStore),
+		baseURL: 'https://api.smartthings.com',
+		authURL: 'https://auth.smartthings.com',
 	}
-}
-
-const tokenStore = new TokenStore()
-const token = 'authToken'
-
-const config = {
-	'urlProvider': defaultSmartThingsURLProvider,
-	'authenticator': new RefreshTokenAuthenticator(token, tokenStore),
-	'baseURL': 'https://api.smartthings.com',
-	'authURL': 'https://auth.smartthings.com',
-	'headers': {
+	const headers = {
 		'Content-Type': 'application/json;charset=utf-8',
-		'Accept': 'application/json',
-	},
-	'loggingId': 'AAABBBCCC',
-}
+		Accept: 'application/json',
+	}
+	const buildClient = (config: EndpointClientConfig = { ...configWithoutHeaders, headers }): EndpointClient =>
+		new EndpointClient('base/path', { ...config, headers: { ...config.headers }})
 
-const client = new EndpointClient('basepath', config)
-
-describe('Endpoint Client',  () => {
-	beforeAll(() => {
-		axios.request.mockResolvedValue({ status: 200, data: { status: 'ok' } })
+	beforeEach(() => {
+		client = buildClient()
 	})
 
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
 
-	test('request', async () => {
-		const response = await client.request('GET', 'mypath')
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/mypath',
-			'method': 'GET',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
-			},
-			'data': undefined,
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+	describe('setHeader', () => {
+		it('adds header to config', () => {
+			client.setHeader('NewHeader', 'header value')
+
+			expect(client.config.headers?.NewHeader).toBe('header value')
 		})
-		expect(response.status).toBe('ok')
+
+		it('works when no previous headers set', () => {
+			const client = new EndpointClient('base/path', { ...configWithoutHeaders })
+			client.setHeader('NewHeader', 'header value')
+
+			expect(client.config.headers?.NewHeader).toBe('header value')
+		})
 	})
 
-	test('request with header overrides', async () => {
-		const headerOverrides = {
-			'Content-Type': 'overridden content type',
-			'X-ST-Organization': '00000000-0000-0000-0000-000000000008',
-		}
-		const response = await client.request('POST', 'mypath', { name: 'Bob' }, undefined, { headerOverrides })
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/mypath',
-			'method': 'POST',
-			'headers': {
+	describe('removeHeader', () => {
+		it('removes header from config', () => {
+			client.setHeader('NewHeader', 'header value')
+
+			expect(client.config.headers?.NewHeader).toBe('header value')
+
+			client.removeHeader('NewHeader')
+
+			expect(client.config.headers?.NewHeader).toBeUndefined()
+		})
+
+		it('ignores undefined headers', () => {
+			client.removeHeader('NewHeader')
+
+			expect(client.config.headers?.NewHeader).toBeUndefined()
+		})
+	})
+
+	describe('request', () => {
+		it('submits basic request', async () => {
+			const response = await client.request('GET', 'my/path')
+
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'GET',
+				headers: {
+					...headers,
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
+
+			const stringifyMock = (qs.stringify as jest.Mock<string, [unknown]>)
+				.mockReturnValue('stringified parameters')
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const paramsSerializer = mockRequest.mock.calls[0][0].paramsSerializer as (params: any) => string
+
+			expect(paramsSerializer).toBeDefined()
+			expect(paramsSerializer({ param: 'value' })).toBe('stringified parameters')
+
+			expect(stringifyMock).toHaveBeenCalledTimes(1)
+			expect(stringifyMock).toHaveBeenCalledWith({ param: 'value' }, { indices: false })
+		})
+
+		it('adds accept header for version', async () => {
+			const client = buildClient({
+				...configWithoutHeaders,
+				version: 'api-version',
+				headers: { Accept: 'accept-header' },
+			})
+			const response = await client.request('GET', 'my/path')
+
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'GET',
+				headers: {
+					Accept: 'application/vnd.smartthings+json;v=api-version, accept-header',
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
+		})
+
+		it('includes version along with accept header', async () => {
+			const client = buildClient({ ...configWithoutHeaders, version: 'api-version' })
+			const response = await client.request('GET', 'my/path')
+
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'GET',
+				headers: {
+					Accept: 'application/vnd.smartthings+json;v=api-version',
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
+		})
+
+		it('adds header overrides to headers submitted', async () => {
+			const headerOverrides = {
 				'Content-Type': 'overridden content type',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
 				'X-ST-Organization': '00000000-0000-0000-0000-000000000008',
-			},
-			'data': { name: 'Bob' },
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+			}
+			const response = await client.request('POST', 'my/path', { name: 'Bob' }, undefined, { headerOverrides })
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'POST',
+				headers: {
+					'Content-Type': 'overridden content type',
+					Accept: 'application/json',
+					Authorization: `Bearer ${token}`,
+					'X-ST-Organization': '00000000-0000-0000-0000-000000000008',
+				},
+				data: { name: 'Bob' },
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
 		})
-		expect(response.status).toBe('ok')
+
+		it('includes logging id when specified', async () => {
+			const client = buildClient({ ...configWithoutHeaders, loggingId: 'request-logging-id' })
+			const response = await client.request('GET', 'my/path')
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'X-ST-CORRELATION': 'request-logging-id',
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
+		})
+
+		it('calls warningLogger when included and needed', async () => {
+			const warningLogger = jest.fn()
+			client = buildClient({ ...configWithoutHeaders, warningLogger })
+			mockRequest.mockResolvedValueOnce({
+				status: 200,
+				data: { status: 'ok' },
+				headers: { warning: '299 - "Danger, Will Robinson! Danger!"' },
+			} as AxiosResponse)
+			const response = await client.request('GET', 'my/path')
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
+
+			expect(warningLogger).toHaveBeenCalledTimes(1)
+			expect(warningLogger).toHaveBeenCalledWith([{
+				code: 299,
+				agent: '-',
+				text: 'Danger, Will Robinson! Danger!',
+			}])
+		})
+
+		it('is okay with no warningLogger', async () => {
+			mockRequest.mockResolvedValueOnce({
+				status: 200,
+				data: { status: 'ok' },
+				headers: { warning: 'warning message in header' },
+			} as AxiosResponse)
+
+			expect(client.request('GET', 'my/path')).resolves.not.toThrow
+		})
+
+		it('returns dryRunReturnValue in dry run mode', async () => {
+			const dryRunReturnValue = { usually: 'very similar to the input' }
+			const response = await client.request('GET', 'my/path', undefined, undefined, {
+				dryRun: true,
+				dryRunReturnValue,
+			})
+			expect(mockRequest).toHaveBeenCalledTimes(0)
+			expect(response).toBe(dryRunReturnValue)
+		})
+
+		it('throws error in dry run mode when return value not specified', async () => {
+			await expect(client.request('GET', 'my/path', undefined, undefined, {
+				dryRun: true,
+			})).rejects.toThrow('skipping request; dry run mode')
+			expect(mockRequest).toHaveBeenCalledTimes(0)
+		})
 	})
 
-	test('get', async () => {
-		const response = await client.get('path2')
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/path2',
-			'method': 'get',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
-			},
-			'data': undefined,
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+	describe('get', () => {
+		it('submits basic request', async () => {
+			const response = await client.get('path2')
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/path2',
+				method: 'get',
+				headers: {
+					...headers,
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
 		})
-		expect(response.status).toBe('ok')
-	})
 
-	test('get with query params', async () => {
-		const response = await client.get('mypath', { locationId: 'XXX' })
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/mypath',
-			'method': 'get',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
-			},
-			'data': undefined,
-			'params': {
-				locationId: 'XXX',
-			},
-			'paramsSerializer': expect.anything(),
+		it('includes query params when specified', async () => {
+			const response = await client.get('my/path', { locationId: 'XXX' })
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base/path/my/path',
+				method: 'get',
+				headers: {
+					...headers,
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: {
+					locationId: 'XXX',
+				},
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
 		})
-		expect(response.status).toBe('ok')
-	})
 
-	test('get absolute path', async () => {
-		const response = await client.get('/base2/thispath')
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/base2/thispath',
-			'method': 'get',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
-			},
-			'data': undefined,
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+		it('skips base path with absolute path', async () => {
+			const response = await client.get('/base2/this/path')
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/base2/this/path',
+				method: 'get',
+				headers: {
+					...headers,
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
 		})
-		expect(response.status).toBe('ok')
-	})
 
-	test('get absolute url', async () => {
-		const response = await client.get('https://api.smartthings.com/foo/bar')
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/foo/bar',
-			'method': 'get',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
-			},
-			'data': undefined,
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+		it('skips base URL and path with absolute URL', async () => {
+			const response = await client.get('https://api.smartthings.com/absolute/url')
+			expect(mockRequest).toHaveBeenCalledTimes(1)
+			expect(mockRequest).toHaveBeenCalledWith({
+				url: 'https://api.smartthings.com/absolute/url',
+				method: 'get',
+				headers: {
+					...headers,
+					Authorization: `Bearer ${token}`,
+				},
+				data: undefined,
+				params: undefined,
+				paramsSerializer: expect.any(Function),
+			})
+			expect(response.status).toBe('ok')
 		})
-		expect(response.status).toBe('ok')
 	})
 
 	test('post', async () => {
 		const response = await client.post('myotherpath', { name: 'Bill' })
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/myotherpath',
-			'method': 'post',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
+		expect(mockRequest).toHaveBeenCalledTimes(1)
+		expect(mockRequest).toHaveBeenCalledWith({
+			url: 'https://api.smartthings.com/base/path/myotherpath',
+			method: 'post',
+			headers: {
+				...headers,
+				Authorization: `Bearer ${token}`,
 			},
-			'data': {
-				'name': 'Bill',
+			data: {
+				name: 'Bill',
 			},
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+			params: undefined,
+			paramsSerializer: expect.any(Function),
 		})
 		expect(response.status).toBe('ok')
 	})
 
 	test('put', async () => {
 		const response = await client.put('myotherpath', { name: 'Bill' })
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/myotherpath',
-			'method': 'put',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
+		expect(mockRequest).toHaveBeenCalledTimes(1)
+		expect(mockRequest).toHaveBeenCalledWith({
+			url: 'https://api.smartthings.com/base/path/myotherpath',
+			method: 'put',
+			headers: {
+				...headers,
+				Authorization: `Bearer ${token}`,
 			},
-			'data': {
-				'name': 'Bill',
+			data: {
+				name: 'Bill',
 			},
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+			params: undefined,
+			paramsSerializer: expect.any(Function),
 		})
 		expect(response.status).toBe('ok')
 	})
 
 	test('patch', async () => {
 		const response = await client.patch('path3', { name: 'Joe' })
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/path3',
-			'method': 'patch',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
+		expect(mockRequest).toHaveBeenCalledTimes(1)
+		expect(mockRequest).toHaveBeenCalledWith({
+			url: 'https://api.smartthings.com/base/path/path3',
+			method: 'patch',
+			headers: {
+				...headers,
+				Authorization: `Bearer ${token}`,
 			},
-			'data': {
-				'name': 'Joe',
+			data: {
+				name: 'Joe',
 			},
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+			params: undefined,
+			paramsSerializer: expect.any(Function),
 		})
 		expect(response.status).toBe('ok')
 	})
 
 	test('delete', async () => {
 		const response = await client.delete('path3')
-		expect(axios.request).toHaveBeenCalledTimes(1)
-		expect(axios.request).toHaveBeenCalledWith({
-			'url': 'https://api.smartthings.com/basepath/path3',
-			'method': 'delete',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`,
-				'X-ST-CORRELATION': 'AAABBBCCC',
+		expect(mockRequest).toHaveBeenCalledTimes(1)
+		expect(mockRequest).toHaveBeenCalledWith({
+			url: 'https://api.smartthings.com/base/path/path3',
+			method: 'delete',
+			headers: {
+				...headers,
+				Authorization: `Bearer ${token}`,
 			},
-			'data': undefined,
-			'params': undefined,
-			'paramsSerializer': expect.anything(),
+			data: undefined,
+			params: undefined,
+			paramsSerializer: expect.any(Function),
 		})
 		expect(response.status).toBe('ok')
 	})
 
 	test('expired token request', async () => {
-		axios.request
+		mockRequest
 			.mockImplementationOnce(() => Promise.reject(
 				{ response: {status: 401, data: 'Unauthorized'} }))
 			.mockImplementationOnce(() => Promise.resolve(
-				{ status: 200, data: { 'access_token': 'abcdefghijk', 'refresh_token': 'lmnopqrstuv' } }))
+				{ status: 200, data: { access_token: 'my-access-token', refresh_token: 'my-refresh-token' } } as AxiosResponse))
 			.mockImplementationOnce(() => Promise.resolve(
-				{ status: 200, data: { status: 'ok' } }))
+				{ status: 200, data: { status: 'ok' } } as AxiosResponse))
 
-		const response = await client.get('mypath')
-		expect(axios.request).toHaveBeenCalledTimes(3)
+		const response = await client.get('my/path')
+		expect(mockRequest).toHaveBeenCalledTimes(3)
 		expect(response.status).toBe('ok')
 	})
 
@@ -276,32 +471,28 @@ describe('Endpoint Client',  () => {
 		// TODO -- actually test mutex??
 		const mutex = new Mutex()
 		const mutexConfig = {
-			'authenticator': new SequentialRefreshTokenAuthenticator(token, tokenStore, mutex),
-			'baseURL': 'https://api.smartthings.com',
-			'authURL': 'https://auth.smartthings.com',
-			'headers': {
-				'Content-Type': 'application/json;charset=utf-8',
-				'Accept': 'application/json',
-			},
-			'loggingId': 'AAABBBCCC',
+			authenticator: new SequentialRefreshTokenAuthenticator(token, tokenStore, mutex),
+			baseURL: 'https://api.smartthings.com',
+			authURL: 'https://auth.smartthings.com',
+			headers: { ...headers },
 		}
-		const mutexClient = new EndpointClient('basepath', mutexConfig)
+		const mutexClient = buildClient(mutexConfig)
 
-		axios.request
+		mockRequest
 			.mockImplementationOnce(() => Promise.reject(
 				{response: { status: 401, data: 'Unauthorized' }}))
 			.mockImplementationOnce(() => Promise.resolve(
-				{ status: 200, data: { 'access_token': 'abcdefghijk', 'refresh_token': 'lmnopqrstuv' } }))
+				{ status: 200, data: { access_token: 'my-access-token', refresh_token: 'my-refresh-token' } } as AxiosResponse))
 			.mockImplementationOnce(() => Promise.resolve(
-				{ status: 200, data: { status: 'ok' } }))
+				{ status: 200, data: { status: 'ok' } } as AxiosResponse))
 
-		const response = await mutexClient.get('mypath')
-		expect(axios.request).toHaveBeenCalledTimes(3)
+		const response = await mutexClient.get('my/path')
+		expect(mockRequest).toHaveBeenCalledTimes(3)
 		expect(response.status).toBe('ok')
 	})
 
 	test('get 404', async () => {
-		axios.request.mockImplementationOnce(() => Promise.reject({response: { status: 404, data: 'Not Found' }}))
+		mockRequest.mockImplementationOnce(() => Promise.reject({response: { status: 404, data: 'Not Found' }}))
 		let threwError = false
 		try {
 			await client.get('path2')
@@ -310,12 +501,12 @@ describe('Endpoint Client',  () => {
 			expect(error.response.status).toBe(404)
 			threwError = true
 		}
-		expect(axios.request).toHaveBeenCalledTimes(1)
+		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(threwError).toBe(true)
 	})
 
 	test('get refresh fail', async () => {
-		axios.request
+		mockRequest
 			.mockImplementationOnce(() => Promise.reject({response: { status: 401, data: 'Unauthorized' }}))
 			.mockImplementationOnce(() => Promise.reject({response: { status: 500, data: 'Server error' }}))
 
@@ -327,7 +518,7 @@ describe('Endpoint Client',  () => {
 			expect(error.response.status).toBe(500)
 			threwError = true
 		}
-		expect(axios.request).toHaveBeenCalledTimes(2)
+		expect(mockRequest).toHaveBeenCalledTimes(2)
 		expect(threwError).toBe(true)
 	})
 
