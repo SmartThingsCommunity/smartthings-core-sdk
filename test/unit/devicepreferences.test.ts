@@ -4,15 +4,13 @@ import { DevicePreference, DevicePreferenceCreate, DevicePreferencesEndpoint, Pr
 import { LocaleReference } from '../../src/types'
 
 
-jest.mock('../../src/endpoint-client')
-
 const MOCK_PREFERENCE_L10N = { tag: 'localeTag' } as PreferenceLocalization
 const MOCK_PREFERENCE = { preferenceId: 'preferenceId' } as DevicePreference
 const MOCK_PREFERENCE_LIST = [MOCK_PREFERENCE] as DevicePreference[]
 const MOCK_PREFERENCE_CREATE = { preferenceType: 'type' } as unknown as DevicePreferenceCreate
 const MOCK_LOCALE_LIST = [{ tag: 'tag' }] as LocaleReference[]
 
-describe('devicepreferences', () => {
+describe('DevicePreferencesEndpoint', () => {
 	const authenticator = new NoOpAuthenticator()
 	const devicepreferences = new DevicePreferencesEndpoint({ authenticator })
 
