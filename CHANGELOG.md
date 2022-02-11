@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.1.1...v3.2.0) (2022-02-11)
+
+
+### Features
+
+* add support for logging RFC 2068 warning headers ([854a3f2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/854a3f27e706d2a3d6de71a317b6f4c0c840a355))
+
 ### [3.1.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.1.0...v3.1.1) (2022-02-04)
 
 
