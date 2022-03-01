@@ -80,8 +80,12 @@ export class SmartThingsClient extends RESTClient {
 		return this
 	}
 
+	/**
+	 * @param headers http headers to be merged with existing client headers
+	 */
 	public clone(headers?: HttpClientHeaders): SmartThingsClient {
-		return new SmartThingsClient(this.config.authenticator, { ...this.config, headers })
+		const config: RESTClientConfig = { ...this.config, headers: { ...this.config.headers, ...headers } }
+		return new SmartThingsClient(this.config.authenticator, config)
 	}
 }
 
