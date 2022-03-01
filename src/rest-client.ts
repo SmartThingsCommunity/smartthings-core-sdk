@@ -17,7 +17,7 @@ export interface RESTClientConfig {
 
 
 // TODO:
-// at site version specification and at other levels; need to support header and url versions
+// add site version specification and at other levels; need to support header and url versions
 // server specification
 export class RESTClient {
 	protected static defaultHeaders: HttpClientHeaders = {
