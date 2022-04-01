@@ -1,3 +1,10 @@
+### [3.4.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.4.0...v3.4.1) (2022-04-01)
+
+
+### Performance Improvements
+
+* replace underscore with lodash modules ([8429815](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/8429815b17b7f6ce29ed18ecd9fe045a9285ec92))
+
 ## [3.4.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.3.0...v3.4.0) (2022-03-02)
 
 
