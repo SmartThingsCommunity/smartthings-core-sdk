@@ -1,4 +1,5 @@
-import {isString, isDate} from 'underscore'
+import isString from 'lodash.isstring'
+import isDate from 'lodash.isdate'
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 import { Status, SuccessStatusValue } from '../types'
