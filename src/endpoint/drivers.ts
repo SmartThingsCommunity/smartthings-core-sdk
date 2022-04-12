@@ -214,6 +214,14 @@ export class DriversEndpoint extends Endpoint {
 	}
 
 	/**
+	 * List drivers in the default channel. (The default channel in this context is a channel
+	 * that users do not need to subscribe to.)
+	 */
+	public async listDefault(): Promise<EdgeDriverSummary[]> {
+		return this.client.getPagedItems('default')
+	}
+
+	/**
 	 * Uploads the zipped package represented by archiveData.
 	 */
 	public async upload(archiveData: Uint8Array): Promise<EdgeDriver> {
