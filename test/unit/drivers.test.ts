@@ -50,6 +50,15 @@ describe('DriversEndpoint', () => {
 		expect(getPagedItemsSpy).toHaveBeenCalledWith('')
 	})
 
+	test('listDefault', async () => {
+		const drivers = [{ driverId: 'listed-in-channel-id' }] as EdgeDriverSummary[]
+		getPagedItemsSpy.mockResolvedValueOnce(drivers)
+
+		expect(await driversEndpoint.listDefault()).toBe(drivers)
+
+		expect(getPagedItemsSpy).toHaveBeenCalledWith('default')
+	})
+
 	test('upload', async () => {
 		const driver = { driverId: 'driver-id' }
 		requestSpy.mockResolvedValueOnce(driver)
