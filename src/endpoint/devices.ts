@@ -143,6 +143,38 @@ export interface ZwaveDeviceDetails {
 	provisioningState?: ProvisioningState
 }
 
+export interface MatterDeviceDetails {
+	/**
+	 * matches: string <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$> (DriverId)
+	 */
+	driverId?: string
+
+	/**
+	 * The hub that the device is connected to
+	 */
+	hubId?: string
+
+	/**
+	 * Provisioning type for a widget device
+	 */
+	provisioningState?: ProvisioningState
+
+	/**
+	 * The network-specific identifier of the device on the network
+	 */
+	networkId?: string
+
+	/**
+	 * True if the device is executing locally on the hub
+	 */
+	executingLocally?: boolean
+
+	/**
+	 * Optional Vendor-supplied unique identifier.
+	 */
+	uniqueId?: string
+}
+
 export interface IrDeviceDetails {
 	parentDeviceId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
 	profileId?: string // <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
@@ -180,22 +212,73 @@ export interface ViperDeviceDetails {
 	hwVersion?: string
 }
 
+export interface AttributeValue {
+	/**
+	 * The attribute that this command will correspond to
+	 */
+	attribute?: string
+
+	/**
+	 * How will the attribute be provided? Choose 'ARGUMENT' to provide it with a command at
+	 * runtime or 'STATIC' to provide a set value here.
+	 */
+	inputType: 'ARGUMENT' | 'STATIC'
+
+	/**
+	 * The argument to be used automatically for this command mapping. Any simple type is accepted.
+	 */
+	staticValue: string | number | boolean
+}
+
+export interface CommandMapping {
+	capabilityId: string
+
+	/**
+	 * The capability version number.
+	 */
+	version: string
+
+	/**
+	 * The command name to apply the mapping to on the device
+	 */
+	command: string
+
+	/**
+	 * A collection of attribute values, replicator will use these to create device events in
+	 * serial for the specified command.
+	 */
+	eventValues: AttributeValue[]
+}
+
+export interface CommandMappings {
+	commands: CommandMapping[]
+}
+
+export interface VirtualDeviceDetails {
+	name?: string
+	commandMappings?: CommandMappings
+}
+
 export enum DeviceIntegrationType {
 	BLE = 'BLE',
 	BLE_D2D = 'BLE_D2D',
 	DTH = 'DTH',
 	ENDPOINT_APP = 'ENDPOINT_APP',
+	GROUP = 'GROUP',
 	HUB = 'HUB',
 	IR = 'IR',
 	IR_OCF = 'IR_OCF',
+	LAN = 'LAN',
+	MATTER = 'MATTER',
+	MOBILE = 'MOBILE',
 	MQTT = 'MQTT',
 	OCF = 'OCF',
 	PENGYOU = 'PENGYOU',
+	SHP = 'SHP',
 	VIDEO = 'VIDEO',
 	VIPER = 'VIPER',
+	VIRTUAL = 'VIRTUAL',
 	WATCH = 'WATCH',
-	GROUP = 'GROUP',
-	LAN = 'LAN',
 	ZIGBEE = 'ZIGBEE',
 	ZWAVE = 'ZWAVE',
 }
@@ -209,28 +292,105 @@ interface ChildDeviceRef {
 	id: string
 }
 
+export type DeviceClientAction = 'w:devices' | 'w:devices:locationId' | 'w:devices:roomId' | 'x:devices' | 'd:devices'
+
 export interface Device {
 	deviceId: string
+
+	/**
+	 * A non-unique id that is used to help drive UI information.
+	 */
 	presentationId: string
+
+	/**
+	 * The device manufacturer name.
+	 */
 	manufacturerName: string
+
+	/**
+	 * The type of device integration (may be null). If the type is LAN, the device implementation
+	 * is a groovy Device Handler and the details are in the "lan" field. If the type is
+	 * ENDPOINT_APP, the device implementation is a SmartApp and the details are in the "app"
+	 * field, etc.
+	 */
 	type: DeviceIntegrationType
-	restrictionTier: number // integer
+
+	/**
+	 * Restriction tier of the device, if any.
+	 *
+	 * integer value
+	 */
+	restrictionTier: number
+
+	/**
+	 * The name that the Device integration (Device Handler or SmartApp) defines for the Device.
+	 */
 	name?: string
+
+	/**
+	 * The name that a user chooses for the Device. This defaults to the same value as name.
+	 */
 	label?: string
+
+	/**
+	 * The device manufacturer code.
+	 */
 	deviceManufacturerCode?: string
-	locationId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
-	eventId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+
+	/**
+	 * The ID of the Location with which the Device is associated.
+	 *
+	 * matches; <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	 */
+	locationId?: string
+
+	/**
+	 *
+	 */
+	eventId?: string
+
+	/**
+	 * The identifier for the owner of the Device instance.
+	 */
 	ownerId?: string
-	roomId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+
+	/**
+	 * The ID of the Room with which the Device is associated. If the Device is not associated with
+	 * any room, this field will be null.
+	 *
+	 * matches: <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	 */
+	roomId?: string
+
 	/**
 	 * @deprecated please use dth.deviceTypeId instead
+	 *
+	 * matches: <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	 */
-	deviceTypeId?: string // <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
+	deviceTypeId?: string
+
+	/**
+	 * The IDs of all components on the device.
+	 */
 	components?: Component[]
+
+	/**
+	 * The time when the device was created.
+	 */
 	createTime?: string
+
+	/**
+	 * The id of the parent device.
+	 */
 	parentDeviceId?: string
+
+	/**
+	 * References containing device ids of all child devices of the device.
+	 */
 	childDevices?: ChildDeviceRef[]
+
 	profile?: DeviceProfileReference
+
 	app?: AppDeviceDetails
 	ble?: BleDeviceDetails
 	bleD2D?: BleD2DDeviceDetails
@@ -238,10 +398,25 @@ export interface Device {
 	lan?: LanDeviceDetails
 	zigbee?: ZigbeeDeviceDetails
 	zwave?: ZwaveDeviceDetails
+	matter?: MatterDeviceDetails
 	ir?: IrDeviceDetails
 	irOcf?: IrDeviceDetails
 	ocf?: OcfDeviceDetails
 	viper?: ViperDeviceDetails
+	virtual?: VirtualDeviceDetails
+
+	/**
+	 * List of client-facing action identifiers that are currently permitted for the user.
+	 * If the value of this property is not null, then any action not included in the list value of
+	 * the property is currently prohibited for the user.
+	 *
+	 * * w:devices - the user can change device details
+	 * * w:devices:locationId - the user can move the device from a location
+	 * * w:devices:roomId - the user can move or remove the device from a room
+	 * * x:devices - the user can execute commands on the device
+	 * * d:devices - the user can uninstall the device
+	 */
+	allowed?: DeviceClientAction[]
 }
 
 export interface UpdateDeviceComponent {
