@@ -1,3 +1,10 @@
+## [3.5.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.4.1...v3.5.0) (2022-04-13)
+
+
+### Features
+
+* update device models ([9f8a4dc](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/9f8a4dcbb8467c1653fa75943c359eb10276e424))
+
 ### [3.4.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.4.0...v3.4.1) (2022-04-01)
 
 
