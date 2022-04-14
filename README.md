@@ -39,6 +39,61 @@ client.locations.list().then(locations => {
 
 ```
 
+## Logging
+
+There is some logging done of requests and responses made to the API. The
+default logger does nothing but you can pass your own. Logging is done via a generic interface so
+you can use whatever logger you want in your application.
+
+First, write an implementation of the `Logger` interface defined in
+[logger.ts](https://github.com/SmartThingsCommunity/smartthings-core-sdk/blob/master/src/logger.ts)
+which proxies to your logger. For example:
+
+```javascript
+import { Logger as WinstonLogger } from 'winston'
+import { Logger } from '@smartthings/core-sdk'
+
+
+export class WinstonLoggerProxy implements Logger {
+	proxy: WinstonLogger
+	level: string
+
+	constructor(winstonLogger) {
+		this.level = proxy.level
+	}
+
+	trace(message: any, ...args: any[]): void {
+		// Winston doesn't have a "trace" level but it has a "silly" level in the same place.
+		proxy.silly(message, args)
+	}
+
+	debug(message: any, ...args: any[]): void {
+		proxy.debug(message, args)
+	}
+
+	info(message: any, ...args: any[]): void {
+		proxy.info(message, args)
+	}
+
+	...
+
+	isTraceEnabled(): boolean {
+		return proxy.isSillyEnabled()
+	}
+
+	...
+}
+```
+
+Then, when you create your `SmartThingsClient`, pass this in via the `config` parameter.
+
+```javascript
+const config = {
+	logger: new WinstonLoggerProxy(myWinstonLoggerInstance)
+}
+const client = new SmartThingsClient(new BearerTokenAuthenticator('{YOUR-PAT-TOKEN}'), config)
+```
+
 ## Reference
 
 ### Authenticators
@@ -94,4 +149,3 @@ and retry the original request.
 
 * subscriptions -  Operations for subscribing to events, for use in SmartApps and
 API Access apps.  Link to code interface [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/blob/master/src/endpoint/subscriptions.ts#L213), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Subscriptions)
-
