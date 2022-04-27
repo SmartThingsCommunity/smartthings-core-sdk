@@ -1,3 +1,10 @@
+## [3.6.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.5.0...v3.6.0) (2022-04-27)
+
+
+### Features
+
+* add support for listing drivers in default channel ([ef92829](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/ef928295b714c697be7d5f6c504a15f9b74c44a6))
+
 ## [3.5.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.4.1...v3.5.0) (2022-04-13)
 
 
