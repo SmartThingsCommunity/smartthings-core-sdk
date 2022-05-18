@@ -150,7 +150,7 @@ export interface CapabilityAlternative {
 	 *
 	 * Default: "active"
 	 */
-	type?: 'active'| 'inactive'
+	type?: 'active' | 'inactive'
 	/**
 	 * Additional description for each value. This description is shown in
 	 * the detail view or automation under this particular key.

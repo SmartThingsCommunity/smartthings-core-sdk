@@ -82,6 +82,7 @@ module.exports = {
 		],
 		'@typescript-eslint/no-var-requires': 'error',
 		'@typescript-eslint/no-floating-promises': 'error',
+		'@typescript-eslint/space-infix-ops': 'error',
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',
