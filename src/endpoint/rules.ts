@@ -1,174 +1,168 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
-import { SuccessStatusValue, Status } from '../types'
 
 
-export enum ConditionAggregationMode {
-	Any = 'Any',
-	All = 'All',
-}
+export type ConditionAggregationMode = 'Any' | 'All'
 
 export interface SimpleCondition {
-	/**
-	 * Unique id for the condition
-	 */
-	id?: string
-	left: Operand
-	right: Operand
+	left: RuleOperand
+	right: RuleOperand
 	aggregation?: ConditionAggregationMode
 }
 
 export interface BetweenCondition {
-	/**
-	 * Unique id for the condition
-	 */
-	id?: string
-	value: Operand
-	start: Operand
-	end: Operand
+	value: RuleOperand
+	start: RuleOperand
+	end: RuleOperand
 	aggregation?: ConditionAggregationMode
 }
 
-export interface SingleOperandCondition {
-	/**
-	 * Unique id for the condition
-	 */
-	id?: string
-	left: Operand
-	aggregation?: ConditionAggregationMode
+/**
+ * A condition that returns true when its evaluation resolves to true and the previous evaluation
+ * resolved to false.
+ */
+export interface ChangesCondition extends BasicCondition {
+	id: string
+	operand?: RuleOperand
 }
 
-export interface TimedSimpleCondition {
-	id?: string
-	left: Operand
-	right: Operand
-	interval: Interval
-	aggregation?: ConditionAggregationMode
+/**
+ * A condition that returns true if its evaluation would return true within the specified duration.
+ */
+export interface WasCondition extends BasicCondition {
+	id: string
+	operand?: RuleOperand
+	duration: RuleInterval
 }
 
-export enum ArmState {
-	ArmedStay = 'ArmedStay',
-	ArmedAway = 'ArmedAway',
-	Disarmed = 'Disarmed',
+/**
+ * A condition that returns true if its evaluation is true after the specified duration.
+ */
+export interface RemainsCondition extends BasicCondition {
+	id: string
+	duration: RuleInterval
+	operand?: RuleOperand
 }
 
-export interface SecurityState {
-	armState: ArmState
-	monitoring?: boolean
-}
-
-export interface Condition {
-	and?: Condition[]
-	or?: Condition[]
-	not?: Condition
+export interface BasicCondition {
+	and?: RuleCondition[]
+	or?: RuleCondition[]
+	not?: RuleCondition
 	equals?: SimpleCondition
 	greaterThan?: SimpleCondition
 	greaterThanOrEquals?: SimpleCondition
 	lessThan?: SimpleCondition
 	lessThanOrEquals?: SimpleCondition
 	between?: BetweenCondition
-	dropsBelow?: SimpleCondition
-	dropsToOrBelow?: SimpleCondition
-	risesAbove?: SimpleCondition
-	risesToOrAbove?: SimpleCondition
 }
 
-export enum SubscriptionMode {
-	Auto = 'Auto',
-	Always = 'Always',
-	Never = 'Never'
+export interface RuleCondition {
+	and?: RuleCondition[]
+	or?: RuleCondition[]
+	not?: RuleCondition
+	equals?: SimpleCondition
+	greaterThan?: SimpleCondition
+	greaterThanOrEquals?: SimpleCondition
+	lessThan?: SimpleCondition
+	lessThanOrEquals?: SimpleCondition
+	between?: BetweenCondition
+	changes?: ChangesCondition
+	remains?: RemainsCondition
+	was?: WasCondition
 }
 
-export enum TimeReference {
-	Now = 'Now',
-	Midnight = 'Midnight',
-	Sunrise = 'Sunrise',
-	Noon = 'Noon',
-	Sunset = 'Sunset'
-}
-
-export interface TimeOperand {
-	/**
-	 * A java time zone ID reference
-	 */
-	timeZoneId?: string
-	reference: TimeReference
-	offset?: Interval
-}
-
-export enum OperandAggregationMode {
-	None = 'None',
-	Avg = 'Avg',
-	Sum = 'Sum',
-	Min = 'Min',
-	Max = 'Max',
-	Least = 'Least'
-}
+export type TimeReference = 'Now' | 'Midnight' | 'Sunrise' | 'Noon' | 'Sunset'
+export type DateReference = 'Today'
+export type OperandAggregationMode = 'None'
+export type TriggerMode = 'Auto' | 'Always' | 'Never'
 
 export interface ArrayOperand {
-	operands: Operand[]
+	operands: RuleOperand[]
 	aggregation?: OperandAggregationMode
 }
 
-export class MapOperand extends null<string, Operand> {
-
+export interface MapOperand {
+	[name: string]: RuleOperand | undefined
 }
 
 export interface DeviceOperand {
-	devices?: string[]
+	devices: string[]
 	component: string
 	capability: string
 	attribute: string
 	path?: string
 	aggregation?: OperandAggregationMode
-	subscriptionMode?: SubscriptionMode
+	trigger?: TriggerMode
 }
 
-export enum LocationAttribute {
-	Mode = 'Mode',
-	ArmState = 'ArmState'
-}
+export type LocationAttribute  = 'FineDust' | 'FineDustIndex' | 'Humidity' | 'Mode' | 'Security' | 'Temperature' | 'TemperatureC' | 'TemperatureF' | 'UltraFineDust' | 'UltraFineDustIndex' | 'Weather' | 'WeatherAlertSeverity'
 
-export enum DayOfWeek {
-	Sun = 'Sun',
-	Mon = 'Mon',
-	Tue = 'Tue',
-	Wed = 'Wed',
-	Thu = 'Thu',
-	Fri = 'Fri',
-	Sat = 'Sat'
-}
+export type DayOfWeek = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat'
 
 export interface LocationOperand {
+	/**
+	 * Required for User level rule, optional for Location level in request. Will always be present
+	 * in response for both.
+	 */
+	locationId?: string
 	attribute: LocationAttribute
+	trigger?: TriggerMode
 }
 
 export interface DateOperand {
 	/**
-	 * A java time zone ID reference
+	 * A java time zone ID reference.
 	 */
 	timeZoneId?: string
 	daysOfWeek?: DayOfWeek[]
 	year?: number
 	month?: number
 	day?: number
+	reference?: DateReference
+}
+
+export interface TimeOperand {
+	/**
+	 * A java time zone ID reference.
+	 */
+	timeZoneId?: string
+
+	daysOfWeek?: DayOfWeek[]
+
+	/**
+	 * default: Midnight
+	 */
+	reference: TimeReference
+
+	offset?: RuleInterval
 }
 
 export interface DateTimeOperand {
 	/**
-	 * A java time zone ID reference
+	 * A java time zone ID reference.
 	 */
 	timeZoneId?: string
+
+	/**
+	 * Location ID for location actions.
+	 */
+	locationId?: string
+
 	daysOfWeek?: DayOfWeek[]
 	year?: number
 	month?: number
 	day?: number
+
+	/**
+	 * default: Midnight
+	 */
 	reference: TimeReference
-	offset?: Interval
+
+	offset?: RuleInterval
 }
 
-export interface Operand {
-	'_boolean'?: boolean
+export interface RuleOperand {
+	'boolean'?: boolean
 	decimal?: number
 	integer?: number
 	string?: string
@@ -181,18 +175,10 @@ export interface Operand {
 	datetime?: DateTimeOperand
 }
 
-export enum IntervalUnit {
-	Second = 'Second',
-	Minute = 'Minute',
-	Hour = 'Hour',
-	Day = 'Day',
-	Week = 'Week',
-	Month = 'Month',
-	Year = 'Year'
-}
+export type IntervalUnit = 'Second' | 'Minute' | 'Hour' | 'Day' | 'Week' | 'Month' | 'Year'
 
-export interface Interval {
-	value: Operand
+export interface RuleInterval {
+	value: RuleOperand
 	unit: IntervalUnit
 }
 
@@ -201,16 +187,19 @@ export interface DeviceCommand {
 	 * The name of the component on this device, default is 'main'. The
 	 * component must be valid for the device.
 	 */
-	component?: string
+	component: string
+
 	/**
 	 * Capability that this command relates to. This must be a capability of the
 	 * component.
 	 */
 	capability: string
+
 	/**
 	 * Name of the command, this must be valid for the capability.
 	 */
 	command: string
+
 	/**
 	 * Arguments of the command. All the required arguments defined in the
 	 * capability's command argument definition must be provided. The type of
@@ -218,69 +207,77 @@ export interface DeviceCommand {
 	 * argument. Please refer to the capabilities definition at
 	 * https://smartthings.developer.samsung.com/develop/api-ref/capabilities.html
 	 */
-	arguments?: (object | string | number)[]
+	arguments?: RuleOperand[]
 }
 
-export interface IfAction extends Condition {
+export interface IfActionSequence{
+	then?: RuleSequence
+	'else'?: RuleSequence
+}
+
+export interface IfAction extends RuleCondition {
+	then?: RuleAction[]
+	'else'?: RuleAction[]
+
 	/**
-	 * Unique id for the action
+	 * The sequence in which the actions are to be executed.
 	 */
-	id?: string
-	then?: Action[]
-	'else'?: Action[]
-	subscriptionMode?: SubscriptionMode
+	sequence?: IfActionSequence
 }
 
 export interface SleepAction {
-	/**
-	 * Unique id for the action
-	 */
-	id?: string
-	duration: Interval
+	duration: RuleInterval
+}
+
+export interface CommandSequence {
+	commands?: RuleSequence
+	devices?: RuleSequence
 }
 
 export interface CommandAction {
-	/**
-	 * Unique id for the action
-	 */
-	id?: string
 	devices: string[]
 	commands: DeviceCommand[]
+	sequence?: CommandSequence
 }
 
 export interface EveryAction {
-	/**
-	 * Unique id for the action
-	 */
-	id?: string
-	interval?: Interval
-	specific?: TimeOperand
-	actions: Action[]
+	interval?: RuleInterval
+	specific?: DateTimeOperand
+	actions: RuleAction[]
+	sequence?: RuleActionSequence
 }
 
 export interface LocationAction {
 	/**
-	 * Unique id for the action
+	 * locationId is required for "User level rule". (It's optional for "Location level rule".)
+	 *
+	 * <^(?:([0-9a-fA-F]{32})|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}))$>
 	 */
-	id: string
+	locationId: string
+
 	mode?: string
-	security?: SecurityState
 }
 
-export interface Action {
-	'if'?: IfAction
-	sleep?: SleepAction
-	command?: CommandAction
-	every?: EveryAction
-	location?: LocationAction
+export type RuleAction = { 'if': IfAction } | { sleep: SleepAction } | { command: CommandAction } | { every: EveryAction } | { location: LocationAction }
+
+export type RuleSequence = 'Serial' | 'Parallel'
+export interface RuleActionSequence {
+	actions?: RuleSequence
 }
 
 export interface RuleRequest {
 	/**
-	 * Name for the rule
+	 * The name for the Rule. Limit 100 characters.
 	 */
 	name: string
-	actions: Action[]
+
+	actions: RuleAction[]
+
+	/**
+	 * The sequence in which the actions are to be executed (i.e. Serial (default) or Parallel).
+	 */
+	sequence?: RuleActionSequence
+
 	/**
 	 * Time zone ID for this rule. This overrides the location time zone ID,
 	 * but is overridden by time zone ID provided by each operand individually.
@@ -288,11 +285,24 @@ export interface RuleRequest {
 	timeZoneId?: string
 }
 
+export type RuleOwnerType = 'Location' | 'User'
+export type RuleStatus = 'Enabled' | 'Disabled'
+export type RuleExecutionLocation = 'Cloud' | 'Local'
+export type RuleCreator = 'SMARTTHINGS' | 'ARB' | 'RECIPE' | 'UNDEFINED'
+
 export interface Rule extends RuleRequest {
 	/**
-	 * Unique id for the rule
+	 * Unique id for the rule.
 	 */
 	id: string
+
+	ownerType: RuleOwnerType
+	ownerId: string
+	dateCreated: string
+	dateUpdated: string
+	status?: RuleStatus
+	executionLocation?: RuleExecutionLocation
+	creator?: RuleCreator
 }
 
 export type ExecutionResult = 'Success' | 'Failure' | 'Ignored'
@@ -301,6 +311,10 @@ export type IfExecutionResult = 'True' | 'False'
 export interface IfActionExecutionResult {
 	result: IfExecutionResult
 }
+
+/**
+ * The result of a location action execution.
+ */
 export interface LocationActionExecutionResult {
 	result: ExecutionResult
 	locationId: string
@@ -323,10 +337,14 @@ export interface ActionExecutionResult {
 	command?: CommandActionExecutionResult[]
 	sleep?: SleepActionExecutionResult
 }
-export interface ExecuteResponse {
+
+/**
+ * The result of a Rule execution.
+ */
+export interface RuleExecutionResponse {
 	executionId: string
 	id: string
-	result: string
+	result: ExecutionResult
 	actions?: ActionExecutionResult[]
 }
 
@@ -362,9 +380,8 @@ export class RulesEndpoint extends Endpoint {
 	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
 	 * can be omitted
 	 */
-	public async delete(id: string, locationId?: string): Promise<Status> {
-		await this.client.delete(id, { locationId: this.locationId(locationId) })
-		return SuccessStatusValue
+	public async delete(id: string, locationId?: string): Promise<Rule> {
+		return this.client.delete(id, { locationId: this.locationId(locationId) })
 	}
 
 	/**
@@ -394,7 +411,7 @@ export class RulesEndpoint extends Endpoint {
 	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
 	 * can be omitted
 	 */
-	public async execute(id: string, locationId?: string): Promise<ExecuteResponse> {
+	public async execute(id: string, locationId?: string): Promise<RuleExecutionResponse> {
 		return this.client.post(`execute/${id}`, undefined, { locationId: this.locationId(locationId) })
 	}
 }

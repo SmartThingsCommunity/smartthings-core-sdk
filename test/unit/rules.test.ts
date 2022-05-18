@@ -1,7 +1,6 @@
 import { NoOpAuthenticator } from '../../src/authenticator'
-import { ExecuteResponse, Rule, RuleRequest, RulesEndpoint } from '../../src/endpoint/rules'
+import { Rule, RuleExecutionResponse, RuleRequest, RulesEndpoint } from '../../src/endpoint/rules'
 import { EndpointClient } from '../../src/endpoint-client'
-import { SuccessStatusValue } from '../../src/types'
 
 
 describe('RulesEndpoint', () => {
@@ -12,7 +11,7 @@ describe('RulesEndpoint', () => {
 	const getSpy = jest.spyOn(EndpointClient.prototype, 'get').mockImplementation()
 	const postSpy = jest.spyOn(EndpointClient.prototype, 'post').mockImplementation()
 	const putSpy = jest.spyOn(EndpointClient.prototype, 'put').mockImplementation()
-	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete').mockImplementation()
+	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
 	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems').mockImplementation()
 
 	const locationIdMock = jest.fn<string, [string | undefined]>()
@@ -46,7 +45,9 @@ describe('RulesEndpoint', () => {
 	})
 
 	test('delete', async () => {
-		expect(await rulesEndpoint.delete('id-to-delete', 'input-location-id')).toBe(SuccessStatusValue)
+		const rule = { id: 'rule-to-delete-id' }
+		deleteSpy.mockResolvedValueOnce(rule)
+		expect(await rulesEndpoint.delete('id-to-delete', 'input-location-id')).toBe(rule)
 
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('id-to-delete', { locationId: 'final-location-id' })
@@ -77,7 +78,7 @@ describe('RulesEndpoint', () => {
 	})
 
 	test('execute', async () => {
-		const executeResponse = {} as ExecuteResponse
+		const executeResponse = {} as RuleExecutionResponse
 		postSpy.mockResolvedValue(executeResponse)
 
 		expect(await rulesEndpoint.execute('id-of-rule-to-execute', 'input-location-id')).toBe(executeResponse)
