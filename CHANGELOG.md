@@ -1,3 +1,14 @@
+## [4.0.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.6.0...v4.0.0) (2022-05-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rules:** Updated rules model objects have been significantly updated.
+
+### Bug Fixes
+
+* **rules:** update rules model objects to match current API ([28b04ec](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/28b04ec4d00ff7e6553ff650128637d358b3de6a))
+
 ## [3.6.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.5.0...v3.6.0) (2022-04-27)
 
 
