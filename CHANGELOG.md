@@ -1,3 +1,10 @@
+## [4.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v4.0.0...v4.1.0) (2022-05-23)
+
+
+### Features
+
+* added support for virtual devices ([383c03e](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/383c03ec5cf16f30aad09c816e2ae46681dc5240))
+
 ## [4.0.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v3.6.0...v4.0.0) (2022-05-19)
 
 
