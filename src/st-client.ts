@@ -10,6 +10,7 @@ import { ChannelsEndpoint } from './endpoint/channels'
 import { DevicesEndpoint } from './endpoint/devices'
 import { DriversEndpoint } from './endpoint/drivers'
 import { HistoryEndpoint } from './endpoint/history'
+import { HubdevicesEndpoint } from './endpoint/hubdevices'
 import { InstalledAppsEndpoint } from './endpoint/installedapps'
 import { ModesEndpoint } from './endpoint/modes'
 import { LocationsEndpoint } from './endpoint/locations'
@@ -36,6 +37,7 @@ export class SmartThingsClient extends RESTClient {
 	public readonly devices: DevicesEndpoint
 	public readonly drivers: DriversEndpoint
 	public readonly history: HistoryEndpoint
+	public readonly hubdevices: HubdevicesEndpoint
 	public readonly installedApps: InstalledAppsEndpoint
 	public readonly modes: ModesEndpoint
 	public readonly notifications: NotificationsEndpoint
@@ -62,6 +64,7 @@ export class SmartThingsClient extends RESTClient {
 		this.devices = new DevicesEndpoint(this.config)
 		this.drivers = new DriversEndpoint(this.config)
 		this.history = new HistoryEndpoint(this.config)
+		this.hubdevices = new HubdevicesEndpoint(this.config)
 		this.installedApps = new InstalledAppsEndpoint(this.config)
 		this.locations = new LocationsEndpoint(this.config)
 		this.modes = new ModesEndpoint(this.config)
