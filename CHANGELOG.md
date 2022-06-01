@@ -1,3 +1,10 @@
+## [4.2.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v4.1.0...v4.2.0) (2022-06-01)
+
+
+### Features
+
+* add hubdevices endpoints ([1bcdf62](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/1bcdf627e1017a32e69eebe31a5b489af92c4e7d))
+
 ## [4.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v4.0.0...v4.1.0) (2022-05-23)
 
 
