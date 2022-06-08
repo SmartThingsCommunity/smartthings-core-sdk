@@ -1,118 +1,131 @@
-import axios from '../../__mocks__/axios'
-import {
-	App,
-	AppClassification,
-	AppCreationResponse,
-	AppOAuth,
-	AppType,
-	BearerTokenAuthenticator,
-	Count,
-	SignatureType,
-	SmartThingsClient,
-	Status,
-	SuccessStatusValue,
-} from '../../src'
-import { expectedRequest } from './helpers/utils'
-import { delete_apps_sdktest_234_1582991474199 as deleteApp } from './data/apps/delete'
-import {
-	get_apps as list,
-	get_apps_automation as listAutomations,
-	get_apps_lambda_automations as listLambdaAutomations,
-	get_apps_sdktest_234_1582991474199 as get,
-	get_apps_tags as listTags,
-	get_apps_webhook as listWebhooks,
-} from './data/apps/get'
-import {
-	post_apps_requireConfirmation_false_signatureType_APP_RSA as post,
-	post_apps_sdktest_234_1582991474199_oauth_generate as oauthGenerate,
-} from './data/apps/post'
-import {
-	put_apps_a01c0ba4_3ac2_4a5c_9628_c43e394c1ea2_signature_type as putSignature,
-	put_apps_sdktest_234_1582991474199_oauth as putOAuth,
-} from './data/apps/put'
+import { NoOpAuthenticator } from '../../src/authenticator'
+import { EndpointClient } from '../../src/endpoint-client'
+import { AppClassification, AppCreateRequest, AppCreationResponse, AppOAuthRequest, AppOAuthResponse, AppResponse, AppsEndpoint, AppType, GenerateAppOAuthRequest, GenerateAppOAuthResponse, PagedApp, SignatureType } from '../../src/endpoint/apps'
 
 
-const client = new SmartThingsClient(new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'))
+const MOCK_APP_LIST = [{ appId: 'appId' }] as PagedApp[]
+const MOCK_APP = { appId: 'appId', appType: AppType.WEBHOOK_SMART_APP } as AppResponse
+const MOCK_APP_CREATE = { app: {} } as AppCreationResponse
+const MOCK_APP_OAUTH = { clientName: 'clientName' } as AppOAuthResponse
+const MOCK_APP_OAUTH_GENERATE = { oauthClientId: 'oauthClientId' } as GenerateAppOAuthResponse
 
-describe('Apps', () => {
+describe('AppsEndpoint', () => {
+	const authenticator = new NoOpAuthenticator()
+	const apps = new AppsEndpoint({ authenticator })
+
+	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
+	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')
+	const postSpy = jest.spyOn(EndpointClient.prototype, 'post')
+	const putSpy = jest.spyOn(EndpointClient.prototype, 'put')
+	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
+
 	afterEach(() => {
-		axios.request.mockReset()
+		jest.clearAllMocks()
 	})
 
-	it('List', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listAutomations.response }))
-		const response: App[] = await client.apps.list({ classification: AppClassification.AUTOMATION })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listAutomations.request))
-		expect(response).toBe(listAutomations.response.items)
+	test('List', async () => {
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_APP_LIST)
+		const response = await apps.list()
+
+		expect(getPagedItemsSpy).toBeCalledWith(undefined, {})
+		expect(response).toStrictEqual(MOCK_APP_LIST)
 	})
 
-	it('List Automations', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response }))
-		const response: App[] = await client.apps.list()
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(list.request))
-		expect(response).toBe(list.response.items)
+	test('List Automations', async () => {
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_APP_LIST)
+		const response = await apps.list({ classification: AppClassification.AUTOMATION })
+
+		expect(getPagedItemsSpy).toBeCalledWith(undefined, { classification: 'AUTOMATION' })
+		expect(response).toStrictEqual(MOCK_APP_LIST)
 	})
 
-	it('List Webhooks', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listWebhooks.response }))
-		const response: App[] = await client.apps.list({ appType: AppType.WEBHOOK_SMART_APP })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listWebhooks.request))
-		expect(response).toBe(listWebhooks.response.items)
+	test('List Webhooks', async () => {
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_APP_LIST)
+		const response = await apps.list({ appType: AppType.WEBHOOK_SMART_APP })
+
+		expect(getPagedItemsSpy).toBeCalledWith(undefined, { appType: 'WEBHOOK_SMART_APP' })
+		expect(response).toStrictEqual(MOCK_APP_LIST)
 	})
 
-	it('List Lambda Automations', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listLambdaAutomations.response }))
-		const response: App[] = await client.apps.list({ appType: AppType.LAMBDA_SMART_APP, classification: AppClassification.AUTOMATION })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listLambdaAutomations.request))
-		expect(response).toBe(listLambdaAutomations.response.items)
+	test('List Lambda Automations', async () => {
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_APP_LIST)
+		const response = await apps.list({ appType: AppType.LAMBDA_SMART_APP, classification: AppClassification.AUTOMATION })
+
+		expect(getPagedItemsSpy).toBeCalledWith(undefined, { appType: 'LAMBDA_SMART_APP', classification: 'AUTOMATION' })
+		expect(response).toStrictEqual(MOCK_APP_LIST)
+
 	})
 
-	it('List Tags', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listTags.response }))
-		const response: App[] = await client.apps.list({ tag: { industry: 'energy', region: 'North America' } })
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listTags.request))
-		expect(response).toBe(listTags.response.items)
+	test('List Tags', async () => {
+		getPagedItemsSpy.mockResolvedValueOnce(MOCK_APP_LIST)
+		const response = await apps.list({ tag: { industry: 'energy', region: 'North America' } })
+
+		expect(getPagedItemsSpy).toBeCalledWith(undefined, { 'tag:industry': 'energy', 'tag:region': 'North America' })
+		expect(response).toStrictEqual(MOCK_APP_LIST)
 	})
 
-	it('Get', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: get.response }))
-		const response: App = await client.apps.get('sdktest-234-1582991474199')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(get.request))
-		expect(response).toBe(get.response)
+	test('Get', async () => {
+		getSpy.mockResolvedValueOnce(MOCK_APP)
+		const response = await apps.get('appName')
+
+		expect(getSpy).toBeCalledWith('appName')
+		expect(response).toStrictEqual(MOCK_APP)
 	})
 
-	it('Create', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: post.response }))
-		const response: AppCreationResponse = await client.apps.create(post.request.data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(post.request))
-		expect(response).toBe(post.response)
+	test('Create', async () => {
+		postSpy.mockResolvedValueOnce(MOCK_APP_CREATE)
+		const createRequest = { appName: 'app' } as AppCreateRequest
+		const response = await apps.create(createRequest)
+
+		expect(postSpy).toBeCalledWith(undefined, createRequest, {})
+		expect(response).toStrictEqual(MOCK_APP_CREATE)
 	})
 
-	it('Update signature type', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putSignature.response }))
-		const response: Status = await client.apps.updateSignatureType('a01c0ba4-3ac2-4a5c-9628-c43e394c1ea2', SignatureType.ST_PADLOCK)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(putSignature.request))
-		expect(response).toBe(SuccessStatusValue)
+	test('Update signature type', async () => {
+		putSpy.mockResolvedValueOnce({})
+
+		await expect(apps.updateSignatureType('appId', SignatureType.ST_PADLOCK)).resolves.toBeUndefined()
+		expect(putSpy).toBeCalledWith('appId/signature-type', { signatureType: 'ST_PADLOCK' })
 	})
 
-	it('Update OAuth', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: putOAuth.response }))
-		const response: AppOAuth = await client.apps.updateOauth('sdktest-234-1582991474199', putOAuth.request.data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(putOAuth.request))
-		expect(response).toBe(putOAuth.response)
+	test('Register', async () => {
+		putSpy.mockResolvedValueOnce({})
+
+		await expect(apps.register('appId')).resolves.toBeUndefined()
+		expect(putSpy).toBeCalledWith('appId/register')
 	})
 
-	it('Regenerate OAuth', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: oauthGenerate.response }))
-		const response: AppOAuth = await client.apps.regenerateOauth('sdktest-234-1582991474199', oauthGenerate.request.data)
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(oauthGenerate.request))
-		expect(response).toBe(oauthGenerate.response)
+	test('Update OAuth', async () => {
+		putSpy.mockResolvedValueOnce(MOCK_APP_OAUTH)
+		const oauthRequest = { redirectUris: [] } as unknown as AppOAuthRequest
+
+		const response = await apps.updateOauth('appId', oauthRequest)
+
+		expect(putSpy).toBeCalledWith('appId/oauth', oauthRequest)
+		expect(response).toStrictEqual(MOCK_APP_OAUTH)
 	})
 
-	it('Delete', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deleteApp.response }))
-		const response: Count = await client.apps.delete('sdktest-234-1582991474199')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(deleteApp.request))
-		expect(response).toEqual({ count: 1 })
+	test('Regenerate OAuth', async () => {
+		postSpy.mockResolvedValueOnce(MOCK_APP_OAUTH_GENERATE)
+		const regenerateRequest = { clientName: 'clientName' } as GenerateAppOAuthRequest
+
+		const response = await apps.regenerateOauth('appId', regenerateRequest)
+
+		expect(postSpy).toBeCalledWith('appId/oauth/generate', regenerateRequest)
+		expect(response).toStrictEqual(MOCK_APP_OAUTH_GENERATE)
+	})
+
+	test('Delete', async () => {
+		deleteSpy.mockResolvedValueOnce({})
+
+		await expect(apps.delete('appId')).resolves.toBeUndefined()
+		expect(deleteSpy).toBeCalledWith('appId')
+	})
+
+	test('Delete Error', async () => {
+		const error = new Error('failed')
+		deleteSpy.mockRejectedValueOnce(error)
+
+		await expect(apps.delete('appId')).rejects.toThrow(error)
 	})
 })

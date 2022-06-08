@@ -1,6 +1,6 @@
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { Endpoint } from '../endpoint'
-import { Count, IconImage, Owner, PrincipalType, Status, SuccessStatusValue } from '../types'
+import { IconImage, Owner, PrincipalType, SuccessResponse } from '../types'
 
 
 export enum AppType {
@@ -10,7 +10,6 @@ export enum AppType {
 }
 
 export enum AppClassification {
-
 	AUTOMATION = 'AUTOMATION',
 	SERVICE = 'SERVICE',
 	DEVICE = 'DEVICE',
@@ -31,20 +30,29 @@ export interface LambdaSmartApp {
 	/**
 	 * A list of AWS ARNs referencing a Lambda function.
 	 */
-	functions?: string[]
+	functions: string[]
 }
 
 export interface WebhookSmartApp {
 	/**
 	 * A URL that should be invoked during execution.
 	 */
-	targetUrl?: string
+	targetUrl: string
+	/**
+	 * The registration status of a target url.
+	 */
 	targetStatus?: AppTargetStatus
 	/**
-	 * The public half of an RSA key pair.  Useful for verifying a Webhook
+	 * The public half of an RSA key pair. Useful for verifying a Webhook
 	 * execution request signature to ensure it came from SmartThings.
 	 */
 	publicKey?: string
+	/**
+	 * The http signature type used for authorizing event delivery.
+	 * APP_RSA generates an RSA key pair that will be used to verify requests
+	 * from SmartThings. ST_PADLOCK requires verification through SmartThings
+	 * public certificate.
+	 */
 	signatureType?: SignatureType
 }
 
@@ -58,163 +66,204 @@ export interface ApiOnlyApp {
 }
 
 export interface AppUISettings {
-	pluginId?: string
-	pluginUri?: string
 	dashboardCardsEnabled: boolean
 	preInstallDashboardCardsEnabled: boolean
+	pluginId?: string
+	pluginUri?: string
 }
 
-export interface App {
+export interface AppUpdateRequest {
+	/**
+	 * Denotes the type of app.
+	 */
+	appType: AppType
+	/**
+	 * An App maybe associated to many classifications.  A classification
+	 * drives how the integration is presented to the user in the SmartThings
+	 * mobile clients.  These classifications include:
+	 *
+	 * AUTOMATION - Denotes an integration that should display under the "Automation" tab in mobile clients.
+	 * SERVICE - Denotes an integration that is classified as a "Service".
+	 * DEVICE - Denotes an integration that should display under the "Device" tab in mobile clients.
+	 * CONNECTED_SERVICE - Denotes an integration that should display under the "Connected Services" menu in mobile clients.
+	 */
+	classifications: AppClassification[]
+	/**
+	 * A default display name for an app.
+	 */
+	displayName: string
+	/**
+	 * A default description for an app.
+	 */
+	description: string
+	/**
+	 * Inform the installation systems that a particular app can only be
+	 * installed once within a user's account.
+	 */
+	singleInstance?: boolean
+	/**
+	 * A default icon image for the app.
+	 */
+	iconImage?: IconImage
+	/**
+	 * Details related to a Lambda Smart App implementation.
+	 * This model should only be specified for apps of type LAMBDA_SMART_APP.
+	 */
+	lambdaSmartApp?: LambdaSmartApp
+	/**
+	 * Details related to a Webhook Smart App implementation.
+	 * This model should only be specified for apps of type WEBHOOK_SMART_APP.
+	 */
+	webhookSmartApp?: WebhookSmartApp
+	/**
+	 * Details related to an ApiOnly Smart App implementation.
+	 * This model should only be specified for apps of type API_ONLY.
+	 */
+	apiOnly?: ApiOnlyApp
+	/**
+	 * A collection of settings to drive user interface in SmartThings clients.
+	 * Currently, only applicable for LAMBDA_SMART_APP and WEBHOOK_SMART_APP app types.
+	 */
+	ui?: AppUISettings
+}
+
+export interface AppCreateRequest extends AppUpdateRequest {
+	/**
+	 * A globally unique, developer-defined identifier for an app. It is
+	 * alpha-numeric, may contain dashes, underscores, periods, and must
+	 * be less then 250 characters long.
+	 */
+	appName: string
+	/**
+	 * Denotes the principal type to be used with the app.
+	 * Default is LOCATION.
+	 */
+	principalType?: PrincipalType
+	/**
+	 * App OAuth settings.
+	 */
+	oauth?: Partial<AppOAuthRequest>
+}
+
+export interface PagedApp {
 	/**
 	 * A user defined unique identifier for an app.  It is alpha-numeric, may
 	 * contain dashes, underscores, periods, and be less then 250 characters
 	 * long.  It must be unique within your account.
 	 */
-	appName?: string
+	appName: string
 	/**
 	 * A globally unique identifier for an app.
 	 */
-	appId?: string
-	appType?: AppType
-	principalType?: PrincipalType
+	appId: string
+	/**
+	 * Denotes the type of app.
+	 */
+	appType: AppType
 	/**
 	 * An App maybe associated to many classifications.  A classification
 	 * drives how the integration is presented to the user in the SmartThings
-	 * mobile clients.  These classifications include: * AUTOMATION - Denotes
-	 * an integration that should display under the \"Automation\" tab in
-	 * mobile clients. * SERVICE - Denotes an integration that is classified as
-	 * a \"Service\". * DEVICE - Denotes an integration that should display
-	 * under the \"Device\" tab in mobile clients. * CONNECTED_SERVICE -
-	 * Denotes an integration that should display under the \"Connected
-	 * Services\" menu in mobile clients. * HIDDEN - Denotes an integration
-	 * that should not display in mobile clients
+	 * mobile clients.  These classifications include:
+	 *
+	 * AUTOMATION - Denotes an integration that should display under the "Automation" tab in mobile clients.
+	 * SERVICE - Denotes an integration that is classified as a "Service".
+	 * DEVICE - Denotes an integration that should display under the "Device" tab in mobile clients.
+	 * CONNECTED_SERVICE - Denotes an integration that should display under the "Connected Services" menu in mobile clients.
 	 */
-	classifications?: AppClassification[]
+	classifications: AppClassification[]
 	/**
 	 * A default display name for an app.
 	 */
-	displayName?: string
+	displayName: string
 	/**
 	 * A default description for an app.
 	 */
-	description?: string
+	description: string
+	/**
+	 * A default icon image for the app.
+	 */
+	iconImage: Required<IconImage>
+	/**
+	 * A typed model which provides information around ownership of a specific domain.
+	 */
+	owner: Owner
+	/**
+	 * A UTC ISO-8601 Date-Time String
+	 */
+	createdDate: string
+	/**
+	 * A UTC ISO-8601 Date-Time String
+	 */
+	lastUpdatedDate: string
+}
+
+export interface AppResponse extends PagedApp {
+	/**
+	 * Denotes the principal type to be used with the app.
+	 * Default is LOCATION.
+	 */
+	principalType: PrincipalType
 	/**
 	 * Inform the installation systems that a particular app can only be
 	 * installed once within a user's account.
 	 */
-	singleInstance?: boolean
-	iconImage?: IconImage
+	singleInstance: boolean
 	/**
 	 * System generated metadata that impacts eligibility requirements around
 	 * installing an App.
 	 */
-	installMetadata?: { [key: string]: string }
-	owner?: Owner
-	/**
-	 * A UTC ISO-8601 Date-Time String
-	 */
-	createdDate?: string
-	/**
-	 * A UTC ISO-8601 Date-Time String
-	 */
-	lastUpdatedDate?: string
+	installMetadata: { [key: string]: string }
 	lambdaSmartApp?: LambdaSmartApp
 	webhookSmartApp?: WebhookSmartApp
 	apiOnly?: ApiOnlyApp
-	ui?: AppUISettings
-}
-
-export interface OAuthRequest {
-	clientName: string
-	scope?: string[]
-	redirectUris?: string[]
-}
-
-export interface AppRequest {
-	/**
-	 * A user defined unique identifier for an app.  It is alpha-numeric, may
-	 * contain dashes, underscores, periods, and be less then 250 characters
-	 * long.  It must be unique within your account.
-	 */
-	appName?: string
-	appType?: AppType
-	/**
-	 * An App maybe associated to many classifications.  A classification
-	 * drives how the integration is presented to the user in the SmartThings
-	 * mobile clients.  These classifications include: * AUTOMATION - Denotes
-	 * an integration that should display under the \"Automation\" tab in
-	 * mobile clients. * SERVICE - Denotes an integration that is classified as
-	 * a \"Service\". * DEVICE - Denotes an integration that should display
-	 * under the \"Device\" tab in mobile clients. * CONNECTED_SERVICE -
-	 * Denotes an integration that should display under the \"Connected
-	 * Services\" menu in mobile clients. * HIDDEN - Denotes an integration
-	 * that should not display in mobile clients
-	 */
-	classifications?: AppClassification[]
-	/**
-	 * A default display name for an app.
-	 */
-	displayName?: string
-	/**
-	 * A default description for an app.
-	 */
-	description?: string
-	/**
-	 * Inform the installation systems that a particular app can only be
-	 * installed once within a user's account.
-	 */
-	singleInstance?: boolean
-	iconImage?: IconImage
-	/**
-	 * System generated metadata that impacts eligibility requirements around
-	 * installing an App.
-	 */
-	installMetadata?: { [key: string]: string }
-	lambdaSmartApp?: LambdaSmartApp
-	webhookSmartApp?: WebhookSmartApp
-	ui?: AppUISettings
-	oauth?: OAuthRequest
+	ui: AppUISettings
 }
 
 export interface AppCreationResponse {
-	app: App
+	app: AppResponse
 	oauthClientId: string
 	oauthClientSecret: string
 }
 
-export interface AppOAuth {
+export interface GenerateAppOAuthRequest {
 	/**
 	 * A name given to the OAuth Client.
 	 */
-	clientName?: string
+	clientName: string
 	/**
 	 * A list of SmartThings API OAuth scope identifiers that maybe required to
 	 * execute your integration.
 	 */
-	scope?: string[]
+	scope: string[]
+}
+
+export interface AppOAuthRequest extends GenerateAppOAuthRequest {
 	/**
 	 * A list of redirect URIs.
 	 */
-	redirectUris?: string[]
+	redirectUris: string[]
 }
 
-export interface AppOAuthResponse {
-	clientName: string
+export type AppOAuthResponse = AppOAuthRequest
+
+export interface GenerateAppOAuthResponse {
+	oauthClientDetails: AppOAuthResponse
 	oauthClientId: string
 	oauthClientSecret: string
-	scope?: string[]
-	redirectUris?: string[]
 }
 
-export interface AppSettings {
+export interface AppSettingsRequest {
 	settings?: { [key: string]: string }
 }
+
+export type AppSettingsResponse = Required<AppSettingsRequest>
 
 export interface AppListOptions {
 	appType?: AppType
 	classification?: AppClassification | AppClassification[]
 	tag?: { [key: string]: string }
 }
+
 export class AppsEndpoint extends Endpoint {
 
 	constructor(config: EndpointClientConfig) {
@@ -224,7 +273,7 @@ export class AppsEndpoint extends Endpoint {
 	/**
 	 * Returns a list of all apps belonging to the principal (i.e. the user)
 	 */
-	public async list(options: AppListOptions = {}): Promise<App[]> {
+	public async list(options: AppListOptions = {}): Promise<PagedApp[]> {
 		const params: HttpClientParams = {}
 		if ('appType' in options && options.appType) {
 			params.appType = options.appType
@@ -237,35 +286,30 @@ export class AppsEndpoint extends Endpoint {
 				params[`tag:${key}`] = options.tag[key]
 			}
 		}
-		return this.client.getPagedItems<App>(undefined, params)
+		return this.client.getPagedItems<PagedApp>(undefined, params)
 	}
 
 	/**
 	 * Returns a specific app
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public get(id: string): Promise<App> {
-		return this.client.get<App>(id)
+	public get(id: string): Promise<AppResponse> {
+		return this.client.get(id)
 	}
 
 	/**
 	 * Create a new app. For WEBHOOK_SMART_APPs the default SignatureType is ST_PADLOCK.
 	 * @param data the app definition
 	 */
-	public create(data: AppRequest): Promise<AppCreationResponse> {
+	public create(data: AppCreateRequest): Promise<AppCreationResponse> {
 		// TODO -- use of query params might be temporary
 		const params: HttpClientParams = {}
 		if (data.webhookSmartApp) {
-
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			params.requireConfirmation = true
-
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
+			params.requireConfirmation = 'true'
 			params.signatureType = data.webhookSmartApp.signatureType || 'ST_PADLOCK'
 		}
-		return this.client.post(undefined , data, params)
+
+		return this.client.post(undefined, data, params)
 	}
 
 	/**
@@ -273,7 +317,7 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data the new app definition
 	 */
-	public update(id: string, data: AppRequest): Promise<App> {
+	public update(id: string, data: AppUpdateRequest): Promise<AppResponse> {
 		return this.client.put(id, data)
 	}
 
@@ -281,7 +325,7 @@ export class AppsEndpoint extends Endpoint {
 	 * Get the settings of an app. Settings are string name/value pairs for optional use by the app developer.
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public getSettings(id: string): Promise<AppSettings> {
+	public getSettings(id: string): Promise<AppSettingsResponse> {
 		return this.client.get(`${id}/settings`)
 	}
 
@@ -290,7 +334,7 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data the new app settings
 	 */
-	public updateSettings(id: string, data: AppSettings): Promise<AppSettings> {
+	public updateSettings(id: string, data: AppSettingsRequest): Promise<AppSettingsResponse> {
 		return this.client.put(`${id}/settings`, data)
 	}
 
@@ -300,9 +344,9 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param signatureType the new signature type
 	 */
-	public async updateSignatureType(id: string, signatureType: SignatureType): Promise<Status> {
-		await this.client.put(`${id}/signature-type`, {signatureType})
-		return Promise.resolve(SuccessStatusValue)
+	public async updateSignatureType(id: string, signatureType: SignatureType): SuccessResponse {
+		await this.client.put(`${id}/signature-type`, { signatureType })
+		return Promise.resolve()
 	}
 
 	/**
@@ -310,17 +354,17 @@ export class AppsEndpoint extends Endpoint {
 	 * in order to receive events from SmartThings.
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public async register(id: string): Promise<Status> {
+	public async register(id: string): SuccessResponse {
 		await this.client.put(`${id}/register`)
-		return Promise.resolve(SuccessStatusValue)
+		return Promise.resolve()
 	}
 
 	/**
 	 * Returns the OAuth information for this app, including the name, scopes, and redirect URLs, if any
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public getOauth(id: string): Promise<AppOAuth> {
-		return this.client.get<AppOAuth>(`${id}/oauth`)
+	public getOauth(id: string): Promise<AppOAuthResponse> {
+		return this.client.get(`${id}/oauth`)
 	}
 
 	/**
@@ -329,8 +373,8 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data new OAuth definition
 	 */
-	public updateOauth(id: string, data: AppOAuth): Promise<AppOAuth> {
-		return this.client.put<AppOAuth>(`${id}/oauth`,  data)
+	public updateOauth(id: string, data: AppOAuthRequest): Promise<AppOAuthResponse> {
+		return this.client.put(`${id}/oauth`, data)
 	}
 
 	/**
@@ -339,16 +383,16 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data new OAuth definition
 	 */
-	public regenerateOauth(id: string, data: AppOAuth): Promise<AppOAuthResponse> {
-		return this.client.post<AppOAuthResponse>(`${id}/oauth/generate`, data)
+	public regenerateOauth(id: string, data: GenerateAppOAuthRequest): Promise<GenerateAppOAuthResponse> {
+		return this.client.post(`${id}/oauth/generate`, data)
 	}
 
 	/**
 	 * Deletes the specified app
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public async delete(id: string): Promise<Count> {
+	public async delete(id: string): SuccessResponse {
 		await this.client.delete(id)
-		return { count: 1 }
+		return Promise.resolve()
 	}
 }

@@ -21,11 +21,11 @@ export interface Owner {
 	/**
 	 * The account type which owns the specific domain item.
 	 */
-	'ownerType'?: OwnerType
+	ownerType: OwnerType
 	/**
 	 * A global identifier for owner.
 	 */
-	'ownerId'?: string
+	ownerId: string
 }
 
 export enum PrincipalType {
@@ -55,3 +55,8 @@ export interface LocaleReference {
  * @example en
  */
 export type LocaleTag = string
+
+/**
+ * The default SDK response for APIs that return empty JSON bodies
+ */
+export type SuccessResponse = Promise<void>
