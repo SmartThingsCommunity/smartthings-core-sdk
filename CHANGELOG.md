@@ -1,3 +1,18 @@
+## [5.0.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v4.2.0...v5.0.0) (2022-06-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **apps:** Most of the request/response models related to apps will need to be updated.
+
+Anything using `App` will need to be changed to either `AppResponse` (if used with GET)
+or `PagedApp` (if used with LIST). AppEndpoints that previously returned `Count` or `Status` now
+return an empty Promise.
+
+### Bug Fixes
+
+* **apps:** update models to match API spec ([84c41b3](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/84c41b326bbc6b10128c2dfcf84c5985e38f60d5)), closes [#89](https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/89)
+
 ## [4.2.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v4.1.0...v4.2.0) (2022-06-01)
 
 
