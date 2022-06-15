@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
           cache: "npm"
       - run: npm ci --ignore-scripts
       - run: npx commitlint --from HEAD~${{ github.event.pull_request.commits }} --to HEAD
@@ -30,12 +30,12 @@ jobs:
     strategy:
       matrix:
         # add/remove versions as we move support forward
-        node-version: [12, 14, 16]
+        node-version: [14, 16, 18]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -53,18 +53,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - run: npm ci
       - name: Release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.PI_GITHUB_TOKEN }}
-          GIT_AUTHOR_NAME: smartthingspi
-          GIT_AUTHOR_EMAIL: pi-team@smartthings.com
-          GIT_COMMITTER_NAME: smartthingspi
-          GIT_COMMITTER_EMAIL: pi-team@smartthings.com
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
