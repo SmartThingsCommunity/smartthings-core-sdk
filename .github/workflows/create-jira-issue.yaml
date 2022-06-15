@@ -10,7 +10,7 @@ jobs:
     with:
       trigger-label: reviewed
       project: PI
-      fields: '{"labels": ["pi-github"],"components": [{"id": "19894"}]}'
+      fields: '{"labels": ["pi-github"], "components": [{"id": "19894"}, {"id": "19513"}]}'
     secrets:
       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
