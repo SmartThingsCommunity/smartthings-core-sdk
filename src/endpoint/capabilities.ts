@@ -44,7 +44,7 @@ export interface CapabilityJSONSchema {
 	enum?: string[]
 	propertyName?: unknown
 	properties?: { [name: string]: CapabilityJSONSchema }
-	items?: CapabilityJSONSchema | [CapabilityJSONSchema]
+	items?: CapabilityJSONSchema | CapabilityJSONSchema[]
 	title?: string
 }
 
