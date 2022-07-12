@@ -106,6 +106,24 @@ export interface SchemaAppRequest {
 	 * webhook url for the partner
 	 */
 	webhookUrl?: string
+
+	/**
+	 * email for the partner
+	 */
+	userEmail: string
+
+	/**
+	 * Data to support deep-linking to partner's mobile app
+	 */
+	viperAppLinks?: ViperAppLinks
+}
+
+export interface ViperAppLinks {
+	android?: string
+
+	ios?: string
+
+	isLinkingEnabled?: boolean
 }
 
 interface SchemaAppList {
