@@ -1,133 +1,113 @@
-import axios from '../../__mocks__/axios'
 import {
-	BearerTokenAuthenticator,
 	SmartThingsClient,
-	SchemaApp, SchemaPage,
+	SchemaApp,
+	SchemaAppRequest,
 	Status,
-	SuccessStatusValue, InstalledSchemaApp,
+	SuccessStatusValue,
+	InstalledSchemaApp,
+	EndpointClient,
+	SchemaCreateResponse,
+	NoOpAuthenticator,
 } from '../../src'
-import { expectedRequest } from './helpers/utils'
-import {
-	get_schema_apps as list,
-	get_schema_apps_viper_4cb1e740_d415_11e9_8250_8f49824a9876 as get,
-	get_schema_install_viper_4cb1e740_d415_11e9_8250_8f49824a9876 as getAuthorized,
-	get_schema_install_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as getUnauthorized,
-	get_schema_installedapps_location_95efee9b_6073_4871_b5ba_de6642187293 as listInstalledApps,
-	get_schema_installedapps_df5dd5f2_7080_4c0b_8bbb_1b64e05ccbd5 as getInstalledApp,
-} from './data/schema/get'
-import {
-	post_schema_apps as create,
-	post_oauth_update as updateOauth,
-} from './data/schema/post'
-import {
-	put_schema_apps_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as update,
-} from './data/schema/put'
-import {
-	delete_schema_installedapps_b2e93ec5_23e3_45dc_acad_d70c3f044b1d as deleteInstalledApp,
-	delete_schema_apps_viper_9e767550_5f2a_11ea_9ea0_bb3ce8866e53 as deleteApp,
-} from './data/schema/delete'
 
 
-const client = new SmartThingsClient(
-	new BearerTokenAuthenticator('00000000-0000-0000-0000-000000000000'))
+const client = new SmartThingsClient(new NoOpAuthenticator())
 
 describe('Schema', () => {
+	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
+	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
+	const postSpy = jest.spyOn(EndpointClient.prototype, 'post')
+	const putSpy = jest.spyOn(EndpointClient.prototype, 'put')
+
 	afterEach(() => {
-		axios.request.mockReset()
+		jest.clearAllMocks()
 	})
 
 	it('List', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response }))
-		const response: SchemaApp[] = await client.schema.list()
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(list.request))
-		expect(response).toBe(list.response.endpointApps)
+		const list = [{endpointAppId: 'endpoint_app_id'}] as SchemaApp[]
+		getSpy.mockResolvedValueOnce({endpointApps: list})
+		const response = await client.schema.list()
+		expect(getSpy).toHaveBeenCalledWith('apps')
+		expect(response).toStrictEqual(list)
 	})
 
 	it('Get app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: get.response }))
-		const response: SchemaApp = await client.schema.get('viper_4cb1e740-d415-11e9-8250-8f49824a9876')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(get.request))
-		expect(response).toBe(get.response)
+		const app = {endpointAppId: 'endpoint_app_id'}
+		getSpy.mockResolvedValueOnce(app)
+		const response = await client.schema.get('endpoint_app_id')
+		expect(getSpy).toHaveBeenCalledWith('apps/endpoint_app_id')
+		expect(response).toBe(app)
 	})
 
 	it('Create app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: create.response }))
-		const response: SchemaApp = await client.schema.create({
-			'appName': 'Functional Test Schema App',
-			'partnerName': 'Functional Test',
-			'hostingType': 'lambda',
-			'oAuthAuthorizationUrl': 'https://st-schema.ngrok.io/oauth/login',
-			'oAuthClientId': '15245388-2660-4a3e-a1be-1e276dba1377',
-			'oAuthClientSecret': '90459b40-cc1a-4f4e-8a50-0b8bca9892b4',
-			'oAuthTokenUrl': 'https://st-schema.ngrok.io/oauth/token',
-			'icon': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYU2Cs',
-			'icon2x': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYU2Cs',
-			'icon3x': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYU2Cs',
-			'lambdaArn': 'arn:aws:lambda:us-east-1:084870046141:function:st-virtual-devices',
-		})
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(create.request))
-		expect(response).toBe(create.response)
+		const app = { appName: 'Test app' } as SchemaAppRequest
+		postSpy.mockResolvedValueOnce(app)
+		const response = await client.schema.create(app)
+		expect(postSpy).toHaveBeenCalledWith('apps', app)
+		expect(response).toStrictEqual(app)
 	})
 
 	it('Update app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: update.response }))
-		const response: Status = await client.schema.update('viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53', {
-			'appName': 'Functional Test Schema App (Modified)',
-			'partnerName': 'Functional Test (Modified)',
-			'icon': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYUxyz',
-			'icon2x': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYUxyz',
-			'icon3x': 'https://catalog3rd.samsungiotcloud.com/devws/j2fF9Fg3oClYUxyz',
-		})
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(update.request))
+		const app = { appName: 'Test app (modified)' } as SchemaAppRequest
+		const id = 'viper_app_id'
+		putSpy.mockResolvedValueOnce(app)
+		const response: Status = await client.schema.update(id, app as SchemaAppRequest)
+		expect(putSpy).toHaveBeenCalledWith(`apps/${id}`, app)
 		expect(response).toEqual(SuccessStatusValue)
 	})
 
 	it('Regenerate OAuth', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: updateOauth.response }))
-		const response: SchemaApp = await client.schema.regenerateOauth('viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(updateOauth.request))
-		expect(response).toEqual(updateOauth.response)
+		const app = { endpointAppId: 'viper_app_id', stClientId: 'xxx', stClientSecret: 'yyy' } as SchemaCreateResponse
+		postSpy.mockResolvedValueOnce(app)
+		const response = await client.schema.regenerateOauth('viper_app_id')
+		expect(postSpy).toHaveBeenCalledWith('oauth/stclient/credentials', { endpointAppId: 'viper_app_id' })
+		expect(response).toStrictEqual(app)
 	})
 
-	it('Get authorized page', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getAuthorized.response }))
-		const response: SchemaPage = await client.schema.getPage('viper_4cb1e740-d415-11e9-8250-8f49824a9876', '95efee9b-6073-4871-b5ba-de6642187293')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getAuthorized.request))
-		expect(response).toEqual(getAuthorized.response)
-	})
-
-	it('Get unauthorized page', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getUnauthorized.response }))
-		const response: SchemaPage = await client.schema.getPage('viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53', '95efee9b-6073-4871-b5ba-de6642187293')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getUnauthorized.request))
-		expect(response).toEqual(getUnauthorized.response)
+	it('Get page', async () => {
+		const page = { pageType: 'requiresLogin' }
+		getSpy.mockResolvedValueOnce(page)
+		const response = await client.schema.getPage('viper_app_id', 'location_id')
+		expect(getSpy).toHaveBeenCalledWith('install/viper_app_id?locationId=location_id&type=oauthLink')
+		expect(response).toStrictEqual(page)
 	})
 
 	it('List installed apps', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: listInstalledApps.response }))
-		const response: InstalledSchemaApp[] = await client.schema.installedApps('95efee9b-6073-4871-b5ba-de6642187293')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(listInstalledApps.request))
-		expect(response).toBe(listInstalledApps.response.installedSmartApps)
+		const list = [{ isaId: 'isa_id'}]
+		getSpy.mockResolvedValueOnce({installedSmartApps: list})
+		const response = await client.schema.installedApps('location_id')
+		expect(getSpy).toHaveBeenCalledWith('installedapps/location/location_id')
+		expect(response).toStrictEqual(list)
 	})
 
+	it('List installed apps empty', async () => {
+		const list: InstalledSchemaApp[] = []
+		getSpy.mockResolvedValueOnce(undefined)
+		const response = await client.schema.installedApps('location_id')
+		expect(getSpy).toHaveBeenCalledWith('installedapps/location/location_id')
+		expect(response).toStrictEqual(list)
+	})
+
+
 	it('Get installed app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: getInstalledApp.response }))
-		const response: InstalledSchemaApp = await client.schema.getInstalledApp('df5dd5f2-7080-4c0b-8bbb-1b64e05ccbd5')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(getInstalledApp.request))
-		expect(response).toBe(getInstalledApp.response)
+		const app = { isaId: 'isa_id'}
+		getSpy.mockResolvedValueOnce(app)
+		const response = await client.schema.getInstalledApp('isa_id')
+		expect(getSpy).toHaveBeenCalledWith('installedapps/isa_id')
+		expect(response).toStrictEqual(app)
 	})
 
 	it('Delete installed app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deleteInstalledApp.response }))
-		const response: Status = await client.schema.deleteInstalledApp('b2e93ec5-23e3-45dc-acad-d70c3f044b1d')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(deleteInstalledApp.request))
+		deleteSpy.mockResolvedValueOnce(undefined)
+		const response = await client.schema.deleteInstalledApp('isa_id')
+		expect(deleteSpy).toHaveBeenCalledWith('installedapps/isa_id')
 		expect(response).toEqual(SuccessStatusValue)
 	})
 
 	it('Delete app', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: deleteApp.response }))
-		const response: Status = await client.schema.delete('viper_9e767550-5f2a-11ea-9ea0-bb3ce8866e53')
-		expect(axios.request).toHaveBeenCalledWith(expectedRequest(deleteApp.request))
+		deleteSpy.mockResolvedValueOnce(undefined)
+		const response = await client.schema.delete('endpoint_app_id')
+		expect(deleteSpy).toHaveBeenCalledWith('apps/endpoint_app_id')
 		expect(response).toEqual(SuccessStatusValue)
 	})
 
