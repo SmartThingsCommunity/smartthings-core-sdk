@@ -64,5 +64,7 @@ jobs:
       - name: Release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # We can't use the built-in GITHUB_TOKEN for releases, at least for now.
+          # https://github.com/github-community/community/discussions/13836
+          GITHUB_TOKEN: ${{ secrets.PI_GITHUB_TOKEN }}
         run: npx semantic-release
