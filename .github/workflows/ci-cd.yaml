@@ -45,6 +45,8 @@ jobs:
       - run: npm test
 
   release:
+    needs: build
+
     # don't run on forks
     if: ${{ github.repository_owner == 'SmartThingsCommunity' && github.ref == 'refs/heads/master' }}
 
