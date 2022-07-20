@@ -66,5 +66,9 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           # We can't use the built-in GITHUB_TOKEN for releases, at least for now.
           # https://github.com/github-community/community/discussions/13836
-          GH_TOKEN: ${{ secrets.PI_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PI_GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: smartthingspi
+          GIT_AUTHOR_EMAIL: pi-team@smartthings.com
+          GIT_COMMITTER_NAME: smartthingspi
+          GIT_COMMITTER_EMAIL: pi-team@smartthings.com
         run: npx semantic-release
