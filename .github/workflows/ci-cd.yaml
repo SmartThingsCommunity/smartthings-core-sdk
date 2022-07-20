@@ -67,4 +67,4 @@ jobs:
           # We can't use the built-in GITHUB_TOKEN for releases, at least for now.
           # https://github.com/github-community/community/discussions/13836
           GH_TOKEN: ${{ secrets.PI_GITHUB_TOKEN }}
-        run: npx semantic-release --debug
+        run: npx semantic-release
