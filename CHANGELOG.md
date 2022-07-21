@@ -1,3 +1,15 @@
+## [5.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.0.0...v5.1.0) (2022-07-21)
+
+
+### Features
+
+* added userEmail and app links fields to ST schema apps ([237c1a0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/237c1a071819aec9595259db8339b60664478f3a))
+
+
+### Bug Fixes
+
+* correct type of JSON schema v4 items property ([e33f37b](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/e33f37bc9fb9a032748422f334f767efc48d2b9c))
+
 ## [5.0.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v4.2.0...v5.0.0) (2022-06-13)
 
 
