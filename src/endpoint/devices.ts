@@ -256,6 +256,8 @@ export interface CommandMappings {
 
 export interface VirtualDeviceDetails {
 	name?: string
+	hubId?: string
+	driverId?: string
 	commandMappings?: CommandMappings
 }
 

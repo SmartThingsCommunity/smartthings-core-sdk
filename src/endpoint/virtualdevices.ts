@@ -1,6 +1,6 @@
 import { Endpoint} from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
-import { CommandMapping, Device, DeviceEvent } from './devices'
+import { CommandMappings, Device, DeviceEvent } from './devices'
 import { DeviceProfileCreateRequest } from './deviceprofiles'
 
 
@@ -19,7 +19,7 @@ export interface VirtualDeviceCreateRequest {
 	deviceProfileId?: string
 	deviceProfile?: DeviceProfileCreateRequest
 	roomId?: string
-	commandMappings?: CommandMapping
+	commandMappings?: CommandMappings
 	executionTarget?: ExecutionTarget
 	hubId?: string
 	driverId?: string
