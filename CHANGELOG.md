@@ -1,3 +1,10 @@
+## [5.1.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.0...v5.1.1) (2022-08-03)
+
+
+### Bug Fixes
+
+* update virtual device fields ([264bc1b](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/264bc1b4880618a5b0b750307151d2274881d90c))
+
 ## [5.1.0](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.0.0...v5.1.0) (2022-07-21)
 
 
