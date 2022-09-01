@@ -17,6 +17,24 @@ describe('HubdevicesEndpoint', () => {
 	const authenticator = new NoOpAuthenticator()
 	const hubdevicesEndpoint = new HubdevicesEndpoint({ authenticator })
 
+	test('get', async () => {
+		putSpy.mockImplementationOnce(() => Promise.resolve())
+
+		await expect(hubdevicesEndpoint.get('hub-id')).resolves.not.toThrow()
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('hub-id')
+	})
+
+	test('getCharacteristics', async () => {
+		putSpy.mockImplementationOnce(() => Promise.resolve())
+
+		await expect(hubdevicesEndpoint.getCharacteristics('hub-id')).resolves.not.toThrow()
+
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toHaveBeenCalledWith('hub-id/characteristics')
+	})
+
 	test('installDriver', async () => {
 		putSpy.mockImplementationOnce(() => Promise.resolve())
 
