@@ -46,14 +46,44 @@ export interface InstalledDriver {
 	permissions: { [name: string]: any }
 }
 
+export interface Hub {
+	id: string
+	name: string
+	eui: string
+	owner: string
+	serialNumber: string
+	firmwareVersion: string
+}
+
+export interface HubCharacteristics {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[key: string]: any
+}
+
 export class HubdevicesEndpoint extends Endpoint {
 	constructor(config: EndpointClientConfig) {
 		super(new EndpointClient('hubdevices', config))
 	}
 
 	/**
-	 * Install driver on a hub. The primary use case of this functionality is to install a self
-	 * published driver to be included in generic discovery (e.g. scanning).
+	 * Get a hub record
+	 * @param hubId
+	 */
+	public async get(hubId: string): Promise<Hub> {
+		return this.client.get(`${hubId}`)
+	}
+
+	/**
+	 * Get the characteristics of a hub
+	 * @param hubId
+	 */
+	public async getCharacteristics(hubId: string): Promise<HubCharacteristics> {
+		return this.client.get(`${hubId}/characteristics`)
+	}
+
+	/**
+	 * Install driver on a hub. The primary use case of this functionality is to install a
+	 * self-published driver to be included in generic discovery (e.g. scanning).
 	 */
 	public async installDriver(driverId: string, hubId: string, channelId: string): Promise<void> {
 		return this.client.put(`${hubId}/drivers/${driverId}`, { channelId })
