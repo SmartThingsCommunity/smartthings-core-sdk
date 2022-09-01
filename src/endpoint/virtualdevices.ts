@@ -23,6 +23,7 @@ export interface VirtualDeviceCreateRequest {
 	executionTarget?: ExecutionTarget
 	hubId?: string
 	driverId?: string
+	channelId?: string
 }
 
 export interface VirtualDeviceStandardCreateRequest {
@@ -33,6 +34,7 @@ export interface VirtualDeviceStandardCreateRequest {
 	executionTarget?: ExecutionTarget
 	hubId?: string
 	driverId?: string
+	channelId?: string
 }
 
 export interface VirtualDeviceListOptions {
