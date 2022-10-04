@@ -20,6 +20,7 @@ export interface SchemaApp extends SchemaAppRequest {
 	certificationStatus?: string
 }
 
+export type PartnerSTConnection = 'connected' | 'disconnected'
 export interface SchemaAppRequest {
 
 	/**
@@ -190,6 +191,11 @@ export interface InstalledSchemaApp {
 	 * generated oAuth link for the user to login to partner server. This will only be returned when the user is not logged in.
 	 */
 	oAuthLink?: string
+
+	/**
+	 * connection status between partner and ST platform
+	 */
+	partnerSTConnection?: PartnerSTConnection
 }
 
 interface InstalledSchemaAppList {

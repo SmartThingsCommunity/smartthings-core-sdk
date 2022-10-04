@@ -169,6 +169,8 @@ export interface EdgeDriverSummary {
 	 */
 	name: string
 
+	description?: string
+
 	/**
 	 * A user-scoped package key used to look up the respective driver record.
 	 *
