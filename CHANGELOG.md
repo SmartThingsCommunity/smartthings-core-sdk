@@ -1,3 +1,11 @@
+## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
+
+
+### Bug Fixes
+
+* add a couple missing fields in model objects ([d1847ff](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/d1847ffb649a84db3cae431e8e47039d1cd687bd))
+* added channelId to virtual device create requests ([5906448](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/59064482b9409868cdb5abe3b0f09848dc531206))
+
 ## [5.1.1](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.0...v5.1.1) (2022-08-03)
 
 
