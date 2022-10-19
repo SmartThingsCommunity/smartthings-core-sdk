@@ -26,13 +26,28 @@ describe('HubdevicesEndpoint', () => {
 		expect(putSpy).toHaveBeenCalledWith('hub-id/drivers/driver-id', { channelId: 'channel-id' })
 	})
 
-	test('switchDriver', async () => {
-		patchSpy.mockImplementationOnce(() => Promise.resolve())
+	describe('switchDriver', () => {
+		it('calls patch with driver id', async () => {
+			patchSpy.mockImplementationOnce(() => Promise.resolve())
 
-		await expect(hubdevicesEndpoint.switchDriver('driver-id', 'hub-id', 'device-id')).resolves.not.toThrow()
+			await expect(hubdevicesEndpoint.switchDriver('driver-id', 'hub-id', 'device-id'))
+				.resolves.not.toThrow()
 
-		expect(patchSpy).toHaveBeenCalledTimes(1)
-		expect(patchSpy).toHaveBeenCalledWith('hub-id/childdevice/device-id', { driverId: 'driver-id' })
+			expect(patchSpy).toHaveBeenCalledTimes(1)
+			expect(patchSpy).toHaveBeenCalledWith('hub-id/childdevice/device-id',
+				{ driverId: 'driver-id' }, undefined)
+		})
+
+		it('includes forceUpdate query parameter when specified', async () => {
+			patchSpy.mockImplementationOnce(() => Promise.resolve())
+
+			await expect(hubdevicesEndpoint.switchDriver('driver-id', 'hub-id', 'device-id', true))
+				.resolves.not.toThrow()
+
+			expect(patchSpy).toHaveBeenCalledTimes(1)
+			expect(patchSpy).toHaveBeenCalledWith('hub-id/childdevice/device-id',
+				{ driverId: 'driver-id' }, { forceUpdate: 'true' })
+		})
 	})
 
 	test('uninstallDriver', async () => {
