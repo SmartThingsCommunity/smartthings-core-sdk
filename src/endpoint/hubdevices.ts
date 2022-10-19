@@ -62,8 +62,9 @@ export class HubdevicesEndpoint extends Endpoint {
 	/**
 	 * Change the driver for a device to the one specified by driverId.
 	 */
-	public async switchDriver(driverId: string, hubId: string, deviceId: string): Promise<void> {
-		return this.client.patch(`${hubId}/childdevice/${deviceId}`, { driverId })
+	public async switchDriver(driverId: string, hubId: string, deviceId: string, forceUpdate = false): Promise<void> {
+		return this.client.patch(`${hubId}/childdevice/${deviceId}`, { driverId },
+			forceUpdate ? { forceUpdate: 'true' } : undefined)
 	}
 
 	/**
