@@ -28,9 +28,10 @@ We're always looking for more opinions on discussions in the issue tracker. It's
 - New features should be accompanied with tests and documentation
 - Commit messages
   - Use a clear and descriptive title for the pull request and commits
-  - We use [semantic-release](https://www.npmjs.com/package/semantic-release) to automatically generate release
-    notes, versions and publish releases. This requires commit messages must be formatted properly using
-    [conventional commit format](https://www.conventionalcommits.org/en/v1.0.0/). Our CI will check this and fail any PRs that are formatted incorrectly.
+  - We use changesets to automatically version and publish releases, and generate release notes.
+    Please include one with your pull request by following the instructions to
+	[add a changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md).
+	We have a bot that will remind you to include one with your pull request if you forget.
   - This repo is [commitizen friendly](https://github.com/commitizen/cz-cli), so you can use the `cz` cli to help create your commits.
 - Lint and test before submitting the pull request
   - `npm run lint`
