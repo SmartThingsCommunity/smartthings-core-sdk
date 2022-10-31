@@ -65,6 +65,7 @@
 		"build": "npm run clean && npm run compile",
 		"docs-gen": "typedoc --out docs src/index.ts",
 		"json-docs-gen": "typedoc --json dist/docs.json src/index.ts",
+		"version": "changeset version && npm i --package-lock-only && npm run build",
 		"release": "npm run build && changeset publish"
 	}
 }
