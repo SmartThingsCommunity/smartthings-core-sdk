@@ -380,7 +380,7 @@ export class InstalledAppsEndpoint extends Endpoint{
 	}
 
 	/**
-	 * Returns the token info for an intalled app principal
+	 * Returns the token info for an installed app principal
 	 */
 	public tokenInfo(): Promise<TokenInformation> {
 		return this.client.get<TokenInformation>('me')
