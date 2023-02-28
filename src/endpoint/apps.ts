@@ -38,15 +38,18 @@ export interface WebhookSmartApp {
 	 * A URL that should be invoked during execution.
 	 */
 	targetUrl: string
+
 	/**
 	 * The registration status of a target url.
 	 */
 	targetStatus?: AppTargetStatus
+
 	/**
 	 * The public half of an RSA key pair. Useful for verifying a Webhook
 	 * execution request signature to ensure it came from SmartThings.
 	 */
 	publicKey?: string
+
 	/**
 	 * The http signature type used for authorizing event delivery.
 	 * APP_RSA generates an RSA key pair that will be used to verify requests
@@ -65,6 +68,15 @@ export interface ApiOnlyApp {
 	subscription?: ApiOnlySubscription
 }
 
+export interface ApiOnlyAppRequest {
+	/**
+	 * Optional target url to receive events. Url scheme must be https.
+	 *
+	 * Must be <= 2048 characters.
+	 */
+	targetUrl?: string
+}
+
 export interface AppUISettings {
 	dashboardCardsEnabled: boolean
 	preInstallDashboardCardsEnabled: boolean
@@ -72,11 +84,14 @@ export interface AppUISettings {
 	pluginUri?: string
 }
 
-export interface AppUpdateRequest {
+export interface AppBase {
 	/**
-	 * Denotes the type of app.
+	 * A user defined unique identifier for an app.  It is alpha-numeric, may
+	 * contain dashes, underscores, periods, and be less then 250 characters
+	 * long.  It must be unique within your account.
 	 */
-	appType: AppType
+	appName: string
+
 	/**
 	 * An App maybe associated to many classifications.  A classification
 	 * drives how the integration is presented to the user in the SmartThings
@@ -88,38 +103,48 @@ export interface AppUpdateRequest {
 	 * CONNECTED_SERVICE - Denotes an integration that should display under the "Connected Services" menu in mobile clients.
 	 */
 	classifications: AppClassification[]
+
 	/**
 	 * A default display name for an app.
 	 */
 	displayName: string
+
 	/**
 	 * A default description for an app.
 	 */
 	description: string
+}
+
+export interface AppUpdateRequest extends AppBase {
 	/**
 	 * Inform the installation systems that a particular app can only be
 	 * installed once within a user's account.
 	 */
 	singleInstance?: boolean
+
 	/**
 	 * A default icon image for the app.
 	 */
 	iconImage?: IconImage
+
 	/**
 	 * Details related to a Lambda Smart App implementation.
 	 * This model should only be specified for apps of type LAMBDA_SMART_APP.
 	 */
 	lambdaSmartApp?: LambdaSmartApp
+
 	/**
 	 * Details related to a Webhook Smart App implementation.
 	 * This model should only be specified for apps of type WEBHOOK_SMART_APP.
 	 */
 	webhookSmartApp?: WebhookSmartApp
+
 	/**
 	 * Details related to an ApiOnly Smart App implementation.
 	 * This model should only be specified for apps of type API_ONLY.
 	 */
-	apiOnly?: ApiOnlyApp
+	apiOnly?: ApiOnlyAppRequest
+
 	/**
 	 * A collection of settings to drive user interface in SmartThings clients.
 	 * Currently, only applicable for LAMBDA_SMART_APP and WEBHOOK_SMART_APP app types.
@@ -134,63 +159,45 @@ export interface AppCreateRequest extends AppUpdateRequest {
 	 * be less then 250 characters long.
 	 */
 	appName: string
+
 	/**
 	 * Denotes the principal type to be used with the app.
 	 * Default is LOCATION.
 	 */
 	principalType?: PrincipalType
+
 	/**
 	 * App OAuth settings.
 	 */
 	oauth?: Partial<AppOAuthRequest>
 }
 
-export interface PagedApp {
-	/**
-	 * A user defined unique identifier for an app.  It is alpha-numeric, may
-	 * contain dashes, underscores, periods, and be less then 250 characters
-	 * long.  It must be unique within your account.
-	 */
-	appName: string
+export interface PagedApp extends AppBase {
 	/**
 	 * A globally unique identifier for an app.
 	 */
 	appId: string
+
 	/**
 	 * Denotes the type of app.
 	 */
 	appType: AppType
-	/**
-	 * An App maybe associated to many classifications.  A classification
-	 * drives how the integration is presented to the user in the SmartThings
-	 * mobile clients.  These classifications include:
-	 *
-	 * AUTOMATION - Denotes an integration that should display under the "Automation" tab in mobile clients.
-	 * SERVICE - Denotes an integration that is classified as a "Service".
-	 * DEVICE - Denotes an integration that should display under the "Device" tab in mobile clients.
-	 * CONNECTED_SERVICE - Denotes an integration that should display under the "Connected Services" menu in mobile clients.
-	 */
-	classifications: AppClassification[]
-	/**
-	 * A default display name for an app.
-	 */
-	displayName: string
-	/**
-	 * A default description for an app.
-	 */
-	description: string
+
 	/**
 	 * A default icon image for the app.
 	 */
 	iconImage: Required<IconImage>
+
 	/**
 	 * A typed model which provides information around ownership of a specific domain.
 	 */
 	owner: Owner
+
 	/**
 	 * A UTC ISO-8601 Date-Time String
 	 */
 	createdDate: string
+
 	/**
 	 * A UTC ISO-8601 Date-Time String
 	 */
@@ -203,16 +210,19 @@ export interface AppResponse extends PagedApp {
 	 * Default is LOCATION.
 	 */
 	principalType: PrincipalType
+
 	/**
 	 * Inform the installation systems that a particular app can only be
 	 * installed once within a user's account.
 	 */
 	singleInstance: boolean
+
 	/**
 	 * System generated metadata that impacts eligibility requirements around
 	 * installing an App.
 	 */
 	installMetadata: { [key: string]: string }
+
 	lambdaSmartApp?: LambdaSmartApp
 	webhookSmartApp?: WebhookSmartApp
 	apiOnly?: ApiOnlyApp
@@ -230,6 +240,7 @@ export interface GenerateAppOAuthRequest {
 	 * A name given to the OAuth Client.
 	 */
 	clientName: string
+
 	/**
 	 * A list of SmartThings API OAuth scope identifiers that maybe required to
 	 * execute your integration.
