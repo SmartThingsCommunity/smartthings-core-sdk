@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 5.2.1
+
+### Patch Changes
+
+- [#196](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/196) [`12a8ba4`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/12a8ba41ebcc80db414799cc6390cdd70854c2fd) Thanks [@rossiam](https://github.com/rossiam)! - minor fixes to app types
+
 ## 5.2.0
 
 ### Minor Changes
