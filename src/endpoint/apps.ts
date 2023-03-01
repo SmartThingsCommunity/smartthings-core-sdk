@@ -93,6 +93,11 @@ export interface AppBase {
 	appName: string
 
 	/**
+	 * Denotes the type of app.
+	 */
+	appType: AppType
+
+	/**
 	 * An App maybe associated to many classifications.  A classification
 	 * drives how the integration is presented to the user in the SmartThings
 	 * mobile clients.  These classifications include:
@@ -177,11 +182,6 @@ export interface PagedApp extends AppBase {
 	 * A globally unique identifier for an app.
 	 */
 	appId: string
-
-	/**
-	 * Denotes the type of app.
-	 */
-	appType: AppType
 
 	/**
 	 * A default icon image for the app.
