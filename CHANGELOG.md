@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 5.3.0
+
+### Minor Changes
+
+- [#200](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/200) [`32838ab`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/32838abe7199f12e169a94f3ba93a1026160656b) Thanks [@bflorian](https://github.com/bflorian)! - Added hub characteristics endpoint
+
 ## 5.2.1
 
 ### Patch Changes
