@@ -1,9 +1,8 @@
-module.exports = {
-	globals: {
-		'ts-jest': {
-			tsconfig: 'tsconfig.json',
-		},
-	},
+import { Config } from 'jest'
+
+
+const config: Config = {
+	preset: 'ts-jest',
 	moduleFileExtensions: [
 		'ts',
 		'js',
@@ -14,3 +13,5 @@ module.exports = {
 	collectCoverageFrom: ['src/**/*.ts'],
 	testEnvironment: 'node',
 }
+
+export default config

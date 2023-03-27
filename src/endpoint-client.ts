@@ -180,7 +180,7 @@ export class EndpointClient {
 			headers: options?.headerOverrides ? { ...headers, ...options.headerOverrides } : headers,
 			params,
 			data,
-			paramsSerializer: params => qs.stringify(params, { indices: false }),
+			paramsSerializer: { serialize: params => qs.stringify(params, { indices: false }) },
 		}
 
 		axiosConfig = await this.config.authenticator.authenticate(axiosConfig)
