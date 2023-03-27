@@ -1,5 +1,13 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 6.0.0
+
+### Major Changes
+
+- [#202](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/202) [`915c120`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/915c120c0264ae38e04891b63bdc11ef4078c87d) Thanks [@rossiam](https://github.com/rossiam)! - updated dependencies, including major axios update
+
+  NOTE: Dependents which use axios should also update it.
+
 ## 5.3.0
 
 ### Minor Changes
