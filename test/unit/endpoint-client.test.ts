@@ -1,5 +1,5 @@
 import { Mutex } from 'async-mutex'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse, CustomParamsSerializer, ParamsSerializerOptions } from 'axios'
 import qs from 'qs'
 
 import { AuthData, Authenticator, BearerTokenAuthenticator, NoOpAuthenticator, RefreshData,
@@ -150,17 +150,18 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 
 			const stringifyMock = (qs.stringify as jest.Mock<string, [unknown]>)
 				.mockReturnValue('stringified parameters')
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const paramsSerializer = mockRequest.mock.calls[0][0].paramsSerializer as (params: any) => string
+			const serialize = (mockRequest.mock.calls[0][0].paramsSerializer as ParamsSerializerOptions)
+				?.serialize as CustomParamsSerializer
 
-			expect(paramsSerializer).toBeDefined()
-			expect(paramsSerializer({ param: 'value' })).toBe('stringified parameters')
+			expect(serialize).toBeDefined()
+			expect(serialize({ param: 'value' })).toBe('stringified parameters')
 
 			expect(stringifyMock).toHaveBeenCalledTimes(1)
 			expect(stringifyMock).toHaveBeenCalledWith({ param: 'value' }, { indices: false })
@@ -184,7 +185,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -203,7 +204,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -226,7 +227,7 @@ describe('EndpointClient',  () => {
 				},
 				data: { name: 'Bob' },
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -244,7 +245,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -256,7 +257,7 @@ describe('EndpointClient',  () => {
 				status: 200,
 				data: { status: 'ok' },
 				headers: { warning: '299 - "Danger, Will Robinson! Danger!"' },
-			} as AxiosResponse)
+			} as unknown as AxiosResponse)
 			const response = await client.request('GET', 'my/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
@@ -267,7 +268,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 
@@ -284,7 +285,7 @@ describe('EndpointClient',  () => {
 				status: 200,
 				data: { status: 'ok' },
 				headers: { warning: 'warning message in header' },
-			} as AxiosResponse)
+			} as unknown as AxiosResponse)
 
 			expect(client.request('GET', 'my/path')).resolves.not.toThrow
 		})
@@ -320,7 +321,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -339,7 +340,7 @@ describe('EndpointClient',  () => {
 				params: {
 					locationId: 'XXX',
 				},
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -356,7 +357,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -373,7 +374,7 @@ describe('EndpointClient',  () => {
 				},
 				data: undefined,
 				params: undefined,
-				paramsSerializer: expect.any(Function),
+				paramsSerializer: expect.any(Object),
 			})
 			expect(response.status).toBe('ok')
 		})
@@ -393,7 +394,7 @@ describe('EndpointClient',  () => {
 				name: 'Bill',
 			},
 			params: undefined,
-			paramsSerializer: expect.any(Function),
+			paramsSerializer: expect.any(Object),
 		})
 		expect(response.status).toBe('ok')
 	})
@@ -412,7 +413,7 @@ describe('EndpointClient',  () => {
 				name: 'Bill',
 			},
 			params: undefined,
-			paramsSerializer: expect.any(Function),
+			paramsSerializer: expect.any(Object),
 		})
 		expect(response.status).toBe('ok')
 	})
@@ -431,7 +432,7 @@ describe('EndpointClient',  () => {
 				name: 'Joe',
 			},
 			params: undefined,
-			paramsSerializer: expect.any(Function),
+			paramsSerializer: expect.any(Object),
 		})
 		expect(response.status).toBe('ok')
 	})
@@ -448,7 +449,7 @@ describe('EndpointClient',  () => {
 			},
 			data: undefined,
 			params: undefined,
-			paramsSerializer: expect.any(Function),
+			paramsSerializer: expect.any(Object),
 		})
 		expect(response.status).toBe('ok')
 	})

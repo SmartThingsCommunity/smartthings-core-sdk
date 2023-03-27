@@ -1,6 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function expectedRequest(config: any): any {
-	return { data: undefined, params: undefined, ...config, paramsSerializer: expect.any(Function) }
+	return {
+		data: undefined,
+		params: undefined,
+		...config,
+		paramsSerializer: expect.objectContaining({
+			serialize: expect.any(Function),
+		}),
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,6 +21,8 @@ export function buildRequest(path?: string, params?: any, data?: any, method = '
 		},
 		data: data,
 		params: params,
-		paramsSerializer: expect.anything(),
+		paramsSerializer: expect.objectContaining({
+			serialize: expect.any(Function),
+		}),
 	}
 }

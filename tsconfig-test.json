@@ -13,5 +13,6 @@
 	},
 	"include": [
 		"./test/**/*.ts",
+		"./jest.config.ts",
 	],
 }
