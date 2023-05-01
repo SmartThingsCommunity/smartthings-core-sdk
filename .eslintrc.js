@@ -69,7 +69,9 @@ module.exports = {
 				},
 			},
 		],
-		'@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+		// Temporarily disabling while we switch from interface to type.
+		// see https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/207
+		// '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
 		'@typescript-eslint/explicit-function-return-type': ['error', {
 			allowExpressions: true,
 		}],
