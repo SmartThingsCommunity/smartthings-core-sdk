@@ -23,8 +23,7 @@ export interface DeviceProfileReference {
  *
  * @deprecated
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ProfileIdentifier extends DeviceProfileReference {}
+export type ProfileIdentifier = DeviceProfileReference
 
 export type CategoryType = 'manufacturer' | 'user'
 
@@ -66,6 +65,7 @@ export interface AppDeviceDetails {
 	 * <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$>
 	 */
 	installedAppId?: string
+
 	/**
 	 * A field to store an ID from a system external to SmartThings.
 	 *
@@ -143,6 +143,43 @@ export interface ZwaveDeviceDetails {
 	provisioningState?: ProvisioningState
 }
 
+export type MatterListeningType = 'ALWAYS' | 'SLEEPY'
+export type MatterNetworkInterfaces = 'THREAD' | 'WIFI' | 'ETHERNET'
+
+export type MatterVersion = {
+	/**
+	 * 16-bit hardware version
+	 */
+	hardware?: number
+
+	hardwareLabel?: string
+
+	/**
+	 * 32-bit software version
+	 */
+	software?: number
+
+	softwareLabel?: string
+}
+
+export type MatterEndpointDeviceType = {
+	/**
+	 * 32-bit identifier for the device type
+	 *
+	 * [ 0 .. 4294967295 ]
+	 */
+	deviceTypeId?: number
+}
+
+export type MatterEndpoint = {
+	/**
+	 * 16-bit identifier for the endpoint
+	 */
+	endpointId?: number
+
+	deviceTypes?: MatterEndpointDeviceType[]
+}
+
 export interface MatterDeviceDetails {
 	/**
 	 * matches: string <^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$> (DriverId)
@@ -155,7 +192,7 @@ export interface MatterDeviceDetails {
 	hubId?: string
 
 	/**
-	 * Provisioning type for a widget device
+	 * Provisioning type for a device
 	 */
 	provisioningState?: ProvisioningState
 
@@ -173,6 +210,204 @@ export interface MatterDeviceDetails {
 	 * Optional Vendor-supplied unique identifier.
 	 */
 	uniqueId?: string
+
+	/**
+	 * integer
+	 */
+	vendorId?: number
+
+	/**
+	 * integer
+	 */
+	productId?: number
+
+	listeningType?: MatterListeningType
+
+	supportedNetworkInterfaces?: MatterNetworkInterfaces[]
+
+	version?: MatterVersion
+
+	endpoints?: MatterEndpoint[]
+}
+
+/**
+ * Possible Values for Hub Characteristic "Availability" flags.
+ */
+export type AvailabilityCharacteristic = 'Available' | 'Unavailable' | 'Unsupported'
+
+export type HubData = {
+	/**
+	 * Whether zwaveS2 is enabled for this hub.
+	 */
+	zwaveS2: boolean
+
+	/**
+	 * Whether the hub supports zigbee3.
+	 */
+	zigbee3: boolean
+
+	hardwareType: string
+
+	/**
+	 * Whether the hub allows zigbee unsecure rejoin.
+	 */
+	zigbeeUnsecureRejoin: boolean
+
+	zwaveStaticDsk?: string
+	hardwareId?: string
+
+	/**
+	 * The Zigbee firmware version for this hub.
+	 */
+	zigbeeFirmware: string
+
+	/**
+	 * Describes state of Zigbee OTA.
+	 */
+	zigbeeOta?: string
+
+	/**
+	 * Indicates if Zigbee OTA is enabled.
+	 */
+	otaEnable?: string
+
+	primarySupportAvailability?: AvailabilityCharacteristic
+	secondarySupportAvailability?: AvailabilityCharacteristic
+	zigbeeAvailability?: AvailabilityCharacteristic
+	zwaveAvailability?: AvailabilityCharacteristic
+	threadAvailability?: AvailabilityCharacteristic
+	lanAvailability?: AvailabilityCharacteristic
+	matterAvailability?: AvailabilityCharacteristic
+	localVirtualDeviceAvailability?: AvailabilityCharacteristic
+
+	/**
+	 * The primary hub device id for this hub. Null/Empty if hub is not a repeater.
+	 */
+	primaryHubDeviceId?: string
+
+	zigbeeChannel?: string
+
+	/**
+	 * The Personal Area Network (PAN) id of the zigbee network the hub is on.
+	 */
+	zigbeePanId?: string
+
+	/**
+	 * The unique identifier for this manufactured hub.
+	 */
+	zigbeeEui?: string
+
+	/**
+	 * The short address of a node in Zigbee network.
+	 */
+	zigbeeNodeID?: string
+
+	/**
+	 * The address of a single node in the network.
+	 */
+	zwaveNodeID?: string
+
+	/**
+	 * The common identification of all nodes belonging to one logical Z-Wave network.
+	 */
+	zwaveHomeID?: string
+
+	zwaveSucID?: string
+	zwaveVersion?: string
+
+	/**
+	 * The global region this zwave radio is operating in.
+	 */
+	zwaveRegion?: string
+
+	/**
+	 * MAC address of the hubs network interface.
+	 */
+	macAddress?: string
+
+	/**
+	 * IP address of the hub.
+	 */
+	localIP?: string
+
+	/**
+	 * Whether the hub is zigbee radio functional.
+	 */
+	zigbeeRadioFunctional?: boolean
+
+	/**
+	 * Whether the hub is zwave radio functional.
+	 */
+	zwaveRadioFunctional?: boolean
+}
+
+export type HubDriver = {
+	/**
+	 * The id of the edge driver.
+	 */
+	driverId: string
+
+	/**
+	 * The version of the edge driver.
+	 */
+	driverVersion?: string
+
+	/**
+	 * The id of the edge channel.
+	 */
+	channelId?: string
+}
+
+export type HubDeviceDetails = {
+	/**
+	 * The unique identifier for this manufactured hub.
+	 *
+	 * <^[0-9A-F]{16}$>
+	 */
+	hubEui: string
+
+	/**
+	 * The hub's firmware version.
+	 *
+	 * <^[0-9]\.[0-9]\.[0-9]{3}$>
+	 */
+	firmwareVersion?: string
+
+	hubData: HubData
+
+	/**
+	 * A list of drivers installed on the hub.
+	 */
+	hubDrivers: HubDriver[]
+}
+
+export type EdgeChildDeviceDetails = {
+	driverId?: string
+
+	/**
+	 * The hub that the device is connected to.
+	 */
+	hubId?: string
+
+	/**
+	 * Provisioning type for a device.
+	 */
+	provisioningState?: ProvisioningState
+
+	/**
+	 * The network-specific identifier of the device on the network.
+	 */
+	networkId?: string
+
+	/**
+	 * True if the device is executing locally on the hub.
+	 */
+	executingLocally?: boolean
+
+	/**
+	 * The identifier assigned to this edge child device by its parent.
+	 */
+	parentAssignedChildKey?: string
 }
 
 export interface IrDeviceDetails {
@@ -202,6 +437,31 @@ export interface OcfDeviceDetails {
 	vendorResourceClientServerVersion?: string
 	locale?: string
 	lastSignupTime?: string
+}
+
+export type DeviceGroupType = 'UNDETERMINED' | 'GENERIC' | 'VIDEO_CAMERA' | 'LIGHTING'
+export type GroupDeviceDetails = {
+	groupName?: string
+
+	/**
+	 * The type of the group in question
+	 *
+	 * "UNDETERMINED" is a default value and is not used during normal operation. Passing
+	 * "UNDETERMINED" into the API is the same as not passing a group type.
+	 */
+	groupType?: DeviceGroupType
+
+	devices?: {
+		deviceId: string
+
+		/**
+		 * Components to add to the group.
+		 */
+		components?: {
+			id?: string
+			[name: string]: unknown
+		}
+	}[]
 }
 
 export interface ViperDeviceDetails {
@@ -283,6 +543,7 @@ export enum DeviceIntegrationType {
 	WATCH = 'WATCH',
 	ZIGBEE = 'ZIGBEE',
 	ZWAVE = 'ZWAVE',
+	EDGE_CHILD = 'EDGE_CHILD',
 }
 
 export interface HealthState {
@@ -295,6 +556,30 @@ interface ChildDeviceRef {
 }
 
 export type DeviceClientAction = 'w:devices' | 'w:devices:locationId' | 'w:devices:roomId' | 'x:devices' | 'd:devices'
+
+export type IndoorMap = {
+	/**
+	 * The coordinates to be used to map the device.
+	 */
+	coordinates?: [number, number, number]
+
+	/**
+	 * The rotational data for the device.
+	 */
+	rotation?: [number, number, number]
+
+	/**
+	 * Whether or not the device is visible on the map.
+	 */
+	visible?: boolean
+
+	/**
+	 * Key value pairs to place additional information.
+	 */
+	data: {
+		[name: string]: unknown
+	}
+}
 
 export interface Device {
 	deviceId: string
@@ -347,11 +632,6 @@ export interface Device {
 	locationId?: string
 
 	/**
-	 *
-	 */
-	eventId?: string
-
-	/**
 	 * The identifier for the owner of the Device instance.
 	 */
 	ownerId?: string
@@ -401,9 +681,12 @@ export interface Device {
 	zigbee?: ZigbeeDeviceDetails
 	zwave?: ZwaveDeviceDetails
 	matter?: MatterDeviceDetails
+	hub?: HubDeviceDetails
+	edgeChild?: EdgeChildDeviceDetails
 	ir?: IrDeviceDetails
 	irOcf?: IrDeviceDetails
 	ocf?: OcfDeviceDetails
+	group?: GroupDeviceDetails
 	viper?: ViperDeviceDetails
 	virtual?: VirtualDeviceDetails
 
@@ -419,6 +702,8 @@ export interface Device {
 	 * * d:devices - the user can uninstall the device
 	 */
 	allowed?: DeviceClientAction[]
+
+	indoorMap?: IndoorMap
 }
 
 export interface UpdateDeviceComponent {
@@ -440,6 +725,7 @@ export interface DeviceProfileUpdate {
 
 export interface CreateAppDeviceDetails {
 	profileId: string
+
 	/**
 	 * installedAppId is required but the user can set a default when instantiating
 	 * SmartThingsClient so we don't required it here.
