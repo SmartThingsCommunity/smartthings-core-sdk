@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 7.1.0
+
+### Minor Changes
+
+- [#208](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/208) [`8e205ae`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/8e205ae538129079775bb6cccaf47e1ec57f0c27) Thanks [@rossiam](https://github.com/rossiam)! - add new properties `Device` model object
+
 ## 7.0.0
 
 ### Major Changes
