@@ -2,9 +2,7 @@ import { EndpointClient } from './endpoint-client'
 
 
 export class Endpoint {
-	constructor(protected client: EndpointClient) {
-
-	}
+	constructor(protected client: EndpointClient) {}
 
 	locationId(id?: string): string {
 		const result = id || this.client.config.locationId
