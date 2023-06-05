@@ -27,11 +27,11 @@ import {SmartThingsClient} from '@smartthings/core-sdk'
 ```
 
 ## Example Usage
-Substitue your Personal Access Token (PAT) with at least the `r:locations:*` scope
-for `{YOUR-PAT-TOKEN}` in the following code.
+For this example, you'll need to create a [Personal Access Token (PAT)](https://account.smartthings.com/tokens)
+with at least the `r:locations:*` scope. Substitute it for `YOUR-PAT-HERE` in the following code:
 ```javascript
 const {SmartThingsClient, BearerTokenAuthenticator} = require('@smartthings/core-sdk')
-const client = new SmartThingsClient(new BearerTokenAuthenticator('{YOUR-PAT-TOKEN}'))
+const client = new SmartThingsClient(new BearerTokenAuthenticator('YOUR-PAT-HERE'))
 
 client.locations.list().then(locations => {
     console.log(`Found ${locations.length} locations`)

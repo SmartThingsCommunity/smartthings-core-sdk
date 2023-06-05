@@ -12,6 +12,7 @@ import { DriversEndpoint } from './endpoint/drivers'
 import { HistoryEndpoint } from './endpoint/history'
 import { HubdevicesEndpoint } from './endpoint/hubdevices'
 import { InstalledAppsEndpoint } from './endpoint/installedapps'
+import { InvitesSchemaAppEndpoint } from './endpoint/invites-schemaApp'
 import { ModesEndpoint } from './endpoint/modes'
 import { LocationsEndpoint } from './endpoint/locations'
 import { NotificationsEndpoint } from './endpoint/notifications'
@@ -39,10 +40,11 @@ export class SmartThingsClient extends RESTClient {
 	public readonly history: HistoryEndpoint
 	public readonly hubdevices: HubdevicesEndpoint
 	public readonly installedApps: InstalledAppsEndpoint
+	public readonly invitesSchema: InvitesSchemaAppEndpoint
+	public readonly locations: LocationsEndpoint
 	public readonly modes: ModesEndpoint
 	public readonly notifications: NotificationsEndpoint
 	public readonly organizations: OrganizationsEndpoint
-	public readonly locations: LocationsEndpoint
 	public readonly presentation: PresentationEndpoint
 	public readonly rooms: RoomsEndpoint
 	public readonly rules: RulesEndpoint
@@ -66,6 +68,7 @@ export class SmartThingsClient extends RESTClient {
 		this.history = new HistoryEndpoint(this.config)
 		this.hubdevices = new HubdevicesEndpoint(this.config)
 		this.installedApps = new InstalledAppsEndpoint(this.config)
+		this.invitesSchema = new InvitesSchemaAppEndpoint(this.config)
 		this.locations = new LocationsEndpoint(this.config)
 		this.modes = new ModesEndpoint(this.config)
 		this.notifications = new NotificationsEndpoint(this.config)
