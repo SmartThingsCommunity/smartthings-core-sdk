@@ -2,7 +2,7 @@
 	"name": "@smartthings/core-sdk",
 	"version": "7.1.0",
 	"description": "JavaScript/TypeScript library for using SmartThings APIs",
-	"author": "SmartThings, Inc.",
+	"author": "Samsung Electronics Co., LTD.",
 	"homepage": "https://github.com/SmartThingsCommunity/smartthings-core-sdk",
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues",
 	"repository": {

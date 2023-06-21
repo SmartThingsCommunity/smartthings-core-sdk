@@ -30,7 +30,7 @@
 		"tutorials"		:"",
 		"systemName"	: "smartthings-core",
 		"footer"		: "",
-		"copyright"		: "SmartThingsCore Copyright © 2019 SmartThings, Inc.",
+		"copyright"		: "SmartThingsCore Copyright © 2019 Samsung Electronics Co., LTD.",
 		"outputSourceFiles" : true,
 		"commentsOnly": true
 	}
