@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 7.1.1
+
+### Patch Changes
+
+- [#214](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/214) [`3bdf34c`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/3bdf34c27a7ffa39432acdff8faaddbe82096bb7) Thanks [@bflorian](https://github.com/bflorian)! - fix: corrected type returned by default drivers command
+
 ## 7.1.0
 
 ### Minor Changes
