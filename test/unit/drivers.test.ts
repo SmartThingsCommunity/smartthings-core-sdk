@@ -1,5 +1,5 @@
 import { NoOpAuthenticator } from '../../src/authenticator'
-import { DriversEndpoint, EdgeDriverSummary } from '../../src/endpoint/drivers'
+import {DriversEndpoint, EdgeDriver, EdgeDriverSummary} from '../../src/endpoint/drivers'
 import { EndpointClient } from '../../src/endpoint-client'
 
 
@@ -51,7 +51,7 @@ describe('DriversEndpoint', () => {
 	})
 
 	test('listDefault', async () => {
-		const drivers = [{ driverId: 'listed-in-channel-id' }] as EdgeDriverSummary[]
+		const drivers = [{ driverId: 'listed-in-channel-id' }] as EdgeDriver[]
 		getPagedItemsSpy.mockResolvedValueOnce(drivers)
 
 		expect(await driversEndpoint.listDefault()).toBe(drivers)
