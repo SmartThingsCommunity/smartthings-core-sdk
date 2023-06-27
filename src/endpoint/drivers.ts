@@ -219,7 +219,7 @@ export class DriversEndpoint extends Endpoint {
 	 * List drivers in the default channel. (The default channel in this context is a channel
 	 * that users do not need to subscribe to.)
 	 */
-	public async listDefault(): Promise<EdgeDriverSummary[]> {
+	public async listDefault(): Promise<EdgeDriver[]> {
 		return this.client.getPagedItems('default')
 	}
 
