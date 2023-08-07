@@ -1187,9 +1187,10 @@ export class DevicesEndpoint extends Endpoint {
 	 * Sends the specified list of commands to the device
 	 * @param id UUID of the device
 	 * @param commands list of commands
+	 * @param ordered Specifies whether the command should be executed in order or asynchronously.
 	 */
-	public async executeCommands(id: string, commands: Command[]): Promise<CommandResponse> {
-		return this.client.post(`${id}/commands`, { commands })
+	public async executeCommands(id: string, commands: Command[], ordered?: boolean): Promise<CommandResponse> {
+		return this.client.post(`${id}/commands`, { commands }, { 'ordered': ordered })		
 	}
 
 	/**

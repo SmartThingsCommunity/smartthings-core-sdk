@@ -1,6 +1,8 @@
-import { CommandRequest, CommandList, Command, DeviceHealthState, DeviceProfileUpdate,
+import {
+	CommandRequest, CommandList, Command, DeviceHealthState, DeviceProfileUpdate,
 	DeviceUpdate, DevicesEndpoint, Device, DeviceEvent, DevicePreferenceResponse, DeviceCreate,
-	CommandResponse}  from '../../src/endpoint/devices'
+	CommandResponse,
+} from '../../src/endpoint/devices'
 import { ConfigEntry, ConfigValueType } from '../../src/endpoint/installedapps'
 import { BearerTokenAuthenticator } from '../../src/authenticator'
 import { EndpointClient } from '../../src/endpoint-client'
@@ -346,7 +348,25 @@ describe('DevicesEndpoint', () => {
 			expect(await devicesEndpoint.executeCommands('device-id', [command])).toBe(commandResponse)
 
 			expect(postSpy).toHaveBeenCalledTimes(1)
-			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] })
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] }, {'ordered': undefined})
+		})
+
+		it('works with true ordered param passed', async () => {
+			const command = { command: 'command-1' } as Command
+			postSpy.mockResolvedValueOnce(commandResponse)
+			expect(await devicesEndpoint.executeCommands('device-id', [command], true)).toBe(commandResponse)
+
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] }, { ordered: true })
+		})
+
+		it('works with false ordered param passed', async () => {
+			const command = { command: 'command-1' } as Command
+			postSpy.mockResolvedValueOnce(commandResponse)
+			expect(await devicesEndpoint.executeCommands('device-id', [command], false)).toBe(commandResponse)
+
+			expect(postSpy).toHaveBeenCalledTimes(1)
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] }, {'ordered': false})
 		})
 
 		it('passes on exceptions', async () => {
@@ -357,7 +377,7 @@ describe('DevicesEndpoint', () => {
 			await expect(devicesEndpoint.executeCommands('device-id', [command])).rejects.toThrow(error)
 
 			expect(postSpy).toHaveBeenCalledTimes(1)
-			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] })
+			expect(postSpy).toHaveBeenCalledWith('device-id/commands', { commands: [command] }, {'ordered': undefined})
 		})
 	})
 
@@ -385,7 +405,7 @@ describe('DevicesEndpoint', () => {
 	})
 
 	describe('sendCommand', () => {
-		it ('processes simple single command', async () => {
+		it('processes simple single command', async () => {
 			const deviceConfig = {
 				deviceId: 'device-id',
 				componentId: 'component-id',

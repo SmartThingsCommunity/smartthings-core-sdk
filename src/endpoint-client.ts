@@ -8,7 +8,7 @@ import { Logger, noLogLogger } from './logger'
 export interface HttpClientHeaders {
 	[name: string]: string
 }
-export type HttpClientParamValue = string | string[] | number
+export type HttpClientParamValue = string | string[] | number | boolean | undefined
 export interface HttpClientParams {
 	[name: string]: HttpClientParamValue
 }
