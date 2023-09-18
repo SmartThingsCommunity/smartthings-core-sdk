@@ -17,6 +17,7 @@ export type SchemaAppInvitationSummary = {
 
 export type SchemaAppInvitationCreate = SchemaAppId & {
 	description?: string
+	acceptLimit?: number
 }
 
 export type SchemaAppInvitation = SchemaAppId & {
