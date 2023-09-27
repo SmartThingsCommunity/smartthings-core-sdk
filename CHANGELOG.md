@@ -1,5 +1,19 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.0.0
+
+### Major Changes
+
+- [#222](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/222) [`a8f3d1b`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/a8f3d1bf78dfcd0b844e65631f22f72334af8769) Thanks [@rossiam](https://github.com/rossiam)! - update axios and qs dependencies
+
+### Minor Changes
+
+- [#212](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/212) [`a1a504a`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/a1a504a977b56de7833d096ca0328bd523ac4ffc) Thanks [@rossiam](https://github.com/rossiam)! - add support for schema invitations
+
+### Patch Changes
+
+- [#221](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/221) [`9976f0a`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/9976f0a731424859e7aae47b53435433ea59d710) Thanks [@rossiam](https://github.com/rossiam)! - add acceptLimit field to ST Schema invites
+
 ## 7.1.1
 
 ### Patch Changes
