@@ -15,6 +15,16 @@ export interface SchemaApp extends SchemaAppRequest {
 	userId?: string
 
 	/**
+	 * Organization that this app belongs to
+	 */
+	organizationId?: string
+
+	/**
+	 * Client ID assigned by SmartThings for this app
+	 */
+	stClientId?: string
+
+	/**
 	 * Possible values - '', 'cst', 'wwst'
 	 */
 	certificationStatus?: string
