@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.1.0
+
+### Minor Changes
+
+- [#226](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/226) [`d9f90a0`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/d9f90a0195e9ae139052ab61133bd36e89cb6c30) Thanks [@rossiam](https://github.com/rossiam)! - go back to older version of axios; current version does not work with tools used in the SmartThings CLI
+
 ## 8.0.1
 
 ### Patch Changes
