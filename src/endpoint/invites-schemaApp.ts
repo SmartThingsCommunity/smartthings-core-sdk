@@ -25,12 +25,9 @@ export type SchemaAppInvitation = SchemaAppId & {
 	description?: string
 	expiration?: number
 	acceptUrl?: string
+	acceptances: number
 	declineUrl?: string
 	shortCode?: string
-}
-
-export type SchemaAppAcceptanceStatus = Omit<SchemaAppInvitation, 'id'> & {
-	isAccepted?: boolean
 }
 
 
@@ -49,13 +46,5 @@ export class InvitesSchemaAppEndpoint extends Endpoint {
 
 	public async revoke(invitationId: string): Promise<void> {
 		await this.client.delete(invitationId)
-	}
-
-	public async getAcceptanceStatus(invitationId: string): Promise<SchemaAppAcceptanceStatus> {
-		return this.client.get('checkAcceptance', { invitationId })
-	}
-
-	public async accept(shortCode: string): Promise<SchemaAppId> {
-		return this.client.put(`${shortCode}/accept`)
 	}
 }
