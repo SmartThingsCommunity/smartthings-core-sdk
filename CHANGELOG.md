@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.1.1
+
+### Patch Changes
+
+- [#228](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/228) [`045bf54`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/045bf547fdaed0a7cd3b56114b22f2535505f9dc) Thanks [@rossiam](https://github.com/rossiam)! - minor updates to new ST Schema invites
+
 ## 8.1.0
 
 ### Minor Changes
