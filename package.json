@@ -20,7 +20,7 @@
 	],
 	"dependencies": {
 		"async-mutex": "^0.4.0",
-		"axios": "^0.27.2",
+		"axios": "^1.6.0",
 		"http-signature": "^1.3.6",
 		"lodash.isdate": "^4.0.1",
 		"lodash.isstring": "^4.0.1",
