@@ -174,7 +174,7 @@ export class EndpointClient {
 			}
 		}
 
-		let axiosConfig: AxiosRequestConfig = {
+		const axiosConfig: AxiosRequestConfig = {
 			url: this.url(path),
 			method,
 			headers: options?.headerOverrides ? { ...headers, ...options.headerOverrides } : headers,
@@ -183,7 +183,8 @@ export class EndpointClient {
 			paramsSerializer: params => qs.stringify(params, { indices: false }),
 		}
 
-		axiosConfig = await this.config.authenticator.authenticate(axiosConfig)
+		const authHeaders = await this.config.authenticator.authenticate()
+		axiosConfig.headers = { ...axiosConfig.headers, ...authHeaders }
 
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug(`making axios request: ${scrubConfig(axiosConfig)}`)
@@ -208,6 +209,7 @@ export class EndpointClient {
 			return response.data
 		} catch (error: any) {
 			if (this.logger.isTraceEnabled()) {
+				// https://www.npmjs.com/package/axios#handling-errors
 				if (error.response) {
 					// server responded with non-200 response code
 					this.logger.trace(`axios response ${error.response.status}: data=${JSON.stringify(error.response.data)}`)
@@ -222,14 +224,16 @@ export class EndpointClient {
 				if (this.config.authenticator.acquireRefreshMutex) {
 					const release = await this.config.authenticator.acquireRefreshMutex()
 					try {
-						await this.config.authenticator.refresh(axiosConfig, this.config)
+						const newAuthHeaders = await this.config.authenticator.refresh(this.config)
+						axiosConfig.headers = { ...axiosConfig.headers, ...newAuthHeaders }
 						const response = await axios.request(axiosConfig)
 						return response.data
 					} finally {
 						release()
 					}
 				} else {
-					await this.config.authenticator.refresh(axiosConfig, this.config)
+					const newAuthHeaders = await this.config.authenticator.refresh(this.config)
+					axiosConfig.headers = { ...axiosConfig.headers, ...newAuthHeaders }
 					const response = await axios.request(axiosConfig)
 					return response.data
 				}

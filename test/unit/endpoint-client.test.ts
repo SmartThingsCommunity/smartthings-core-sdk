@@ -1,12 +1,12 @@
 import { Mutex } from 'async-mutex'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import qs from 'qs'
 
 import { AuthData, Authenticator, BearerTokenAuthenticator, NoOpAuthenticator, RefreshData,
 	RefreshTokenAuthenticator, RefreshTokenStore, SequentialRefreshTokenAuthenticator }
 	from '../../src/authenticator'
-import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig, parseWarningHeader } from '../../src/endpoint-client'
-import { NoLogLogger } from '../../src/logger'
+import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig, HttpClientHeaders, parseWarningHeader } from '../../src/endpoint-client'
+import { Logger, NoLogLogger } from '../../src/logger'
 
 
 jest.mock('axios')
@@ -305,6 +305,110 @@ describe('EndpointClient',  () => {
 			})).rejects.toThrow('skipping request; dry run mode')
 			expect(mockRequest).toHaveBeenCalledTimes(0)
 		})
+
+		describe('logging', () => {
+			const isDebugEnabledMock = jest.fn().mockReturnValue(true)
+			const isTraceEnabledMock = jest.fn().mockReturnValue(true)
+			const debugMock = jest.fn()
+			const traceMock = jest.fn()
+			const mockLogger = {
+				isDebugEnabled: isDebugEnabledMock,
+				isTraceEnabled: isTraceEnabledMock,
+				debug: debugMock,
+				trace: traceMock,
+			} as unknown as Logger
+
+			beforeEach(() => {
+				client = buildClient({ ...configWithoutHeaders, headers, logger: mockLogger })
+			})
+
+			it('logs axios request at debug level', async () => {
+				await client.request('GET', 'my/path')
+
+				expect(isDebugEnabledMock).toHaveBeenCalledTimes(1)
+				expect(debugMock).toHaveBeenCalledTimes(1)
+				expect(debugMock).toHaveBeenCalledWith('making axios request: {' +
+						'"url":"https://api.smartthings.com/base/path/my/path",' +
+						'"method":"GET",' +
+						'"headers":{' +
+							'"Content-Type":"application/json;charset=utf-8",' +
+							'"Accept":"application/json",' +
+							'"Authorization":"(redacted)"' +
+						'}' +
+					'}')
+			})
+
+			it('logs successful axios response at trace level', async () => {
+				await client.request('GET', 'my/path')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith('axios response 200: data={"status":"ok"}')
+			})
+
+			it('logs failed axios response at trace level', async () => {
+				mockRequest.mockImplementationOnce(() => { throw Error('things done broke!') })
+
+				await expect(client.request('GET', 'my/path')).rejects.toThrow('things done broke!')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith('error making request: things done broke!')
+			})
+
+			it('logs failed axios response with response info', async () => {
+				const error = Error('error message') as AxiosError
+				error.response = {
+					status: 400,
+					data: 'body data',
+				} as AxiosResponse
+				mockRequest.mockImplementationOnce(() => { throw error })
+
+				await expect(client.request('GET', 'my/path')).rejects.toThrow('error message: "body data"')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith('axios response 400: data="body data"')
+			})
+
+			it('logs failed axios response with response info', async () => {
+				const error = Error('error message') as AxiosError
+				error.response = {
+					status: 400,
+					data: 'body data',
+				} as AxiosResponse
+				mockRequest.mockImplementationOnce(() => { throw error })
+
+				await expect(client.request('GET', 'my/path')).rejects.toThrow('error message: "body data"')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith('axios response 400: data="body data"')
+			})
+
+			it('logs request info when no response received from server', async () => {
+				const error = Error('error message') as AxiosError
+				error.request = { info: 'about request' }
+				mockRequest.mockImplementationOnce(() => { throw error })
+
+				await expect(client.request('GET', 'my/path')).rejects.toThrow('error message')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith('no response from server for request {"info":"about request"}')
+			})
+
+			it('logs error when setting up request failed', async () => {
+				const error = Error('error message') as AxiosError
+				mockRequest.mockImplementationOnce(() => { throw error })
+
+				await expect(client.request('GET', 'my/path')).rejects.toThrow('error message')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith('error making request: error message')
+			})
+		})
 	})
 
 	describe('get', () => {
@@ -453,6 +557,43 @@ describe('EndpointClient',  () => {
 		expect(response.status).toBe('ok')
 	})
 
+	describe('getPagedItems', () => {
+		const getMock = jest.fn()
+		const client = new EndpointClient('paged-thing', {
+			authenticator: new NoOpAuthenticator(),
+			logger: new NoLogLogger(),
+		})
+		client.get = getMock
+
+		const item1 = { name: 'item-1' }
+		const item2 = { name: 'item-2' }
+
+		it('uses single get when full results returned in one go', async () => {
+			getMock.mockResolvedValueOnce({
+				items: [item1, item2],
+			})
+
+			expect(await client.getPagedItems()).toEqual([item1, item2])
+
+			expect(getMock).toHaveBeenCalledTimes(1)
+			expect(getMock).toHaveBeenCalledWith(undefined, undefined, undefined)
+		})
+
+		it('combines multiple pages', async () => {
+			const params = { paramName: 'param-value' }
+			const options = { dryRun: false }
+			getMock
+				.mockResolvedValueOnce({ items: [item1], _links: { next: { href: 'next-url' } } })
+				.mockResolvedValueOnce({ items: [item2] })
+
+			expect(await client.getPagedItems('first-url', params, options)).toEqual([item1, item2])
+
+			expect(getMock).toHaveBeenCalledTimes(2)
+			expect(getMock).toHaveBeenCalledWith('first-url', params, options)
+			expect(getMock).toHaveBeenCalledWith('next-url', undefined, options)
+		})
+	})
+
 	test('expired token request', async () => {
 		mockRequest
 			.mockImplementationOnce(() => Promise.reject(
@@ -522,6 +663,7 @@ describe('EndpointClient',  () => {
 		expect(threwError).toBe(true)
 	})
 
+	// TODO: this could probably be merged into request.logging above
 	describe('request logging', () => {
 		jest.spyOn(NoLogLogger.prototype, 'isDebugEnabled').mockReturnValue(true)
 		const debugSpy = jest.spyOn(NoLogLogger.prototype, 'debug')
@@ -544,14 +686,8 @@ describe('EndpointClient',  () => {
 		it('fully redacts Auth header when Bearer is not present', async () => {
 			const basicAuth = Buffer.from('username:password', 'ascii').toString('base64')
 			class BasicAuthenticator implements Authenticator {
-				authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
-					return Promise.resolve({
-						...requestConfig,
-						headers: {
-							...requestConfig.headers,
-							Authorization: `Basic ${basicAuth}`,
-						},
-					})
+				authenticate(): Promise<HttpClientHeaders> {
+					return Promise.resolve({ Authorization: `Basic ${basicAuth}` })
 				}
 			}
 			const config: EndpointClientConfig = {
@@ -565,43 +701,6 @@ describe('EndpointClient',  () => {
 			expect(debugSpy).toBeCalled()
 			expect(debugSpy).not.toBeCalledWith(expect.stringContaining(basicAuth))
 			expect(debugSpy).toBeCalledWith(expect.stringContaining('Authorization":"(redacted)"'))
-		})
-
-		describe('getPagedItems', () => {
-			const getMock = jest.fn()
-			const client = new EndpointClient('paged-thing', {
-				authenticator: new NoOpAuthenticator(),
-				logger: new NoLogLogger(),
-			})
-			client.get = getMock
-
-			const item1 = { name: 'item-1' }
-			const item2 = { name: 'item-2' }
-
-			it('uses single get when full results returned in one go', async () => {
-				getMock.mockResolvedValueOnce({
-					items: [item1, item2],
-				})
-
-				expect(await client.getPagedItems()).toEqual([item1, item2])
-
-				expect(getMock).toHaveBeenCalledTimes(1)
-				expect(getMock).toHaveBeenCalledWith(undefined, undefined, undefined)
-			})
-
-			it('combines multiple pages', async () => {
-				const params = { paramName: 'param-value' }
-				const options = { dryRun: false }
-				getMock
-					.mockResolvedValueOnce({ items: [item1], _links: { next: { href: 'next-url' } } })
-					.mockResolvedValueOnce({ items: [item2] })
-
-				expect(await client.getPagedItems('first-url', params, options)).toEqual([item1, item2])
-
-				expect(getMock).toHaveBeenCalledTimes(2)
-				expect(getMock).toHaveBeenCalledWith('first-url', params, options)
-				expect(getMock).toHaveBeenCalledWith('next-url', undefined, options)
-			})
 		})
 	})
 })

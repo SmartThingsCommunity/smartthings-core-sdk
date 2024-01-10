@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import { MutexInterface } from 'async-mutex'
 
-import { EndpointClientConfig } from './endpoint-client'
+import { EndpointClientConfig, HttpClientHeaders } from './endpoint-client'
 
 
 /**
@@ -13,24 +13,17 @@ import { EndpointClientConfig } from './endpoint-client'
 export interface Authenticator {
 	login?(): Promise<void>
 	logout?(): Promise<void>
-	refresh?(requestConfig: AxiosRequestConfig, clientConfig: EndpointClientConfig): Promise<void>
+	refresh?(clientConfig: EndpointClientConfig): Promise<HttpClientHeaders>
 	acquireRefreshMutex?(): Promise<MutexInterface.Releaser>
 
 	/**
-	 * Performs required authentication steps to add credentials to the axios config, typically via Bearer Auth headers.
-	 * Expected to call other functions such as @see refresh as needed to return valid credentials.
-	 *
-	 * @param requestConfig AxiosRequestConfig to add credentials to and return otherwise unmodified
-	 */
-	authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig>
-
-	/**
-	 * Performs required authentication steps and returns credentials as a string value
+	 * Performs required authentication steps and returns credentials as a set of HTTP headers which
+	 * must be included in authenticated requests.
 	 * Expected to perform any required steps (such as token refresh) needed to return valid credentials.
 	 *
 	 * @returns {string} valid auth token
 	 */
-	authenticateGeneric?(): Promise<string>
+	authenticate(): Promise<HttpClientHeaders>
 }
 
 
@@ -38,12 +31,8 @@ export interface Authenticator {
  * For use in tests or on endpoints that don't need any authentication.
  */
 export class NoOpAuthenticator implements Authenticator {
-	authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
-		return Promise.resolve(requestConfig)
-	}
-
-	authenticateGeneric(): Promise<string> {
-		return Promise.resolve('')
+	authenticate(): Promise<HttpClientHeaders> {
+		return Promise.resolve({})
 	}
 }
 
@@ -57,7 +46,8 @@ export class BearerTokenAuthenticator implements Authenticator {
 		// simple
 	}
 
-	authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
+	authenticate(): Promise<HttpClientHeaders> {
+		/*
 		return Promise.resolve({
 			...requestConfig,
 			headers: {
@@ -65,10 +55,8 @@ export class BearerTokenAuthenticator implements Authenticator {
 				Authorization: `Bearer ${this.token}`,
 			},
 		})
-	}
-
-	authenticateGeneric(): Promise<string> {
-		return Promise.resolve(this.token)
+		*/
+		return Promise.resolve({ Authorization: `Bearer ${this.token}` })
 	}
 }
 
@@ -101,17 +89,11 @@ export class RefreshTokenAuthenticator implements Authenticator {
 		// simple
 	}
 
-	authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
-		return Promise.resolve({
-			...requestConfig,
-			headers: {
-				...requestConfig.headers,
-				Authorization: `Bearer ${this.token}`,
-			},
-		})
+	authenticate(): Promise<HttpClientHeaders> {
+		return Promise.resolve({ Authorization: `Bearer ${this.token}` })
 	}
 
-	async refresh(requestConfig: AxiosRequestConfig, clientConfig: EndpointClientConfig): Promise<void> {
+	async refresh(clientConfig: EndpointClientConfig): Promise<HttpClientHeaders> {
 		const refreshData: RefreshData = await this.tokenStore.getRefreshData()
 		const headers = {
 			'Content-Type': 'application/x-www-form-urlencoded',
@@ -133,8 +115,8 @@ export class RefreshTokenAuthenticator implements Authenticator {
 				refreshToken: response.data.refresh_token,
 			}
 			this.token = authData.authToken
-			requestConfig.headers = { ...(requestConfig.headers ?? {}), Authorization: `Bearer ${this.token}` }
-			return this.tokenStore.putAuthData(authData)
+			await this.tokenStore.putAuthData(authData)
+			return { Authorization: `Bearer ${this.token}` }
 		}
 
 		throw Error(`error ${response.status} refreshing token, with message ${response.data}`)
