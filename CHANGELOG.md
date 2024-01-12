@@ -1,5 +1,12 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.1.2
+
+### Patch Changes
+
+- [#232](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/232) [`01a6aa2`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/01a6aa2174e84eba145dfe9ea744171accd55b95) Thanks [@rossiam](https://github.com/rossiam)! - Decouple from axios. Dependents of the core SDK no longer need to use the same version of
+  axios, or even use axios at all.
+
 ## 8.1.1
 
 ### Patch Changes
