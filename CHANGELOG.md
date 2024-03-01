@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.1.3
+
+### Patch Changes
+
+- [#235](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/235) [`162e083`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/162e08371c40916ced9829fda6e4e2c0e48b1341) Thanks [@rossiam](https://github.com/rossiam)! - update axios to 0.28
+
 ## 8.1.2
 
 ### Patch Changes
