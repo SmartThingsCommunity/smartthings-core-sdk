@@ -7,7 +7,7 @@
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/SmartThingsCommunity/smartthings-core-sdk"
+		"url": "git+https://github.com/SmartThingsCommunity/smartthings-core-sdk.git"
 	},
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
