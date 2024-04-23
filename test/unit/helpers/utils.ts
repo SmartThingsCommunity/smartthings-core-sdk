@@ -4,7 +4,7 @@ export function expectedRequest(config: any): any {
 		data: undefined,
 		params: undefined,
 		...config,
-		paramsSerializer: expect.any(Function),
+		paramsSerializer: expect.objectContaining({ serialize: expect.any(Function) }),
 	}
 }
 
@@ -19,6 +19,6 @@ export function buildRequest(path?: string, params?: any, data?: any, method = '
 		},
 		data: data,
 		params: params,
-		paramsSerializer: expect.any(Function),
+		paramsSerializer: expect.objectContaining({ serialize: expect.any(Function) }),
 	}
 }

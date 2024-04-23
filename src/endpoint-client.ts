@@ -73,7 +73,9 @@ export interface EndpointClientRequestOptions <T> {
  * Meant to be used before logging the request
  */
 function scrubConfig(config: AxiosRequestConfig): string {
-	const message = JSON.stringify(config)
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const { paramsSerializer: _unused, ...cleanerConfig } = config
+	const message = JSON.stringify(cleanerConfig)
 	const bearerRegex = /"(Bearer [0-9a-f]{8})[0-9a-f-]{28}"/i
 
 	if (bearerRegex.test(message)) {
@@ -180,7 +182,9 @@ export class EndpointClient {
 			headers: options?.headerOverrides ? { ...headers, ...options.headerOverrides } : headers,
 			params,
 			data,
-			paramsSerializer: params => qs.stringify(params, { indices: false }),
+			paramsSerializer: {
+				serialize: params => qs.stringify(params, { indices: false }),
+			},
 		}
 
 		const authHeaders = await this.config.authenticator.authenticate()

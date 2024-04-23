@@ -12,6 +12,8 @@ a work in progress. Changes may still be made that are not backwardly compatible
 npm install @smartthings/core-sdk
 ```
 
+:warning: Note that if you use axios in your project, you must use version 0.28.1 or later.
+
 ## Importing
 
 `NodeJS`:
