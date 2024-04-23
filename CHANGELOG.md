@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.1.4
+
+### Patch Changes
+
+- [#239](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/239) [`0798d93`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/0798d937e0fcecfeafac66febeb60c0736019995) Thanks [@rossiam](https://github.com/rossiam)! - work around bug in axios 0.28.1
+
 ## 8.1.3
 
 ### Patch Changes
