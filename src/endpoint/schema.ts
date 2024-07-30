@@ -260,7 +260,10 @@ export class SchemaEndpoint extends Endpoint {
 	 * Returns a list of all ST Schema C2C connectors belonging to the principal (i.e. the user)
 	 */
 	public async list(): Promise<SchemaApp[]> {
-		const response = await this.client.get<SchemaAppList>('apps')
+		// Querying Schema apps requires a different API for listing by organization in addition to
+		// the standard header other endpoints use.
+		const organization = this.client.config.headers?.['X-ST-Organization']
+		const response = await this.client.get<SchemaAppList>('apps' + (organization ? '/organizations/' : ''))
 		return response.endpointApps
 	}
 
