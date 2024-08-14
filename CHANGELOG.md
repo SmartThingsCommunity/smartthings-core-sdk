@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.2.0
+
+### Minor Changes
+
+- [#243](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/243) [`4151977`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/4151977bf019c73d2e521efbdd63c92a4080f4f1) Thanks [@rossiam](https://github.com/rossiam)! - add support for listing Schema apps by organization
+
 ## 8.1.4
 
 ### Patch Changes
