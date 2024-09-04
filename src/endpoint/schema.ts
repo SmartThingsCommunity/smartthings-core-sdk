@@ -157,7 +157,9 @@ export interface DeviceResult {
 
 export interface InstalledSchemaApp {
 	/**
-	 * Possible values - __requiresLogin__ or __loggedIn__. These two values determine what fields are returned in this response. If value is "requiresLogin", only "oAuthLink" is returned in the response. If value is "loggedIn", only isaId, partnerName, appName, devices and icons are returned.
+	 * Possible values - __requiresLogin__ or __loggedIn__. These two values determine what fields are returned in
+	 * this response. If value is "requiresLogin", only "oAuthLink" is returned in the response. If value is
+	 * "loggedIn", only isaId, partnerName, appName, devices and icons are returned.
 	 */
 	pageType?: string
 
@@ -235,7 +237,7 @@ export interface SchemaPage {
 export interface UnauthorizedSchemaPage extends SchemaPage {
 	/**
 	 * An href to the OAuth page for this connector that allows authentication and connection to the SmartThings
-	 * patform.
+	 * platform.
 	 */
 	oAuthLink?: string
 }
@@ -269,6 +271,7 @@ export class SchemaEndpoint extends Endpoint {
 
 	/**
 	 * Returns a specific ST Schema connector
+	 *
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 */
 	public get(id: string): Promise<SchemaApp> {
@@ -277,25 +280,35 @@ export class SchemaEndpoint extends Endpoint {
 
 	/**
 	 * Create an ST Schema connector
+	 *
 	 * @param data definition of the connector
+	 * @param organizationId The organization to associate the connector with. You must be a member
+	 * of the organization. Overrides any organization header included when creating the
+	 * `SmartThingsClient`.
 	 */
-	public create(data: SchemaAppRequest): Promise<SchemaCreateResponse> {
-		return this.client.post<SchemaCreateResponse>('apps', data)
+	public create(data: SchemaAppRequest, organizationId?: string): Promise<SchemaCreateResponse> {
+		const options = organizationId ? { headerOverrides: { 'X-ST-Organization': organizationId } } : undefined
+		return this.client.post<SchemaCreateResponse>('apps', data, undefined, options)
 	}
 
 	/**
 	 * Update an ST Schema connector
+	 *
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 * @param data new definition of the connector
+	 * @param organizationId The organization to associate the connector with. You must be a member
+	 * of the organization. The organization cannot be changed if the connector's `certificationStatus` is `wwst`.
 	 */
-	public async update(id: string, data: SchemaAppRequest): Promise<Status> {
-		await this.client.put<SchemaApp>(`apps/${id}`, data)
+	public async update(id: string, data: SchemaAppRequest, organizationId?: string): Promise<Status> {
+		const options = organizationId ? { headerOverrides: { 'X-ST-Organization': organizationId } } : undefined
+		await this.client.put<SchemaApp>(`apps/${id}`, data, undefined, options)
 		return SuccessStatusValue
 	}
 
 	/**
 	 * Re-generate the OAuth clientId and clientSecret for an ST Schema connector. The old clientId and clientSecret
 	 * will no longer be valid after this operation.
+	 *
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 */
 	public regenerateOauth(id: string): Promise<SchemaCreateResponse> {
@@ -304,6 +317,7 @@ export class SchemaEndpoint extends Endpoint {
 
 	/**
 	 * Delete an ST Schema connector
+	 *
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 */
 	public async delete(id: string): Promise<Status> {
@@ -313,6 +327,7 @@ export class SchemaEndpoint extends Endpoint {
 
 	/**
 	 * Get the page definition of an ST Schema installed instance in the specified location.
+	 *
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 * @param locationId UUID of the location in which the connector is or is to be installed.
 	 */
@@ -322,6 +337,7 @@ export class SchemaEndpoint extends Endpoint {
 
 	/**
 	 * Returns a list of the installed ST Schema connector instances in the specified location
+	 *
 	 * @param locationId UUID of the location
 	 */
 	public async installedApps(locationId?: string): Promise<InstalledSchemaApp[]> {
@@ -332,6 +348,7 @@ export class SchemaEndpoint extends Endpoint {
 	/**
 	 * Returns a specific installed instance of an ST Schema connector. The returned object includes a list of the
 	 * devices created by the instance.
+	 *
 	 * @param id UUID of the installed app instance
 	 */
 	public getInstalledApp(id: string): Promise<InstalledSchemaApp> {
@@ -341,7 +358,6 @@ export class SchemaEndpoint extends Endpoint {
 	/**
 	 * Deletes a specific installed instance of an ST Schema connector. This operation will also delete all
 	 * devices created by this instance
-	 * @param id
 	 */
 	public async deleteInstalledApp(id: string): Promise<Status> {
 		await this.client.delete(`installedapps/${id}`)

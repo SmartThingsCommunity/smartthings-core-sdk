@@ -42,33 +42,67 @@ describe('Schema', () => {
 	it('Create app', async () => {
 		const app = { appName: 'Test app' } as SchemaAppRequest
 		postSpy.mockResolvedValueOnce(app)
+
 		const response = await client.schema.create(app)
-		expect(postSpy).toHaveBeenCalledWith('apps', app)
+
+		expect(postSpy).toHaveBeenCalledWith('apps', app, undefined, undefined)
+		expect(response).toStrictEqual(app)
+	})
+
+	it('Create app with organization', async () => {
+		const app = { appName: 'Test app' } as SchemaAppRequest
+		postSpy.mockResolvedValueOnce(app)
+
+		const response = await client.schema.create(app, 'organization-id')
+
+		expect(postSpy).toHaveBeenCalledWith(
+			'apps',
+			app,
+			undefined,
+			{ headerOverrides: { 'X-ST-Organization': 'organization-id' }},
+		)
 		expect(response).toStrictEqual(app)
 	})
 
 	it('Update app', async () => {
 		const app = { appName: 'Test app (modified)' } as SchemaAppRequest
-		const id = 'viper_app_id'
+		const id = 'schema-app-id'
 		putSpy.mockResolvedValueOnce(app)
+
 		const response: Status = await client.schema.update(id, app as SchemaAppRequest)
-		expect(putSpy).toHaveBeenCalledWith(`apps/${id}`, app)
+
+		expect(putSpy).toHaveBeenCalledWith(`apps/${id}`, app, undefined, undefined)
+		expect(response).toEqual(SuccessStatusValue)
+	})
+
+	it('Update app with organization', async () => {
+		const app = { appName: 'Test app (modified)' } as SchemaAppRequest
+		const id = 'schema-app-id'
+		putSpy.mockResolvedValueOnce(app)
+
+		const response: Status = await client.schema.update(id, app as SchemaAppRequest, 'organization-id')
+
+		expect(putSpy).toHaveBeenCalledWith(
+			`apps/${id}`,
+			app, undefined,
+			{ headerOverrides: { 'X-ST-Organization': 'organization-id' }},
+		)
 		expect(response).toEqual(SuccessStatusValue)
 	})
 
 	it('Regenerate OAuth', async () => {
-		const app = { endpointAppId: 'viper_app_id', stClientId: 'xxx', stClientSecret: 'yyy' } as SchemaCreateResponse
+		const app = { endpointAppId: 'schema-app-id', stClientId: 'xxx', stClientSecret: 'yyy' } as SchemaCreateResponse
 		postSpy.mockResolvedValueOnce(app)
-		const response = await client.schema.regenerateOauth('viper_app_id')
-		expect(postSpy).toHaveBeenCalledWith('oauth/stclient/credentials', { endpointAppId: 'viper_app_id' })
+		const response = await client.schema.regenerateOauth('schema-app-id')
+		expect(postSpy).toHaveBeenCalledWith('oauth/stclient/credentials', { endpointAppId: 'schema-app-id' })
 		expect(response).toStrictEqual(app)
 	})
 
 	it('Get page', async () => {
 		const page = { pageType: 'requiresLogin' }
 		getSpy.mockResolvedValueOnce(page)
-		const response = await client.schema.getPage('viper_app_id', 'location_id')
-		expect(getSpy).toHaveBeenCalledWith('install/viper_app_id?locationId=location_id&type=oauthLink')
+		const response = await client.schema.getPage('schema-app-id', 'location_id')
+		expect(getSpy).toHaveBeenCalledWith('install/schema-app-id?locationId=location_id&type=oauthLink')
 		expect(response).toStrictEqual(page)
 	})
 
