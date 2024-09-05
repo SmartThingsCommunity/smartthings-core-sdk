@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/core-sdk",
-	"version": "8.2.0",
+	"version": "8.3.0",
 	"description": "JavaScript/TypeScript library for using SmartThings APIs",
 	"author": "Samsung Electronics Co., LTD.",
 	"homepage": "https://github.com/SmartThingsCommunity/smartthings-core-sdk",

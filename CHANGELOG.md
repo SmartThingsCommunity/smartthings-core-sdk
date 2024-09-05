@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.3.0
+
+### Minor Changes
+
+- [#245](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/245) [`aadb5d3`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/aadb5d3506abee13d4b55aba78e7891203ddaba2) Thanks [@rossiam](https://github.com/rossiam)! - add ability to include organization with schema creation and update
+
 ## 8.2.0
 
 ### Minor Changes
