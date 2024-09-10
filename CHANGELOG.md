@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.3.1
+
+### Patch Changes
+
+- [#247](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/247) [`dececa0`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/dececa0f0bf976f4758f6add12ccf8f976ebb909) Thanks [@rossiam](https://github.com/rossiam)! - implement workaround for schema invitations endpoint returning 403
+
 ## 8.3.0
 
 ### Minor Changes
