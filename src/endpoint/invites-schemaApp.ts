@@ -41,7 +41,15 @@ export class InvitesSchemaAppEndpoint extends Endpoint {
 	}
 
 	public async list(schemaAppId: string): Promise<SchemaAppInvitation[]> {
-		return this.client.getPagedItems('', { schemaAppId })
+		try {
+			return await this.client.getPagedItems('', { schemaAppId })
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch(error: any) {
+			if (error.response?.status === 403) {
+				return []
+			}
+			throw error
+		}
 	}
 
 	public async revoke(invitationId: string): Promise<void> {

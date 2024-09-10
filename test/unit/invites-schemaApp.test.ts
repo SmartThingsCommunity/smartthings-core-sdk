@@ -37,6 +37,17 @@ test('list', async () => {
 	expect(getPagedItemsSpy).toHaveBeenCalledWith('', { schemaAppId: 'schema-app-id' })
 })
 
+test('list with 403 error', async () => {
+	getPagedItemsSpy.mockImplementationOnce(() => {
+		throw { response: { status: 403 } }
+	})
+
+	expect(await invitesEndpoint.list('schema-app-id')).toStrictEqual([])
+
+	expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
+	expect(getPagedItemsSpy).toHaveBeenCalledWith('', { schemaAppId: 'schema-app-id' })
+})
+
 test('revoke', async () => {
 	await expect(invitesEndpoint.revoke('schema-app-id')).resolves.not.toThrow()
 

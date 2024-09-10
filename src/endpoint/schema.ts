@@ -292,12 +292,13 @@ export class SchemaEndpoint extends Endpoint {
 	}
 
 	/**
-	 * Update an ST Schema connector
+	 * Update an ST Schema connector. The connector cannot be changed if the connector's
+	 * `certificationStatus` is `wwst` or `cst`.
 	 *
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 * @param data new definition of the connector
 	 * @param organizationId The organization to associate the connector with. You must be a member
-	 * of the organization. The organization cannot be changed if the connector's `certificationStatus` is `wwst`.
+	 * of the organization.
 	 */
 	public async update(id: string, data: SchemaAppRequest, organizationId?: string): Promise<Status> {
 		const options = organizationId ? { headerOverrides: { 'X-ST-Organization': organizationId } } : undefined
