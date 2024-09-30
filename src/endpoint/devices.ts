@@ -774,11 +774,11 @@ export interface DeviceList {
 	_links: Links
 }
 
-interface AttributeState {
+export interface AttributeState {
 	value?: unknown
 	unit?: string
 	data?: { [name: string]: object }
-	timestamp?: string // date-time ("Will always be 0 time-zone offset" whatever that means)
+	timestamp?: string
 }
 
 export interface CapabilityStatus {
