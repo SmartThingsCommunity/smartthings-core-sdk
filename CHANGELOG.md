@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.3.2
+
+### Patch Changes
+
+- [#249](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/249) [`ad000d5`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/ad000d5755bf4859b7fb9e27ad5cc741b39304d0) Thanks [@rossiam](https://github.com/rossiam)! - add missing export on AttributeState
+
 ## 8.3.1
 
 ### Patch Changes
