@@ -186,7 +186,7 @@ export interface PagedApp extends AppBase {
 	/**
 	 * A default icon image for the app.
 	 */
-	iconImage: Required<IconImage>
+	iconImage?: Required<IconImage>
 
 	/**
 	 * A typed model which provides information around ownership of a specific domain.
