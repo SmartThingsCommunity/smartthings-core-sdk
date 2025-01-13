@@ -25,9 +25,11 @@ We're always looking for more opinions on discussions in the issue tracker. It's
 - Non-trivial changes are often best discussed in an issue first, to prevent you from doing unnecessary work.
 - For ambitious tasks, you should try to get your work in front of the community for feedback as soon as possible. Open a pull request as soon as you have done the minimum needed to demonstrate your idea. At this early stage, don't worry about making things perfect, or 100% complete. Describe what you still need to do and submit a [draft pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/). This lets reviewers know not to nit-pick small details or point out improvements you already know you need to make.
 - Don't include unrelated changes
+- Pull requests should include only a single commit. You can use `git rebase -i main` to combine multiple commits into a single one if necessary.
 - New features should be accompanied with tests and documentation
 - Commit messages
-  - Use a clear and descriptive title for the pull request and commits
+  - Use a clear and descriptive title for the pull request and commits.
+  - Commit messages must be formatted properly using [conventional commit format](https://www.conventionalcommits.org/en/v1.0.0/).
   - We use changesets to automatically version and publish releases, and generate release notes.
     Please include one with your pull request by following the instructions to
 	[add a changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md).
