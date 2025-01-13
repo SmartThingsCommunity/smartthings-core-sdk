@@ -1,5 +1,15 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.4.0
+
+### Minor Changes
+
+- [#253](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/253) [`a7253079cb5c0e72610b546d88d77eea9921b2ed`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/a7253079cb5c0e72610b546d88d77eea9921b2ed) Thanks [@rossiam](https://github.com/rossiam)! - remove node 14 and 16; add 20 and 22
+
+### Patch Changes
+
+- [#252](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/252) [`9f9a3f272873276e0da270996bc2824999627086`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/9f9a3f272873276e0da270996bc2824999627086) Thanks [@rossiam](https://github.com/rossiam)! - mark iconImage field as optional in app response
+
 ## 8.3.2
 
 ### Patch Changes
