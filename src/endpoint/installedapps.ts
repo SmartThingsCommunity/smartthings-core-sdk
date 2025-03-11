@@ -197,7 +197,7 @@ export interface ConfigurationRequest {
 	locationId: string
 	installedAppType: InstalledAppType
 	configurationStatus: InstallConfigurationStatus
-	config: {[name: string]: ConfigEntry[]}
+	config: { [name: string]: ConfigEntry[] }
 }
 
 export interface InstalledAppConfiguration {
@@ -206,7 +206,7 @@ export interface InstalledAppConfiguration {
 	configurationStatus: InstallConfigurationStatus
 	createdDate: string
 	lastUpdatedDate: string
-	config: {[name: string]: ConfigEntry}
+	config: { [name: string]: ConfigEntry }
 }
 
 export interface InstalledAppConfigItem {
@@ -233,12 +233,12 @@ export interface InstalledAppUpdateRequest {
 }
 
 export interface ConfigurationUpdateRequest {
-	config: {[name: string]: ConfigEntry[]}
+	config: { [name: string]: ConfigEntry[] }
 }
 
 export interface ConfigurationPatchRequest {
 	removals: string[]
-	upserts: {[name: string]: ConfigEntry[]}
+	upserts: { [name: string]: ConfigEntry[] }
 }
 
 export interface ConfigurationItemsList {
@@ -261,7 +261,7 @@ export enum DashboardLifecycleEventType {
 
 export interface SmartAppEvent {
 	name: string
-	attributes: {[name: string]: string}
+	attributes: { [name: string]: string }
 }
 
 export interface SmartAppDashboardEvent {
@@ -281,23 +281,23 @@ export enum InstalledAppMessageType {
 
 export interface PredefinedMessage {
 	messageTemplateKey: string
-	defaultVariables: {[name: string]: string}
+	defaultVariables: { [name: string]: string }
 	localeVariables: [
 		{
 			localeTag: string
-			variables: {[name: string]: string}
+			variables: { [name: string]: string }
 		}
 	]
 }
 
 export interface AdhocMessage {
 	fallbackLocale: string
-	defaultVariables: {[name: string]: string}
+	defaultVariables: { [name: string]: string }
 	templates: [
 		{
 			localeTag: string
 			template: string
-			variables: {[name: string]: string}
+			variables: { [name: string]: string }
 		}
 	]
 }
@@ -451,7 +451,7 @@ export class InstalledAppsEndpoint extends Endpoint{
 	 * @param id UUID of the installed app
 	 */
 	public async getAuthorizedConfiguration(id: string): Promise<InstalledAppConfiguration | undefined> {
-		const items = await this.listConfigurations(id, {configurationStatus: InstallConfigurationStatus.AUTHORIZED})
+		const items = await this.listConfigurations(id, { configurationStatus: InstallConfigurationStatus.AUTHORIZED })
 		if (items.length > 0) {
 			const item = items[0]
 			return this.getConfiguration(item.installedAppId, item.configurationId)

@@ -109,7 +109,7 @@ describe('VirtualDevicesEndpoint', () => {
 
 	describe('createStandard', () => {
 		it('creates from prototype', async () => {
-			const device = {new: 'device'}
+			const device = { new: 'device' }
 			postSpy.mockResolvedValueOnce(device)
 
 			const deviceCreate: VirtualDeviceStandardCreateRequest = {

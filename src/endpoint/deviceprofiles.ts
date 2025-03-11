@@ -142,7 +142,7 @@ export class DeviceProfilesEndpoint extends Endpoint {
 	 * @param deviceProfileStatus new device profile status
 	 */
 	public updateStatus(id: string, deviceProfileStatus: DeviceProfileStatus): Promise<DeviceProfile> {
-		return this.client.post(`${id}/status`, {deviceProfileStatus})
+		return this.client.post(`${id}/status`, { deviceProfileStatus })
 	}
 
 	/**

@@ -9,7 +9,7 @@ import {
 	CapabilityDetailView,
 	CapabilityMultiArgCommand,
 	CapabilityAutomationCondition,
-	CapabilityAutomationAction} from './capabilities'
+	CapabilityAutomationAction } from './capabilities'
 
 
 export enum PatchItemOpEnum {

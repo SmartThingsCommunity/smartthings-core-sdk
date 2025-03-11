@@ -63,7 +63,10 @@ describe('parseWarningHeader', () => {
 })
 
 describe('EndpointClient',  () => {
-	const mockRequest = axios.request as jest.Mock<Promise<AxiosResponse>, [AxiosRequestConfig]>
+	type StatusResponse = {
+		status: 'ok'
+	}
+	const mockRequest = axios.request as jest.Mock<Promise<AxiosResponse<StatusResponse>>, [AxiosRequestConfig]>
 	mockRequest.mockResolvedValue({ status: 200, data: { status: 'ok' } } as AxiosResponse)
 
 	class TokenStore implements RefreshTokenStore {
@@ -93,7 +96,7 @@ describe('EndpointClient',  () => {
 		Accept: 'application/json',
 	}
 	const buildClient = (config: EndpointClientConfig = { ...configWithoutHeaders, headers }): EndpointClient =>
-		new EndpointClient('base/path', { ...config, headers: { ...config.headers }})
+		new EndpointClient('base/path', { ...config, headers: { ...config.headers } })
 
 	beforeEach(() => {
 		client = buildClient()
@@ -138,7 +141,7 @@ describe('EndpointClient',  () => {
 
 	describe('request', () => {
 		it('submits basic request', async () => {
-			const response = await client.request('GET', 'my/path')
+			const response = await client.request<StatusResponse>('GET', 'my/path')
 
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
@@ -156,7 +159,6 @@ describe('EndpointClient',  () => {
 
 			const stringifyMock = (qs.stringify as jest.Mock<string, [unknown]>)
 				.mockReturnValue('stringified parameters')
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const paramsSerializer = mockRequest.mock.calls[0][0].paramsSerializer as ParamsSerializerOptions
 
 			expect(paramsSerializer).toBeDefined()
@@ -172,7 +174,7 @@ describe('EndpointClient',  () => {
 				version: 'api-version',
 				headers: { Accept: 'accept-header' },
 			})
-			const response = await client.request('GET', 'my/path')
+			const response = await client.request<StatusResponse>('GET', 'my/path')
 
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
@@ -191,7 +193,7 @@ describe('EndpointClient',  () => {
 
 		it('includes version along with accept header', async () => {
 			const client = buildClient({ ...configWithoutHeaders, version: 'api-version' })
-			const response = await client.request('GET', 'my/path')
+			const response = await client.request<StatusResponse>('GET', 'my/path')
 
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
@@ -213,7 +215,7 @@ describe('EndpointClient',  () => {
 				'Content-Type': 'overridden content type',
 				'X-ST-Organization': '00000000-0000-0000-0000-000000000008',
 			}
-			const response = await client.request('POST', 'my/path', { name: 'Bob' }, undefined, { headerOverrides })
+			const response = await client.request<StatusResponse>('POST', 'my/path', { name: 'Bob' }, undefined, { headerOverrides })
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/base/path/my/path',
@@ -233,7 +235,7 @@ describe('EndpointClient',  () => {
 
 		it('includes logging id when specified', async () => {
 			const client = buildClient({ ...configWithoutHeaders, loggingId: 'request-logging-id' })
-			const response = await client.request('GET', 'my/path')
+			const response = await client.request<StatusResponse>('GET', 'my/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/base/path/my/path',
@@ -257,7 +259,7 @@ describe('EndpointClient',  () => {
 				data: { status: 'ok' },
 				headers: { warning: '299 - "Danger, Will Robinson! Danger!"' },
 			} as unknown as AxiosResponse)
-			const response = await client.request('GET', 'my/path')
+			const response = await client.request<StatusResponse>('GET', 'my/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/base/path/my/path',
@@ -286,7 +288,7 @@ describe('EndpointClient',  () => {
 				headers: { warning: 'warning message in header' },
 			} as unknown as AxiosResponse)
 
-			expect(client.request('GET', 'my/path')).resolves.not.toThrow
+			await expect(client.request('GET', 'my/path')).resolves.not.toThrow()
 		})
 
 		it('returns dryRunReturnValue in dry run mode', async () => {
@@ -413,7 +415,7 @@ describe('EndpointClient',  () => {
 
 	describe('get', () => {
 		it('submits basic request', async () => {
-			const response = await client.get('path2')
+			const response = await client.get<StatusResponse>('path2')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/base/path/path2',
@@ -430,7 +432,7 @@ describe('EndpointClient',  () => {
 		})
 
 		it('includes query params when specified', async () => {
-			const response = await client.get('my/path', { locationId: 'XXX' })
+			const response = await client.get<StatusResponse>('my/path', { locationId: 'XXX' })
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/base/path/my/path',
@@ -449,7 +451,7 @@ describe('EndpointClient',  () => {
 		})
 
 		it('skips base path with absolute path', async () => {
-			const response = await client.get('/base2/this/path')
+			const response = await client.get<StatusResponse>('/base2/this/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/base2/this/path',
@@ -466,7 +468,7 @@ describe('EndpointClient',  () => {
 		})
 
 		it('skips base URL and path with absolute URL', async () => {
-			const response = await client.get('https://api.smartthings.com/absolute/url')
+			const response = await client.get<StatusResponse>('https://api.smartthings.com/absolute/url')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
 				url: 'https://api.smartthings.com/absolute/url',
@@ -484,7 +486,7 @@ describe('EndpointClient',  () => {
 	})
 
 	test('post', async () => {
-		const response = await client.post('myotherpath', { name: 'Bill' })
+		const response = await client.post<StatusResponse>('myotherpath', { name: 'Bill' })
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
 			url: 'https://api.smartthings.com/base/path/myotherpath',
@@ -503,7 +505,7 @@ describe('EndpointClient',  () => {
 	})
 
 	test('put', async () => {
-		const response = await client.put('myotherpath', { name: 'Bill' })
+		const response = await client.put<StatusResponse>('myotherpath', { name: 'Bill' })
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
 			url: 'https://api.smartthings.com/base/path/myotherpath',
@@ -522,7 +524,7 @@ describe('EndpointClient',  () => {
 	})
 
 	test('patch', async () => {
-		const response = await client.patch('path3', { name: 'Joe' })
+		const response = await client.patch<StatusResponse>('path3', { name: 'Joe' })
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
 			url: 'https://api.smartthings.com/base/path/path3',
@@ -541,7 +543,7 @@ describe('EndpointClient',  () => {
 	})
 
 	test('delete', async () => {
-		const response = await client.delete('path3')
+		const response = await client.delete<StatusResponse>('path3')
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
 			url: 'https://api.smartthings.com/base/path/path3',
@@ -597,13 +599,13 @@ describe('EndpointClient',  () => {
 	test('expired token request', async () => {
 		mockRequest
 			.mockImplementationOnce(() => Promise.reject(
-				{ response: {status: 401, data: 'Unauthorized'} }))
+				{ response: { status: 401, data: 'Unauthorized' } }))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { access_token: 'my-access-token', refresh_token: 'my-refresh-token' } } as AxiosResponse))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { status: 'ok' } } as AxiosResponse))
 
-		const response = await client.get('my/path')
+		const response = await client.get<StatusResponse>('my/path')
 		expect(mockRequest).toHaveBeenCalledTimes(3)
 		expect(response.status).toBe('ok')
 	})
@@ -621,19 +623,19 @@ describe('EndpointClient',  () => {
 
 		mockRequest
 			.mockImplementationOnce(() => Promise.reject(
-				{response: { status: 401, data: 'Unauthorized' }}))
+				{ response: { status: 401, data: 'Unauthorized' } }))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { access_token: 'my-access-token', refresh_token: 'my-refresh-token' } } as AxiosResponse))
 			.mockImplementationOnce(() => Promise.resolve(
 				{ status: 200, data: { status: 'ok' } } as AxiosResponse))
 
-		const response = await mutexClient.get('my/path')
+		const response = await mutexClient.get<StatusResponse>('my/path')
 		expect(mockRequest).toHaveBeenCalledTimes(3)
 		expect(response.status).toBe('ok')
 	})
 
 	test('get 404', async () => {
-		mockRequest.mockImplementationOnce(() => Promise.reject({response: { status: 404, data: 'Not Found' }}))
+		mockRequest.mockImplementationOnce(() => Promise.reject({ response: { status: 404, data: 'Not Found' } }))
 		let threwError = false
 		try {
 			await client.get('path2')
@@ -648,8 +650,8 @@ describe('EndpointClient',  () => {
 
 	test('get refresh fail', async () => {
 		mockRequest
-			.mockImplementationOnce(() => Promise.reject({response: { status: 401, data: 'Unauthorized' }}))
-			.mockImplementationOnce(() => Promise.reject({response: { status: 500, data: 'Server error' }}))
+			.mockImplementationOnce(() => Promise.reject({ response: { status: 401, data: 'Unauthorized' } }))
+			.mockImplementationOnce(() => Promise.reject({ response: { status: 500, data: 'Server error' } }))
 
 		let threwError = false
 		try {

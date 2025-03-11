@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"lib": ["es2020", "DOM"],
-		"target": "es6",
+		"target": "ES2018",
 		"strict": true,
 		"declaration": true,
 		"strictNullChecks": true,
@@ -11,6 +11,7 @@
 		"noFallthroughCasesInSwitch": true,
 		"declarationMap": true,
 		"outDir": "./dist",
+		"useUnknownInCatchVariables": false,
 	},
 	"include": [
 		"./global.d.ts",

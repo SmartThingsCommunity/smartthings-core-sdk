@@ -29,7 +29,7 @@ export interface Logger {
 export class NoLogLogger implements Logger {
 	public level = 'off'
 
-	/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
+	/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/explicit-module-boundary-types */
 	trace(message: any, ...args: any[]): void {
 		// no-op
 	}

@@ -30,7 +30,7 @@ describe('ChannelsEndpoint', () => {
 	})
 
 	test('delete', async () => {
-		expect(await channelsEndpoint.delete('id-to-delete')).resolves.not.toThrow
+		await expect(channelsEndpoint.delete('id-to-delete')).resolves.not.toThrow()
 
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('id-to-delete')
@@ -122,7 +122,7 @@ describe('ChannelsEndpoint', () => {
 	})
 
 	test('unassignDriver', async () => {
-		expect(channelsEndpoint.unassignDriver('channel-id', 'driver-id')).resolves.not.toThrow
+		await expect(channelsEndpoint.unassignDriver('channel-id', 'driver-id')).resolves.not.toThrow()
 
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('channel-id/drivers/driver-id')
@@ -131,14 +131,14 @@ describe('ChannelsEndpoint', () => {
 	test('enrollHub', async () => {
 		postSpy.mockResolvedValueOnce({ unused: 'value' })
 
-		expect(channelsEndpoint.enrollHub('channel-id', 'hub-id')).resolves.not.toThrow
+		await expect(channelsEndpoint.enrollHub('channel-id', 'hub-id')).resolves.not.toThrow()
 
 		expect(postSpy).toHaveBeenCalledTimes(1)
 		expect(postSpy).toHaveBeenCalledWith('channel-id/hubs/hub-id')
 	})
 
 	test('unenrollHub', async () => {
-		expect(channelsEndpoint.unenrollHub('channel-id', 'hub-id')).resolves.not.toThrow
+		await expect(channelsEndpoint.unenrollHub('channel-id', 'hub-id')).resolves.not.toThrow()
 
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('channel-id/hubs/hub-id')

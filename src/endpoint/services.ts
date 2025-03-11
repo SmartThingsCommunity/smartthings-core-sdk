@@ -571,7 +571,7 @@ export class ServicesEndpoint extends Endpoint {
 		try {
 			await this.client.delete(
 				`${this.locationId(locationId)}/subscriptions/${id}`,
-				{isaId: this.installedAppId(installedAppId)})
+				{ isaId: this.installedAppId(installedAppId) })
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (error: any) {
 			if ( !(error.response.status === 400 &&
@@ -589,7 +589,7 @@ export class ServicesEndpoint extends Endpoint {
 		try {
 			await this.client.delete(
 				`${this.locationId(locationId)}/subscriptions`,
-				{isaId: this.installedAppId(installedAppId)})
+				{ isaId: this.installedAppId(installedAppId) })
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (error: any) {
 			if ( !(error.response.status === 400 &&
@@ -611,7 +611,7 @@ export class ServicesEndpoint extends Endpoint {
 	public getCapability(capability: ServiceCapabilitiesEnum, locationId?: string): Promise<ServiceCapabilityData> {
 		return this.client.get<ServiceCapabilityData>(
 			`${this.locationId(locationId)}/capabilities`,
-			{name: capability})
+			{ name: capability })
 	}
 
 	/**
@@ -624,6 +624,6 @@ export class ServicesEndpoint extends Endpoint {
 		const capabilityList = capabilities.join(',')
 		return this.client.get<ServiceCapabilityData>(
 			`${this.locationId(locationId)}/capabilities`,
-			{name: capabilityList})
+			{ name: capabilityList })
 	}
 }

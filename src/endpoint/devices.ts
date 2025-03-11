@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
-import { ConfigEntry} from './installedapps'
+import { ConfigEntry } from './installedapps'
 import { Links, Status, SuccessStatusValue } from '../types'
 import { PresentationDevicePresentation } from './presentation'
 
@@ -76,10 +76,7 @@ export interface AppDeviceDetails {
 	profile?: DeviceProfileReference
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface BleDeviceDetails {
-	// The API defines this object without properties.
-}
+export type BleDeviceDetails = object
 
 export interface BleD2DDeviceDetails {
 	encryptionKey?: string
@@ -1336,6 +1333,6 @@ export class DevicesEndpoint extends Endpoint {
 				hueColor = 0
 		}
 
-		return {hue: hueColor, saturation}
+		return { hue: hueColor, saturation }
 	}
 }
