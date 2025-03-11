@@ -144,7 +144,7 @@ describe('Installed Apps', () => {
 		expect(axios.request).toHaveBeenNthCalledWith(1, expectedRequest(getConfigs.request))
 		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(getStagedConfig.request))
 
-		expect(response).toBeDefined
+		expect(response).toBeDefined()
 		if (response) {
 			expect(response.configurationId).toEqual('fd9b9bbd-c635-4d87-b4ff-f577a6b14a1d')
 			expect(response).toEqual(getStagedConfig.response)
@@ -162,7 +162,7 @@ describe('Installed Apps', () => {
 		expect(axios.request).toHaveBeenNthCalledWith(1, expectedRequest(getAuthorizedConfigs.request))
 		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(getAuthorizedConfig.request))
 
-		expect(response).toBeDefined
+		expect(response).toBeDefined()
 		if (response) {
 			expect(response.configurationId).toEqual('e9428d01-6710-45f0-85a4-e31e51d011fe')
 			expect(response).toEqual(getAuthorizedConfig.response)
@@ -180,7 +180,7 @@ describe('Installed Apps', () => {
 		expect(axios.request).toHaveBeenNthCalledWith(1, expectedRequest(getAuthorizedConfigs.request))
 		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(getAuthorizedConfig.request))
 
-		expect(response).toBeDefined
+		expect(response).toBeDefined()
 		if (response) {
 			expect(response.configurationId).toEqual('e9428d01-6710-45f0-85a4-e31e51d011fe')
 			expect(response).toEqual(getAuthorizedConfig.response)
@@ -200,7 +200,7 @@ describe('Installed Apps', () => {
 		expect(axios.request).toHaveBeenNthCalledWith(2, expectedRequest(getConfigs.request))
 		expect(axios.request).toHaveBeenNthCalledWith(3, expectedRequest(getStagedConfig.request))
 
-		expect(response).toBeDefined
+		expect(response).toBeDefined()
 		if (response) {
 			expect(response.configurationId).toEqual('fd9b9bbd-c635-4d87-b4ff-f577a6b14a1d')
 			expect(response).toEqual(getStagedConfig.response)

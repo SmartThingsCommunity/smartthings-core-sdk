@@ -1,6 +1,6 @@
 import { CommandRequest, CommandList, Command, DeviceHealthState, DeviceProfileUpdate,
 	DeviceUpdate, DevicesEndpoint, Device, DeviceEvent, DevicePreferenceResponse, DeviceCreate,
-	CommandResponse}  from '../../src/endpoint/devices'
+	CommandResponse }  from '../../src/endpoint/devices'
 import { ConfigEntry, ConfigValueType } from '../../src/endpoint/installedapps'
 import { BearerTokenAuthenticator } from '../../src/authenticator'
 import { EndpointClient } from '../../src/endpoint-client'

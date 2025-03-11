@@ -1,5 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function expectedRequest(config: any): any {
+import { AxiosRequestConfig } from 'axios'
+
+
+export function expectedRequest(config: AxiosRequestConfig): AxiosRequestConfig<object> {
 	return {
 		data: undefined,
 		params: undefined,
@@ -8,8 +10,7 @@ export function expectedRequest(config: any): any {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function buildRequest(path?: string, params?: any, data?: any, method = 'get'): any {
+export function buildRequest(path?: string, params?: unknown, data?: object, method = 'get'): AxiosRequestConfig<object> {
 	return {
 		url: `https://api.smartthings.com/${path}`,
 		method: method,

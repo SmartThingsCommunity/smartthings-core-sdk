@@ -313,7 +313,7 @@ export class SchemaEndpoint extends Endpoint {
 	 * @param id the "endpointApp" UUID of the connector, e.g. "viper_799ff3a0-8249-11e9-9bf1-b5c7d651c2c3"
 	 */
 	public regenerateOauth(id: string): Promise<SchemaCreateResponse> {
-		return this.client.post<SchemaCreateResponse>('oauth/stclient/credentials', {endpointAppId: id})
+		return this.client.post<SchemaCreateResponse>('oauth/stclient/credentials', { endpointAppId: id })
 	}
 
 	/**

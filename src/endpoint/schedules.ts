@@ -63,8 +63,8 @@ function parseDate(value: string): string {
 	try {
 		if (/^[0-9-]+T[0-9][0-9]:[0-9][0-9]:/.test(value)) {
 			const time = value.split('T')[1]
-			const hours = time.slice(0,2)
-			const minutes = time.slice(3,5)
+			const hours = time.slice(0, 2)
+			const minutes = time.slice(3, 5)
 			return `${minutes} ${hours} * * ? *`
 		}
 		if (/^[0-9][0-9]?:[0-9][0-9]$/.test(value)) {

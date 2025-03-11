@@ -70,7 +70,7 @@ export class ModesEndpoint extends Endpoint {
 	 * not necessary.
 	 */
 	public setCurrent(id: string, locationId?: string): Promise<Mode> {
-		return this.client.put(`${this.locationId(locationId)}/modes/current`, {modeId: id})
+		return this.client.put(`${this.locationId(locationId)}/modes/current`, { modeId: id })
 	}
 
 	/**

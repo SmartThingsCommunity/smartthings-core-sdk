@@ -1,5 +1,5 @@
-import {EndpointClient} from './endpoint-client'
-import {Links} from './types'
+import { EndpointClient } from './endpoint-client'
+import { Links } from './types'
 
 
 export interface PagedResult<T> {
@@ -26,9 +26,9 @@ export class PaginatedListIterator<T> implements AsyncIterator<T> {
 					done = true
 				}
 			}
-			return {done, value}
+			return { done, value }
 		}
-		return {done: true, value: undefined}
+		return { done: true, value: undefined }
 	}
 }
 

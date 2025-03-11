@@ -1,6 +1,6 @@
-import {Endpoint} from '../endpoint'
-import {EndpointClient, EndpointClientConfig, HttpClientParams} from '../endpoint-client'
-import {PaginatedList} from '../pagination'
+import { Endpoint } from '../endpoint'
+import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
+import { PaginatedList } from '../pagination'
 
 
 export interface DeviceActivity {

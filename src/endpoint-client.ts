@@ -156,9 +156,8 @@ export class EndpointClient {
 		return `${this.config.urlProvider?.baseURL}/${this.basePath}`
 	}
 
-	/* eslint-disable @typescript-eslint/no-explicit-any */
-	public async request<T = any>(method: HttpClientMethod, path?: string,
-			data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public async request<T = unknown>(method: HttpClientMethod, path?: string,
+			data?: unknown, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		const headers: HttpClientHeaders = this.config.headers ? { ...this.config.headers } : {}
 
 		if (this.config.loggingId) {
@@ -211,7 +210,7 @@ export class EndpointClient {
 				this.config.warningLogger(parseWarningHeader(response.headers.warning))
 			}
 			return response.data
-		} catch (error: any) {
+		} catch (error) {
 			if (this.logger.isTraceEnabled()) {
 				// https://www.npmjs.com/package/axios#handling-errors
 				if (error.response) {
@@ -250,27 +249,27 @@ export class EndpointClient {
 		}
 	}
 
-	public async get<T = any>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public async get<T = unknown>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('get', path, undefined, params, options)
 	}
 
-	public post<T = any>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public post<T = unknown>(path?: string, data?: unknown, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('post', path, data, params, options)
 	}
 
-	public put<T = any>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public put<T = unknown>(path?: string, data?: unknown, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('put', path, data, params, options)
 	}
 
-	public patch<T = any>(path?: string, data?: any, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public patch<T = unknown>(path?: string, data?: unknown, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('patch', path, data, params, options)
 	}
 
-	public delete<T = any>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
+	public delete<T = unknown>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<T>): Promise<T> {
 		return this.request('delete', path, undefined, params, options)
 	}
 
-	public async getPagedItems<T = any>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList>): Promise<T[]> {
+	public async getPagedItems<T = unknown>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList>): Promise<T[]> {
 		let list = await this.get<ItemsList>(path, params, options)
 		const result = list.items
 		while (list._links && list._links.next) {
@@ -279,5 +278,4 @@ export class EndpointClient {
 		}
 		return result
 	}
-	/* eslint-enable */
 }

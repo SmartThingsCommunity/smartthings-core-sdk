@@ -24,15 +24,15 @@ describe('Schema', () => {
 	})
 
 	it('List', async () => {
-		const list = [{endpointAppId: 'endpoint_app_id'}] as SchemaApp[]
-		getSpy.mockResolvedValueOnce({endpointApps: list})
+		const list = [{ endpointAppId: 'endpoint_app_id' }] as SchemaApp[]
+		getSpy.mockResolvedValueOnce({ endpointApps: list })
 		const response = await client.schema.list()
 		expect(getSpy).toHaveBeenCalledWith('apps')
 		expect(response).toStrictEqual(list)
 	})
 
 	it('Get app', async () => {
-		const app = {endpointAppId: 'endpoint_app_id'}
+		const app = { endpointAppId: 'endpoint_app_id' }
 		getSpy.mockResolvedValueOnce(app)
 		const response = await client.schema.get('endpoint_app_id')
 		expect(getSpy).toHaveBeenCalledWith('apps/endpoint_app_id')
@@ -59,7 +59,7 @@ describe('Schema', () => {
 			'apps',
 			app,
 			undefined,
-			{ headerOverrides: { 'X-ST-Organization': 'organization-id' }},
+			{ headerOverrides: { 'X-ST-Organization': 'organization-id' } },
 		)
 		expect(response).toStrictEqual(app)
 	})
@@ -85,7 +85,7 @@ describe('Schema', () => {
 		expect(putSpy).toHaveBeenCalledWith(
 			`apps/${id}`,
 			app, undefined,
-			{ headerOverrides: { 'X-ST-Organization': 'organization-id' }},
+			{ headerOverrides: { 'X-ST-Organization': 'organization-id' } },
 		)
 		expect(response).toEqual(SuccessStatusValue)
 	})
@@ -107,8 +107,8 @@ describe('Schema', () => {
 	})
 
 	it('List installed apps', async () => {
-		const list = [{ isaId: 'isa_id'}]
-		getSpy.mockResolvedValueOnce({installedSmartApps: list})
+		const list = [{ isaId: 'isa_id' }]
+		getSpy.mockResolvedValueOnce({ installedSmartApps: list })
 		const response = await client.schema.installedApps('location_id')
 		expect(getSpy).toHaveBeenCalledWith('installedapps/location/location_id')
 		expect(response).toStrictEqual(list)
@@ -124,7 +124,7 @@ describe('Schema', () => {
 
 
 	it('Get installed app', async () => {
-		const app = { isaId: 'isa_id'}
+		const app = { isaId: 'isa_id' }
 		getSpy.mockResolvedValueOnce(app)
 		const response = await client.schema.getInstalledApp('isa_id')
 		expect(getSpy).toHaveBeenCalledWith('installedapps/isa_id')

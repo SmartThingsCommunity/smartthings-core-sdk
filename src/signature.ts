@@ -1,7 +1,7 @@
 import axios from 'axios'
 import sshpk from 'sshpk'
 import httpSignature from 'http-signature'
-import {SmartThingsURLProvider, defaultSmartThingsURLProvider} from './endpoint-client'
+import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
 import { Logger } from './logger'
 
 

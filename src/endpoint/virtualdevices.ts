@@ -1,4 +1,4 @@
-import { Endpoint} from '../endpoint'
+import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { CommandMappings, Device, DeviceEvent } from './devices'
 import { DeviceProfileCreateRequest } from './deviceprofiles'

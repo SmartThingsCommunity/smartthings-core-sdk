@@ -20,7 +20,7 @@ describe('Organizations', () => {
 	})
 
 	it('list', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: list.response}))
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: list.response }))
 		const response: OrganizationResponse[] = await client.organizations.list()
 		expect(axios.request).toHaveBeenCalledTimes(1)
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(list.request))
@@ -28,7 +28,7 @@ describe('Organizations', () => {
 	})
 
 	it('explicit get', async () => {
-		axios.request.mockImplementationOnce(() => Promise.resolve({status: 200, data: get.response}))
+		axios.request.mockImplementationOnce(() => Promise.resolve({ status: 200, data: get.response }))
 		const response: OrganizationResponse = await client.organizations.get('00000000-0000-0000-0000-000000000000')
 		expect(axios.request).toHaveBeenCalledWith(expectedRequest(get.request))
 		expect(response).toBe(get.response)

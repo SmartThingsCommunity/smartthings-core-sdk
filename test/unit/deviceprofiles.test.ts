@@ -7,7 +7,7 @@ import {
 	SuccessStatusValue,
 	Status,
 } from '../../src'
-import {expectedRequest} from './helpers/utils'
+import { expectedRequest } from './helpers/utils'
 import {
 	get_deviceprofiles as list,
 	get_deviceprofiles_96406249_c14c_4d0e_8dd2_f62fbe381e78 as get,

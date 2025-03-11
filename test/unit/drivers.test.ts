@@ -1,5 +1,5 @@
 import { NoOpAuthenticator } from '../../src/authenticator'
-import {DriversEndpoint, EdgeDriver, EdgeDriverSummary} from '../../src/endpoint/drivers'
+import { DriversEndpoint, EdgeDriver, EdgeDriverSummary } from '../../src/endpoint/drivers'
 import { EndpointClient } from '../../src/endpoint-client'
 
 
@@ -35,7 +35,7 @@ describe('DriversEndpoint', () => {
 	})
 
 	test('delete', async () => {
-		expect(await driversEndpoint.delete('id-to-delete')).resolves.not.toThrow
+		await expect(driversEndpoint.delete('id-to-delete')).resolves.not.toThrow()
 
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('id-to-delete')
