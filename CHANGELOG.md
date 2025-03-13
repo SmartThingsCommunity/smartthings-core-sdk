@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.4.1
+
+### Patch Changes
+
+- [#256](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/256) [`d73ad47`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/d73ad474eef19d49151991888bb29e4ea994a3f3) Thanks [@rossiam](https://github.com/rossiam)! - updated dependencies
+
 ## 8.4.0
 
 ### Minor Changes
