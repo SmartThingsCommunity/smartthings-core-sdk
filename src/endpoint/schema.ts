@@ -302,6 +302,8 @@ export class SchemaEndpoint extends Endpoint {
 	 */
 	public async update(id: string, data: SchemaAppRequest, organizationId?: string): Promise<Status> {
 		const options = organizationId ? { headerOverrides: { 'X-ST-Organization': organizationId } } : undefined
+		// The API documentation says this should return the updated schema app but it does not.
+		// Rather, on success, it simply returns an empty body.
 		await this.client.put<SchemaApp>(`apps/${id}`, data, undefined, options)
 		return SuccessStatusValue
 	}

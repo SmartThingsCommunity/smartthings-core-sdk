@@ -1,12 +1,25 @@
 import { Mutex } from 'async-mutex'
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, ParamsSerializerOptions } from 'axios'
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse, type ParamsSerializerOptions } from 'axios'
 import qs from 'qs'
 
-import { AuthData, Authenticator, BearerTokenAuthenticator, NoOpAuthenticator, RefreshData,
-	RefreshTokenAuthenticator, RefreshTokenStore, SequentialRefreshTokenAuthenticator }
-	from '../../src/authenticator'
-import { defaultSmartThingsURLProvider, EndpointClient, EndpointClientConfig, HttpClientHeaders, parseWarningHeader } from '../../src/endpoint-client'
-import { Logger, NoLogLogger } from '../../src/logger'
+import {
+	type AuthData,
+	type Authenticator,
+	BearerTokenAuthenticator,
+	NoOpAuthenticator,
+	type RefreshData,
+	RefreshTokenAuthenticator,
+	type RefreshTokenStore,
+	SequentialRefreshTokenAuthenticator,
+} from '../../src/authenticator'
+import {
+	EndpointClient,
+	type EndpointClientConfig,
+	type HttpClientHeaders,
+	globalSmartThingsURLProvider,
+	parseWarningHeader,
+} from '../../src/endpoint-client'
+import { type Logger, NoLogLogger } from '../../src/logger'
 
 
 jest.mock('axios')
@@ -86,7 +99,7 @@ describe('EndpointClient',  () => {
 	let client: EndpointClient
 
 	const configWithoutHeaders = {
-		urlProvider: defaultSmartThingsURLProvider,
+		urlProvider: globalSmartThingsURLProvider,
 		authenticator: new RefreshTokenAuthenticator(token, tokenStore),
 		baseURL: 'https://api.smartthings.com',
 		authURL: 'https://auth.smartthings.com',

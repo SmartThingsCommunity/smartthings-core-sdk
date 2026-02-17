@@ -1,7 +1,8 @@
 import axios from 'axios'
-import sshpk from 'sshpk'
 import httpSignature from 'http-signature'
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from './endpoint-client'
+import sshpk from 'sshpk'
+
+import { SmartThingsURLProvider, globalSmartThingsURLProvider } from './endpoint-client'
 import { Logger } from './logger'
 
 
@@ -23,11 +24,14 @@ export class HttpKeyResolver {
 	private keyCacheTTL: number
 
 	constructor(config?: KeyResolverConfig ) {
-		this.keyApiUrl = defaultSmartThingsURLProvider.keyApiURL
+		this.keyApiUrl = globalSmartThingsURLProvider.keyApiURL
 		this.keyCache = undefined
 		this.keyCacheTTL = (24 * 60 * 60 * 1000)
 		if (config) {
 			if (config.urlProvider) {
+				if (!config.urlProvider.keyApiURL) {
+					throw Error('keyApiURL is required in urlProvider')
+				}
 				this.keyApiUrl = config.urlProvider.keyApiURL
 			}
 			if (config.keyCacheTTL) {
