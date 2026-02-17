@@ -783,7 +783,7 @@ export interface CapabilityStatus {
 }
 
 export interface ComponentStatus {
-	[attributeName: string]: CapabilityStatus
+	[capabilityName: string]: CapabilityStatus
 }
 
 export interface DeviceStatus {

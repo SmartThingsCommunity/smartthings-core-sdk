@@ -26,7 +26,7 @@ import { SchedulesEndpoint } from './endpoint/schedules'
 import { SchemaEndpoint } from './endpoint/schema'
 import { ServicesEndpoint } from './endpoint/services'
 import { VirtualDevicesEndpoint } from './endpoint/virtualdevices'
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider, HttpClientHeaders } from './endpoint-client'
+import { SmartThingsURLProvider, globalSmartThingsURLProvider, HttpClientHeaders } from './endpoint-client'
 
 
 export class SmartThingsClient extends RESTClient {
@@ -103,7 +103,7 @@ export class SmartThingsOAuthClient {
 
 	constructor(private clientId: string, private clientSecret: string,
 			private redirectUri: string, urlProvider?: SmartThingsURLProvider) {
-		this.authURL = urlProvider?.authURL || defaultSmartThingsURLProvider.authURL
+		this.authURL = urlProvider?.authURL || globalSmartThingsURLProvider.authURL
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

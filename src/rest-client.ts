@@ -1,6 +1,6 @@
 import { Authenticator } from './authenticator'
 import { EndpointClientConfig, HttpClientHeaders, SmartThingsURLProvider,
-	defaultSmartThingsURLProvider, WarningFromHeader } from './endpoint-client'
+	globalSmartThingsURLProvider, WarningFromHeader } from './endpoint-client'
 import { Logger } from './logger'
 
 
@@ -30,7 +30,7 @@ export class RESTClient {
 	constructor(authenticator: Authenticator, config?: RESTClientConfig) {
 		const defaultConfig = {
 			authenticator,
-			urlProvider: defaultSmartThingsURLProvider,
+			urlProvider: globalSmartThingsURLProvider,
 			useAuth: true,
 		}
 		const headers = (config && config.headers)

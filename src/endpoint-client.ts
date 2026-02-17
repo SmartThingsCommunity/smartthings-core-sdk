@@ -21,14 +21,19 @@ export type HttpClientMethod =
 
 export interface SmartThingsURLProvider {
 	baseURL: string
-	authURL: string
-	keyApiURL: string
+	authURL?: string
+	keyApiURL?: string
 }
 
-export const defaultSmartThingsURLProvider: SmartThingsURLProvider = {
+export const globalSmartThingsURLProvider: Required<SmartThingsURLProvider> = {
 	baseURL: 'https://api.smartthings.com',
 	authURL: 'https://auth-global.api.smartthings.com/oauth/token',
 	keyApiURL: 'https://key.smartthings.com',
+}
+
+export const chinaSmartThingsURLProvider: SmartThingsURLProvider = {
+	// When login auth flow is added for China, make authURL required again.
+	baseURL: 'https://api.samsungiotcloud.cn',
 }
 
 export interface EndpointClientConfig {
@@ -50,8 +55,8 @@ export interface EndpointClientConfig {
 	warningLogger?: (warnings: WarningFromHeader[] | string) => void | Promise<void>
 }
 
-export interface ItemsList {
-	items: []
+export interface ItemsList<T> {
+	items: T[]
 	_links?: {
 		next?: {
 			href: string
@@ -269,11 +274,11 @@ export class EndpointClient {
 		return this.request('delete', path, undefined, params, options)
 	}
 
-	public async getPagedItems<T = unknown>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList>): Promise<T[]> {
-		let list = await this.get<ItemsList>(path, params, options)
+	public async getPagedItems<T = unknown>(path?: string, params?: HttpClientParams, options?: EndpointClientRequestOptions<ItemsList<T>>): Promise<T[]> {
+		let list = await this.get<ItemsList<T>>(path, params, options)
 		const result = list.items
 		while (list._links && list._links.next) {
-			list = await this.get<ItemsList>(list._links.next.href, undefined, options)
+			list = await this.get<ItemsList<T>>(list._links.next.href, undefined, options)
 			result.push(...list.items)
 		}
 		return result

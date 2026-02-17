@@ -1,16 +1,16 @@
 import axios from '../../__mocks__/axios'
-import { MutexInterface } from 'async-mutex'
+import { type MutexInterface } from 'async-mutex'
 
 import {
-	AuthData,
-	RefreshData,
+	type AuthData,
+	type RefreshData,
 	NoOpAuthenticator,
 	BearerTokenAuthenticator,
 	RefreshTokenAuthenticator,
 	RefreshTokenStore,
 	SequentialRefreshTokenAuthenticator,
 } from '../../src/authenticator'
-import { defaultSmartThingsURLProvider } from '../../src/endpoint-client'
+import { globalSmartThingsURLProvider } from '../../src/endpoint-client'
 
 
 class TokenStore implements RefreshTokenStore {
@@ -23,6 +23,7 @@ class TokenStore implements RefreshTokenStore {
 		return Promise.resolve()
 	}
 }
+
 describe('authenticators', () => {
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -59,7 +60,7 @@ describe('authenticators', () => {
 
 			const tokenStore = new TokenStore()
 			const authenticator = new RefreshTokenAuthenticator('a-refreshable-bearer-token', tokenStore)
-			const endpointConfig = { urlProvider: defaultSmartThingsURLProvider, authenticator }
+			const endpointConfig = { urlProvider: globalSmartThingsURLProvider, authenticator }
 
 			expect(await authenticator.refresh(endpointConfig)).toStrictEqual({ Authorization: 'Bearer the-access-token' })
 
@@ -86,7 +87,7 @@ describe('authenticators', () => {
 
 			const tokenStore = new TokenStore()
 			const authenticator = new RefreshTokenAuthenticator('a-refreshable-bearer-token', tokenStore)
-			const endpointConfig = { urlProvider: defaultSmartThingsURLProvider, authenticator }
+			const endpointConfig = { urlProvider: globalSmartThingsURLProvider, authenticator }
 			let message
 			try {
 				await authenticator.refresh(endpointConfig)
@@ -120,7 +121,7 @@ describe('authenticators', () => {
 				},
 			})
 
-			const endpointConfig = { urlProvider: defaultSmartThingsURLProvider, authenticator }
+			const endpointConfig = { urlProvider: globalSmartThingsURLProvider, authenticator }
 
 			it('updates token', async () => {
 				await authenticator.refresh(endpointConfig)
