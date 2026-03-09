@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.5.1
+
+### Patch Changes
+
+- [#262](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/262) [`11b9c97`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/11b9c97dcd501d26028eb74d894885178003d405) Thanks [@rossiam](https://github.com/rossiam)! - downgrade axios to work around regression
+
 ## 8.5.0
 
 ### Minor Changes
