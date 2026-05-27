@@ -66,7 +66,7 @@ describe('authenticators', () => {
 
 			expect(axios.request).toHaveBeenCalledTimes(1)
 			expect(axios.request).toHaveBeenCalledWith({
-				'url': 'https://auth-global.api.smartthings.com/oauth/token',
+				'url': 'https://api.smartthings.com/oauth/token',
 				'method': 'POST',
 				'headers': {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -128,7 +128,7 @@ describe('authenticators', () => {
 
 				expect(axios.request).toHaveBeenCalledTimes(1)
 				expect(axios.request).toHaveBeenCalledWith({
-					'url': 'https://auth-global.api.smartthings.com/oauth/token',
+					'url': 'https://api.smartthings.com/oauth/token',
 					'method': 'POST',
 					'headers': {
 						'Content-Type': 'application/x-www-form-urlencoded',
@@ -146,7 +146,7 @@ describe('authenticators', () => {
 
 				expect(axios.request).toHaveBeenCalledTimes(1)
 				expect(axios.request).toHaveBeenCalledWith({
-					'url': 'https://auth-global.api.smartthings.com/oauth/token',
+					'url': 'https://api.smartthings.com/oauth/token',
 					'method': 'POST',
 					'headers': {
 						'Content-Type': 'application/x-www-form-urlencoded',

@@ -44,7 +44,6 @@ describe('ST Padlock', () => {
 		const resolver = new HttpKeyResolver({
 			urlProvider: {
 				baseURL: 'https://api.smartthings.com',
-				authURL: 'https://auth-global.api.smartthings.com/oauth/token',
 				keyApiURL: 'https://keys.smartthingsdev.com',
 			},
 		})

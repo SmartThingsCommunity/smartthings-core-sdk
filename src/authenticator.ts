@@ -102,7 +102,7 @@ export class RefreshTokenAuthenticator implements Authenticator {
 		}
 
 		const axiosConfig: AxiosRequestConfig = {
-			url: clientConfig.urlProvider?.authURL,
+			url: `${clientConfig.urlProvider?.baseURL}/oauth/token`,
 			method: 'POST',
 			headers,
 			data: `grant_type=refresh_token&client_id=${refreshData.clientId}&refresh_token=${refreshData.refreshToken}`,

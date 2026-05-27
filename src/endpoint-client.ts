@@ -21,13 +21,11 @@ export type HttpClientMethod =
 
 export interface SmartThingsURLProvider {
 	baseURL: string
-	authURL?: string
 	keyApiURL?: string
 }
 
 export const globalSmartThingsURLProvider: Required<SmartThingsURLProvider> = {
 	baseURL: 'https://api.smartthings.com',
-	authURL: 'https://auth-global.api.smartthings.com/oauth/token',
 	keyApiURL: 'https://key.smartthings.com',
 }
 
