@@ -103,7 +103,7 @@ export class SmartThingsOAuthClient {
 
 	constructor(private clientId: string, private clientSecret: string,
 			private redirectUri: string, urlProvider?: SmartThingsURLProvider) {
-		this.authURL = urlProvider?.authURL || globalSmartThingsURLProvider.authURL
+		this.authURL = `${urlProvider?.baseURL || globalSmartThingsURLProvider.baseURL}/oauth/token`
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
