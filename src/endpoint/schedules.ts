@@ -1,5 +1,3 @@
-import isString from 'lodash.isstring'
-import isDate from 'lodash.isdate'
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig } from '../endpoint-client'
 import { Status, SuccessStatusValue } from '../types'
@@ -75,6 +73,14 @@ function parseDate(value: string): string {
 		throw Error(`Error parsing time format '${value}' ${error}`)
 	}
 	throw Error(`Unsupported time format '${value}'`)
+}
+
+function isString(value: unknown): value is string {
+	return typeof value === 'string'
+}
+
+function isDate(value: unknown): value is Date {
+	return Object.prototype.toString.call(value) === '[object Date]'
 }
 
 export class SchedulesEndpoint extends Endpoint {

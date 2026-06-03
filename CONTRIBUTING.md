@@ -34,7 +34,6 @@ We're always looking for more opinions on discussions in the issue tracker. It's
     Please include one with your pull request by following the instructions to
 	[add a changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md).
 	We have a bot that will remind you to include one with your pull request if you forget.
-  - This repo is [commitizen friendly](https://github.com/commitizen/cz-cli), so you can use the `cz` cli to help create your commits.
 - Lint and test before submitting the pull request
   - `npm run lint`
   - `npm run test`
