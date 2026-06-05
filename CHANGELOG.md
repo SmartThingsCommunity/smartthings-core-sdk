@@ -1,5 +1,13 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.5.2
+
+### Patch Changes
+
+- [#264](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/264) [`df3b0c0`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/df3b0c01a07f7676654718d8d395523652036685) Thanks [@bflorian](https://github.com/bflorian)! - fix: use baseURL for OAuth token endpoint rather tnan separate authURL
+
+- [#266](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/266) [`717b913`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/717b9135a01203666fbf253d34c42b9296d1ce38) Thanks [@rossiam](https://github.com/rossiam)! - update dependencies
+
 ## 8.5.1
 
 ### Patch Changes
