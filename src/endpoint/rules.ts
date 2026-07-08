@@ -414,4 +414,24 @@ export class RulesEndpoint extends Endpoint {
 	public async execute(id: string, locationId?: string): Promise<RuleExecutionResponse> {
 		return this.client.post(`execute/${id}`, undefined, { locationId: this.locationId(locationId) })
 	}
+
+	/**
+	 * Enable a rule
+	 * @param id UUID of the rule
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
+	public async enable(id: string, locationId?: string): Promise<void> {
+		await this.client.put(`${id}/status/enable`, undefined, { locationId: this.locationId(locationId) })
+	}
+
+	/**
+	 * Disable a rule
+	 * @param id UUID of the rule
+	 * @param locationId UUID of the location, If the client is configured with a location ID this parameter
+	 * can be omitted
+	 */
+	public async disable(id: string, locationId?: string): Promise<void> {
+		await this.client.put(`${id}/status/disable`, undefined, { locationId: this.locationId(locationId) })
+	}
 }
