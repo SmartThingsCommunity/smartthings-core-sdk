@@ -12,7 +12,11 @@ const MOCK_LOCATION_UPDATE = { name: 'locationUpdate' } as LocationUpdate
 describe('LocationsEndpoint', () => {
 	const authenticator = new NoOpAuthenticator()
 	const locationId = 'locationId'
-	const locations = new LocationsEndpoint({ authenticator, locationId })
+	const locations = new LocationsEndpoint({
+		authenticator,
+		locationId,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	})
 
 	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
 	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')

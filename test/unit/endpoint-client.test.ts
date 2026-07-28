@@ -99,10 +99,8 @@ describe('EndpointClient',  () => {
 	let client: EndpointClient
 
 	const configWithoutHeaders = {
-		urlProvider: globalSmartThingsURLProvider,
+		urlProvider: { baseURL: 'https://example.com' },
 		authenticator: new RefreshTokenAuthenticator(token, tokenStore),
-		baseURL: 'https://api.smartthings.com',
-		authURL: 'https://auth.smartthings.com',
 	}
 	const headers = {
 		'Content-Type': 'application/json;charset=utf-8',
@@ -117,6 +115,13 @@ describe('EndpointClient',  () => {
 
 	afterEach(() => {
 		jest.clearAllMocks()
+	})
+
+	test('constructor throws when invalid base URL', () => {
+		expect(() => new EndpointClient('base/path', {
+			urlProvider: { baseURL: 'invalid-url' },
+			authenticator: new RefreshTokenAuthenticator(token, tokenStore),
+		})).toThrow('Invalid base URL')
 	})
 
 	describe('setHeader', () => {
@@ -158,7 +163,7 @@ describe('EndpointClient',  () => {
 
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'GET',
 				headers: {
 					...headers,
@@ -191,7 +196,7 @@ describe('EndpointClient',  () => {
 
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'GET',
 				headers: {
 					Accept: 'application/vnd.smartthings+json;v=api-version, accept-header',
@@ -210,7 +215,7 @@ describe('EndpointClient',  () => {
 
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'GET',
 				headers: {
 					Accept: 'application/vnd.smartthings+json;v=api-version',
@@ -231,7 +236,7 @@ describe('EndpointClient',  () => {
 			const response = await client.request<StatusResponse>('POST', 'my/path', { name: 'Bob' }, undefined, { headerOverrides })
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'POST',
 				headers: {
 					'Content-Type': 'overridden content type',
@@ -251,7 +256,7 @@ describe('EndpointClient',  () => {
 			const response = await client.request<StatusResponse>('GET', 'my/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -275,7 +280,7 @@ describe('EndpointClient',  () => {
 			const response = await client.request<StatusResponse>('GET', 'my/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -321,6 +326,24 @@ describe('EndpointClient',  () => {
 			expect(mockRequest).toHaveBeenCalledTimes(0)
 		})
 
+		it.each([
+			'https://example.com/paged-thing/next-url',
+			'https://example.com/next-url',
+		])('accepts URL %s with correct base path', async (goodURL) => {
+			await expect(client.request('GET', goodURL)).resolves.not.toThrow()
+		})
+
+		it.each([
+			'https://example.cоm/paged-thing/next-url', // the "o" in "com" is a Cyrillic character, not an ASCII "o"
+			'https://example.com@evil.test/paged-thing',
+			'https://example.com.evil.com/paged-thing',
+		])('rejects URL %s not matching base', async (badURL) => {
+			const params = { paramName: 'param-value' }
+			const options = { dryRun: false }
+
+			await expect(client.request('GET', badURL, undefined, params, options)).rejects.toThrow('illegal url')
+		})
+
 		describe('logging', () => {
 			const isDebugEnabledMock = jest.fn().mockReturnValue(true)
 			const isTraceEnabledMock = jest.fn().mockReturnValue(true)
@@ -343,7 +366,7 @@ describe('EndpointClient',  () => {
 				expect(isDebugEnabledMock).toHaveBeenCalledTimes(1)
 				expect(debugMock).toHaveBeenCalledTimes(1)
 				expect(debugMock).toHaveBeenCalledWith('making axios request: {' +
-						'"url":"https://api.smartthings.com/base/path/my/path",' +
+						'"url":"https://example.com/base/path/my/path",' +
 						'"method":"GET",' +
 						'"headers":{' +
 							'"Content-Type":"application/json;charset=utf-8",' +
@@ -431,7 +454,7 @@ describe('EndpointClient',  () => {
 			const response = await client.get<StatusResponse>('path2')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/path2',
+				url: 'https://example.com/base/path/path2',
 				method: 'get',
 				headers: {
 					...headers,
@@ -448,7 +471,7 @@ describe('EndpointClient',  () => {
 			const response = await client.get<StatusResponse>('my/path', { locationId: 'XXX' })
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base/path/my/path',
+				url: 'https://example.com/base/path/my/path',
 				method: 'get',
 				headers: {
 					...headers,
@@ -467,7 +490,7 @@ describe('EndpointClient',  () => {
 			const response = await client.get<StatusResponse>('/base2/this/path')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/base2/this/path',
+				url: 'https://example.com/base2/this/path',
 				method: 'get',
 				headers: {
 					...headers,
@@ -481,10 +504,10 @@ describe('EndpointClient',  () => {
 		})
 
 		it('skips base URL and path with absolute URL', async () => {
-			const response = await client.get<StatusResponse>('https://api.smartthings.com/absolute/url')
+			const response = await client.get<StatusResponse>('https://example.com/absolute/url')
 			expect(mockRequest).toHaveBeenCalledTimes(1)
 			expect(mockRequest).toHaveBeenCalledWith({
-				url: 'https://api.smartthings.com/absolute/url',
+				url: 'https://example.com/absolute/url',
 				method: 'get',
 				headers: {
 					...headers,
@@ -502,7 +525,7 @@ describe('EndpointClient',  () => {
 		const response = await client.post<StatusResponse>('myotherpath', { name: 'Bill' })
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
-			url: 'https://api.smartthings.com/base/path/myotherpath',
+			url: 'https://example.com/base/path/myotherpath',
 			method: 'post',
 			headers: {
 				...headers,
@@ -521,7 +544,7 @@ describe('EndpointClient',  () => {
 		const response = await client.put<StatusResponse>('myotherpath', { name: 'Bill' })
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
-			url: 'https://api.smartthings.com/base/path/myotherpath',
+			url: 'https://example.com/base/path/myotherpath',
 			method: 'put',
 			headers: {
 				...headers,
@@ -540,7 +563,7 @@ describe('EndpointClient',  () => {
 		const response = await client.patch<StatusResponse>('path3', { name: 'Joe' })
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
-			url: 'https://api.smartthings.com/base/path/path3',
+			url: 'https://example.com/base/path/path3',
 			method: 'patch',
 			headers: {
 				...headers,
@@ -559,7 +582,7 @@ describe('EndpointClient',  () => {
 		const response = await client.delete<StatusResponse>('path3')
 		expect(mockRequest).toHaveBeenCalledTimes(1)
 		expect(mockRequest).toHaveBeenCalledWith({
-			url: 'https://api.smartthings.com/base/path/path3',
+			url: 'https://example.com/base/path/path3',
 			method: 'delete',
 			headers: {
 				...headers,
@@ -577,6 +600,7 @@ describe('EndpointClient',  () => {
 		const client = new EndpointClient('paged-thing', {
 			authenticator: new NoOpAuthenticator(),
 			logger: new NoLogLogger(),
+			urlProvider: { baseURL: 'https://example.com' },
 		})
 		client.get = getMock
 
@@ -595,17 +619,18 @@ describe('EndpointClient',  () => {
 		})
 
 		it('combines multiple pages', async () => {
+			const nextURL = 'https://example.com/paged-thing/next-url'
 			const params = { paramName: 'param-value' }
 			const options = { dryRun: false }
 			getMock
-				.mockResolvedValueOnce({ items: [item1], _links: { next: { href: 'next-url' } } })
+				.mockResolvedValueOnce({ items: [item1], _links: { next: { href: nextURL } } })
 				.mockResolvedValueOnce({ items: [item2] })
 
 			expect(await client.getPagedItems('first-url', params, options)).toEqual([item1, item2])
 
 			expect(getMock).toHaveBeenCalledTimes(2)
 			expect(getMock).toHaveBeenCalledWith('first-url', params, options)
-			expect(getMock).toHaveBeenCalledWith('next-url', undefined, options)
+			expect(getMock).toHaveBeenCalledWith(nextURL, undefined, options)
 		})
 	})
 
@@ -626,10 +651,9 @@ describe('EndpointClient',  () => {
 	test('expired token request with mutex', async () => {
 		// TODO -- actually test mutex??
 		const mutex = new Mutex()
-		const mutexConfig = {
+		const mutexConfig: EndpointClientConfig = {
 			authenticator: new SequentialRefreshTokenAuthenticator(token, tokenStore, mutex),
-			baseURL: 'https://api.smartthings.com',
-			authURL: 'https://auth.smartthings.com',
+			urlProvider: globalSmartThingsURLProvider,
 			headers: { ...headers },
 		}
 		const mutexClient = buildClient(mutexConfig)
@@ -687,6 +711,7 @@ describe('EndpointClient',  () => {
 			const bearerToken = '00000000-0000-0000-0000-000000000000'
 			const config: EndpointClientConfig = {
 				authenticator: new BearerTokenAuthenticator(bearerToken),
+				urlProvider: globalSmartThingsURLProvider,
 				logger: new NoLogLogger,
 			}
 			const bearerClient = new EndpointClient('basePath', config)
@@ -707,6 +732,7 @@ describe('EndpointClient',  () => {
 			}
 			const config: EndpointClientConfig = {
 				authenticator: new BasicAuthenticator,
+				urlProvider: globalSmartThingsURLProvider,
 				logger: new NoLogLogger(),
 			}
 			const basicClient = new EndpointClient('basePath', config)

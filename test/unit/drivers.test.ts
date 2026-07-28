@@ -14,7 +14,10 @@ describe('DriversEndpoint', () => {
 	const requestSpy = jest.spyOn(EndpointClient.prototype, 'request').mockImplementation()
 
 	const authenticator = new NoOpAuthenticator()
-	const driversEndpoint = new DriversEndpoint({ authenticator })
+	const driversEndpoint = new DriversEndpoint({
+		authenticator,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	})
 
 	test('get', async () => {
 		const driver = { driverId: 'driver-id' }

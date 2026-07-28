@@ -26,7 +26,11 @@ describe('DevicesEndpoint', () => {
 	const installedAppIdMock = jest.fn<string, [string | undefined]>()
 		.mockReturnValue('installed-app-id')
 
-	const devicesEndpoint = new DevicesEndpoint({ authenticator })
+	const baseConfig = {
+		authenticator,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	}
+	const devicesEndpoint = new DevicesEndpoint(baseConfig)
 	devicesEndpoint.locationId = locationIdMock
 	devicesEndpoint.installedAppId = installedAppIdMock
 
@@ -44,7 +48,7 @@ describe('DevicesEndpoint', () => {
 		})
 
 		it('includes configured locationId', async () => {
-			const devices = new DevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
+			const devices = new DevicesEndpoint({ ...baseConfig, locationId: 'configured-location-id' })
 			expect(await devices.list()).toBe(deviceList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)
@@ -76,7 +80,7 @@ describe('DevicesEndpoint', () => {
 
 	describe('listInLocation', () => {
 		it('works on happy path', async () => {
-			const devices = new DevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
+			const devices = new DevicesEndpoint({ ...baseConfig, locationId: 'configured-location-id' })
 			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(deviceList)
 
 			expect(await devices.listInLocation()).toBe(deviceList)
@@ -101,7 +105,7 @@ describe('DevicesEndpoint', () => {
 
 	describe('findByCapability', () => {
 		it('works on happy path', async () => {
-			const devices = new DevicesEndpoint({ authenticator, locationId: 'unused-in-test' })
+			const devices = new DevicesEndpoint({ ...baseConfig, locationId: 'unused-in-test' })
 			devices.locationId = locationIdMock
 			const listSpy = jest.spyOn(devices, 'list').mockResolvedValue(deviceList)
 
@@ -363,7 +367,7 @@ describe('DevicesEndpoint', () => {
 
 	test('executeCommand', async () => {
 		// create a new instance of devices so we can spy on it and not affect other tests
-		const devices = new DevicesEndpoint({ authenticator })
+		const devices = new DevicesEndpoint(baseConfig)
 		const executeCommandsSpy = jest.spyOn(devices, 'executeCommands')
 			.mockResolvedValueOnce(commandResponse)
 		const command = { command: 'command-1' } as Command
@@ -495,7 +499,7 @@ describe('DevicesEndpoint', () => {
 			// do nothing
 		})
 
-		const devices = new DevicesEndpoint({ authenticator })
+		const devices = new DevicesEndpoint(baseConfig)
 
 		expect(await devices.createEvents('device-id', events)).toBe(SuccessStatusValue)
 
@@ -506,7 +510,7 @@ describe('DevicesEndpoint', () => {
 	test('sendEvents', async () => {
 		const events = { deviceEvents: [] }
 
-		const devices = new DevicesEndpoint({ authenticator })
+		const devices = new DevicesEndpoint(baseConfig)
 
 		await devices.sendEvents('device-id', events)
 
@@ -518,7 +522,7 @@ describe('DevicesEndpoint', () => {
 		const expected = {} as PresentationDevicePresentation
 		getSpy.mockResolvedValueOnce(expected)
 
-		const devices = new DevicesEndpoint({ authenticator })
+		const devices = new DevicesEndpoint(baseConfig)
 
 		expect(await devices.getPresentation('device-id')).toBe(expected)
 
@@ -530,7 +534,7 @@ describe('DevicesEndpoint', () => {
 		const expected = {} as DevicePreferenceResponse
 		getSpy.mockResolvedValueOnce(expected)
 
-		const devices = new DevicesEndpoint({ authenticator })
+		const devices = new DevicesEndpoint(baseConfig)
 
 		expect(await devices.getPreferences('device-id')).toBe(expected)
 

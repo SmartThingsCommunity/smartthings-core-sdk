@@ -12,7 +12,10 @@ const MOCK_LOCALE_LIST = [{ tag: 'tag' }] as LocaleReference[]
 
 describe('DevicePreferencesEndpoint', () => {
 	const authenticator = new NoOpAuthenticator()
-	const devicepreferences = new DevicePreferencesEndpoint({ authenticator })
+	const devicepreferences = new DevicePreferencesEndpoint({
+		authenticator,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	})
 
 	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
 	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')

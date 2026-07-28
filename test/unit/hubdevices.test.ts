@@ -15,7 +15,10 @@ describe('HubdevicesEndpoint', () => {
 	const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
 
 	const authenticator = new NoOpAuthenticator()
-	const hubdevicesEndpoint = new HubdevicesEndpoint({ authenticator })
+	const hubdevicesEndpoint = new HubdevicesEndpoint({
+		authenticator,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	})
 
 	test('get', async () => {
 		putSpy.mockImplementationOnce(() => Promise.resolve())
