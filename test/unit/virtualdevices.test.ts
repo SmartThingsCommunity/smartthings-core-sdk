@@ -18,7 +18,11 @@ describe('VirtualDevicesEndpoint', () => {
 	const postSpy = jest.spyOn(EndpointClient.prototype, 'post').mockImplementation()
 	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems').mockImplementation()
 
-	const virtualDevicesEndpoint = new VirtualDevicesEndpoint({ authenticator })
+	const baseConfig = {
+		authenticator,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	}
+	const virtualDevicesEndpoint = new VirtualDevicesEndpoint(baseConfig)
 
 	const deviceList = [{ listed: 'device' }] as unknown as Device[]
 
@@ -33,7 +37,10 @@ describe('VirtualDevicesEndpoint', () => {
 		})
 
 		it('includes configured locationId', async () => {
-			const devices = new VirtualDevicesEndpoint({ authenticator, locationId: 'configured-location-id' })
+			const devices = new VirtualDevicesEndpoint({
+				...baseConfig,
+				locationId: 'configured-location-id',
+			})
 			expect(await devices.list()).toBe(deviceList)
 
 			expect(getPagedItemsSpy).toHaveBeenCalledTimes(1)

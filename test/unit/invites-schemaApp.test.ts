@@ -12,7 +12,10 @@ const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems').m
 const deleteSpy = jest.spyOn(EndpointClient.prototype, 'delete')
 
 const authenticator = new NoOpAuthenticator()
-const invitesEndpoint = new InvitesSchemaAppEndpoint( { authenticator })
+const invitesEndpoint = new InvitesSchemaAppEndpoint({
+	authenticator,
+	urlProvider: { baseURL: 'https://example.com/baseURL' },
+})
 
 test('create', async () => {
 	const invitationId = { invitationId: 'my-invitation-id' }

@@ -36,7 +36,7 @@ export const chinaSmartThingsURLProvider: SmartThingsURLProvider = {
 
 export interface EndpointClientConfig {
 	authenticator: Authenticator
-	urlProvider?: SmartThingsURLProvider
+	urlProvider: SmartThingsURLProvider
 	logger?: Logger
 	loggingId?: string
 	version?: string
@@ -129,6 +129,11 @@ export class EndpointClient {
 	private logger: Logger
 
 	constructor(public readonly basePath: string, public readonly config: EndpointClientConfig) {
+		try {
+			new URL(config.urlProvider.baseURL) // throws if invalid URL
+		} catch (error) {
+			throw new Error(`Invalid base URL ${config.urlProvider.baseURL}: ${error}`)
+		}
 		this.logger = config.logger ? config.logger : noLogLogger
 	}
 
@@ -147,16 +152,35 @@ export class EndpointClient {
 		return this
 	}
 
-	private url(path?: string): string {
-		if (path) {
-			if (path.startsWith('/')) {
-				return `${this.config.urlProvider?.baseURL}${path}`
-			} else if (path.startsWith('https://')) {
+	private validateAndCalculateURL(path?: string): string {
+		const calculateURL = (): string => {
+			if (path && path.startsWith('http')) {
 				return path
 			}
-			return `${this.config.urlProvider?.baseURL}/${this.basePath}/${path}`
+
+			const baseURL = this.config.urlProvider.baseURL
+			if (path) {
+				// A path starting with a slash "breaks out of" the base path but not the base URL.
+				// Put another way, it ignores the path specified in the constructor but still uses the base URL.
+				return path.startsWith('/') ? `${baseURL}${path}` : `${baseURL}/${this.basePath}/${path}`
+			}
+			return `${baseURL}/${this.basePath}`
 		}
-		return `${this.config.urlProvider?.baseURL}/${this.basePath}`
+
+		const calculatedURL = calculateURL()
+
+		const isSameOrigin = (candidate: string, baseURLString: string): boolean => {
+			const candidateURL = new URL(candidate)
+			const baseURL = new URL(baseURLString)
+
+			return candidateURL.origin === baseURL.origin
+		}
+
+		if (!isSameOrigin(calculatedURL, this.config.urlProvider.baseURL)) {
+			throw Error(`illegal url ${calculatedURL} does not match base URL ${this.config.urlProvider.baseURL}`)
+		}
+
+		return calculatedURL
 	}
 
 	public async request<T = unknown>(method: HttpClientMethod, path?: string,
@@ -179,7 +203,7 @@ export class EndpointClient {
 		}
 
 		const axiosConfig: AxiosRequestConfig = {
-			url: this.url(path),
+			url: this.validateAndCalculateURL(path),
 			method,
 			headers: options?.headerOverrides ? { ...headers, ...options.headerOverrides } : headers,
 			params,

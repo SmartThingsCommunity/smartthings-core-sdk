@@ -16,7 +16,10 @@ describe('ChannelsEndpoint', () => {
 	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems').mockImplementation()
 
 	const authenticator = new NoOpAuthenticator()
-	const channelsEndpoint = new ChannelsEndpoint({ authenticator })
+	const channelsEndpoint = new ChannelsEndpoint({
+		authenticator,
+		urlProvider: { baseURL: 'https://example.com/baseURL' },
+	})
 
 	test('create', async () => {
 		const createRequest = { name: 'channel-to-create' } as ChannelCreate

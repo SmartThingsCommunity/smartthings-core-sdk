@@ -11,7 +11,7 @@ const MOCK_APP_OAUTH_GENERATE = { oauthClientId: 'oauthClientId' } as GenerateAp
 
 describe('AppsEndpoint', () => {
 	const authenticator = new NoOpAuthenticator()
-	const apps = new AppsEndpoint({ authenticator })
+	const apps = new AppsEndpoint({ authenticator, urlProvider: { baseURL: 'https://example.com/baseURL' } })
 
 	const getSpy = jest.spyOn(EndpointClient.prototype, 'get')
 	const getPagedItemsSpy = jest.spyOn(EndpointClient.prototype, 'getPagedItems')

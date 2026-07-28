@@ -18,7 +18,7 @@ describe('RulesEndpoint', () => {
 		.mockReturnValue('final-location-id')
 
 	const authenticator = new NoOpAuthenticator()
-	const rulesEndpoint = new RulesEndpoint({ authenticator })
+	const rulesEndpoint = new RulesEndpoint({ authenticator, urlProvider: { baseURL: 'https://example.com/baseURL' } })
 	rulesEndpoint.locationId = locationIdMock
 
 	const rulesList = [{ id: 'listed-rule' }] as Rule[]
