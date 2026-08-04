@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.5.3
+
+### Patch Changes
+
+- [#271](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/271) [`8323653`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/8323653044e7256dfb976ef8baf4bf6befb6b2f8) Thanks [@rossiam](https://github.com/rossiam)! - validate URLs in paged data
+
 ## 8.5.2
 
 ### Patch Changes
