@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 8.5.4
+
+### Patch Changes
+
+- [#273](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/273) [`70aab2e`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/70aab2e0249318d734759e4503de070147959d63) Thanks [@rossiam](https://github.com/rossiam)! - update dependencies
+
 ## 8.5.3
 
 ### Patch Changes
@@ -135,7 +141,7 @@
 
 - [#204](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/204) [`b8c5442`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/b8c54422bd117dd50cd573a6cc7f92a096bb0bc2) Thanks [@rossiam](https://github.com/rossiam)! - back off axios version to last non-ESM version so library will still work with pkg tool
 
-  NOTE: Dependents which use axios will also need to downgrade to version 0.27.2.
+    NOTE: Dependents which use axios will also need to downgrade to version 0.27.2.
 
 ## 6.0.0
 
@@ -143,7 +149,7 @@
 
 - [#202](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/202) [`915c120`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/915c120c0264ae38e04891b63bdc11ef4078c87d) Thanks [@rossiam](https://github.com/rossiam)! - updated dependencies, including major axios update
 
-  NOTE: Dependents which use axios should also update it.
+    NOTE: Dependents which use axios should also update it.
 
 ## 5.3.0
 
