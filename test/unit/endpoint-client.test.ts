@@ -394,6 +394,25 @@ describe('EndpointClient',  () => {
 				expect(traceMock).toHaveBeenCalledWith('error making request: things done broke!')
 			})
 
+			it('gracefully handles circular references in axios response', async () => {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const data: any = {
+					status: 'ok',
+					objectField: {
+						key: 'value',
+					},
+				}
+				data.objectField.theFieldItself = data.objectField
+				mockRequest.mockResolvedValue({ status: 200, data } as AxiosResponse)
+				await client.request('GET', 'my/path')
+
+				expect(isTraceEnabledMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledTimes(1)
+				expect(traceMock).toHaveBeenCalledWith(
+					'axios response 200: data={"status":"ok","objectField":{"key":"value","theFieldItself":"[Circular]"}}',
+				)
+			})
+
 			it('logs failed axios response with response info', async () => {
 				const error = Error('error message') as AxiosError
 				error.response = {

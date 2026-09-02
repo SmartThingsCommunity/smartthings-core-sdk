@@ -72,13 +72,30 @@ export interface EndpointClientRequestOptions <T> {
 }
 
 /**
+ * Create a function that can be passed to `JSON.stringify` making it work safely on objects with
+ * circular references.
+ */
+const createCircularReplacerFn = (): (key: string, value: unknown) => unknown => {
+	const seen = new WeakSet()
+	return (_key, value) => {
+		if (typeof value === 'object' && value !== null) {
+			if (seen.has(value)) {
+				return '[Circular]'
+			}
+			seen.add(value)
+		}
+		return value
+	}
+}
+
+/**
  * Convert to string and scrub sensitive values like auth tokens
  * Meant to be used before logging the request
  */
-function scrubConfig(config: AxiosRequestConfig): string {
+const scrubConfig = (config: AxiosRequestConfig): string => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { paramsSerializer: _unused, ...cleanerConfig } = config
-	const message = JSON.stringify(cleanerConfig)
+	const message = JSON.stringify(cleanerConfig, createCircularReplacerFn())
 	const bearerRegex = /"(Bearer [0-9a-f]{8})[0-9a-f-]{28}"/i
 
 	if (bearerRegex.test(message)) {
@@ -228,7 +245,7 @@ export class EndpointClient {
 		try {
 			const response = await axios.request(axiosConfig)
 			if (this.logger.isTraceEnabled()) {
-				this.logger.trace(`axios response ${response.status}: data=${JSON.stringify(response.data)}`)
+				this.logger.trace(`axios response ${response.status}: data=${JSON.stringify(response.data, createCircularReplacerFn())}`)
 			}
 			if (response.headers?.warning && this.config.warningLogger) {
 				// warningLogger allows for return of a promise or just void for flexibility
@@ -242,10 +259,10 @@ export class EndpointClient {
 				// https://www.npmjs.com/package/axios#handling-errors
 				if (error.response) {
 					// server responded with non-200 response code
-					this.logger.trace(`axios response ${error.response.status}: data=${JSON.stringify(error.response.data)}`)
+					this.logger.trace(`axios response ${error.response.status}: data=${JSON.stringify(error.response.data, createCircularReplacerFn())}`)
 				} else if (error.request) {
 					// server never responded
-					this.logger.trace(`no response from server for request ${JSON.stringify(error.request)}`)
+					this.logger.trace(`no response from server for request ${JSON.stringify(error.request, createCircularReplacerFn())}`)
 				} else {
 					this.logger.trace(`error making request: ${error.message}`)
 				}
@@ -270,7 +287,7 @@ export class EndpointClient {
 			}
 			// Annotate message with SmartThings API error data
 			if (error.response && error.response.data) {
-				error.message = error.message + ': ' + JSON.stringify(error.response.data)
+				error.message = error.message + ': ' + JSON.stringify(error.response.data, createCircularReplacerFn())
 			}
 			throw error
 		}
