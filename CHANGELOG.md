@@ -1,5 +1,15 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 9.0.0
+
+### Major Changes
+
+- [#275](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/275) [`faadbf3`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/faadbf36de02a297c9e2dcc45d08bfe77b29ef61) Thanks [@rossiam](https://github.com/rossiam)! - Drop support for EOL versions of node, versions 18 and 20. Add support for versions 24 and 26.
+
+### Patch Changes
+
+- [#277](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/277) [`e43dda5`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/e43dda5ebc794d09d8698692467843a762d3b657) Thanks [@rossiam](https://github.com/rossiam)! - make trace-level logging safe even if responses have circular references
+
 ## 8.5.4
 
 ### Patch Changes
