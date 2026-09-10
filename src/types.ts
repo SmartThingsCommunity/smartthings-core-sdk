@@ -28,10 +28,11 @@ export interface Owner {
 	ownerId: string
 }
 
-export enum PrincipalType {
-	LOCATION = 'LOCATION',
-	USER_LEVEL = 'USER_LEVEL',
-}
+// New SmartApps can only be `LOCATION` but pre-existing SmartApps might have other values.
+export const principalTypeValues = ['LOCATION'] as const
+export type PrincipalType = typeof principalTypeValues[number]
+export const viewPrincipalTypeValues = [...principalTypeValues, 'USER_LEVEL', 'ACCOUNT_LEVEL'] as const
+export type ViewPrincipalType = typeof viewPrincipalTypeValues[number]
 
 export interface Status {
 	status: string

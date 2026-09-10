@@ -9,7 +9,7 @@ export * from './types'
 export * from './endpoint'
 export * from './pagination'
 
-export * from './endpoint/apps'
+export * from './endpoint/smartapps'
 export * from './endpoint/capabilities'
 export * from './endpoint/channels'
 export * from './endpoint/devicepreferences'
