@@ -2,7 +2,6 @@ import axios, { AxiosRequestConfig } from 'axios'
 
 import { Authenticator } from './authenticator'
 import { RESTClient, RESTClientConfig } from './rest-client'
-import { AppsEndpoint } from './endpoint/apps'
 import { CapabilitiesEndpoint } from './endpoint/capabilities'
 import { DevicePreferencesEndpoint } from './endpoint/devicepreferences'
 import { DeviceProfilesEndpoint } from './endpoint/deviceprofiles'
@@ -25,12 +24,12 @@ import { SubscriptionsEndpoint } from './endpoint/subscriptions'
 import { SchedulesEndpoint } from './endpoint/schedules'
 import { SchemaEndpoint } from './endpoint/schema'
 import { ServicesEndpoint } from './endpoint/services'
+import { SmartAppsEndpoint } from './endpoint/smartapps'
 import { VirtualDevicesEndpoint } from './endpoint/virtualdevices'
 import { SmartThingsURLProvider, globalSmartThingsURLProvider, HttpClientHeaders } from './endpoint-client'
 
 
 export class SmartThingsClient extends RESTClient {
-	public readonly apps: AppsEndpoint
 	public readonly capabilities: CapabilitiesEndpoint
 	public readonly channels: ChannelsEndpoint
 	public readonly devicePreferences: DevicePreferencesEndpoint
@@ -53,12 +52,12 @@ export class SmartThingsClient extends RESTClient {
 	public readonly schedules: SchedulesEndpoint
 	public readonly schema: SchemaEndpoint
 	public readonly services: ServicesEndpoint
+	public readonly smartapps: SmartAppsEndpoint
 	public readonly virtualDevices: VirtualDevicesEndpoint
 
 	constructor(authenticator: Authenticator, config?: RESTClientConfig) {
 		super(authenticator, config)
 
-		this.apps = new AppsEndpoint(this.config)
 		this.capabilities = new CapabilitiesEndpoint(this.config)
 		this.channels = new ChannelsEndpoint(this.config)
 		this.devicePreferences = new DevicePreferencesEndpoint(this.config)
@@ -81,6 +80,7 @@ export class SmartThingsClient extends RESTClient {
 		this.schedules = new SchedulesEndpoint(this.config)
 		this.schema = new SchemaEndpoint(this.config)
 		this.services = new ServicesEndpoint(this.config)
+		this.smartapps = new SmartAppsEndpoint(this.config)
 		this.virtualDevices = new VirtualDevicesEndpoint(this.config)
 	}
 

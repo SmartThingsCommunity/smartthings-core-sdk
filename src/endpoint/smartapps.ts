@@ -1,39 +1,31 @@
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
 import { Endpoint } from '../endpoint'
-import { IconImage, Owner, PrincipalType, SuccessResponse } from '../types'
+import { IconImage, Owner, PrincipalType, SuccessResponse, ViewPrincipalType } from '../types'
 
 
-export enum AppType {
-	LAMBDA_SMART_APP = 'LAMBDA_SMART_APP',
-	WEBHOOK_SMART_APP = 'WEBHOOK_SMART_APP',
-	API_ONLY = 'API_ONLY'
-}
+// Pre-existing LAMBDA_SMART_APP and WEBHOOK_SMART_APP can be viewed but only API_ONLY can be created or edited.
+export const smartAppTypeValues = ['API_ONLY'] as const
+export const viewSmartAppTypeValues = [...smartAppTypeValues, 'LAMBDA_SMART_APP', 'WEBHOOK_SMART_APP'] as const
+export type SmartAppType = typeof smartAppTypeValues[number]
+export type ViewSmartAppType = typeof viewSmartAppTypeValues[number]
 
-export enum AppClassification {
-	AUTOMATION = 'AUTOMATION',
-	SERVICE = 'SERVICE',
-	DEVICE = 'DEVICE',
-	CONNECTED_SERVICE = 'CONNECTED_SERVICE',
-}
+export const smartAppClassificationValues = ['AUTOMATION', 'SERVICE', 'DEVICE', 'CONNECTED_SERVICE'] as const
+export type SmartAppClassification = typeof smartAppClassificationValues[number]
 
-export enum AppTargetStatus {
-	PENDING = 'PENDING',
-	CONFIRMED = 'CONFIRMED',
-}
+export const smartAppTargetStatusValues = ['PENDING', 'CONFIRMED'] as const
+export type SmartAppTargetStatus = typeof smartAppTargetStatusValues[number]
 
-export enum SignatureType {
-	APP_RSA = 'APP_RSA',
-	ST_PADLOCK = 'ST_PADLOCK',
-}
+export const signatureTypeValues = ['APP_RSA', 'ST_PADLOCK'] as const
+export type SignatureType = typeof signatureTypeValues[number]
 
-export interface LambdaSmartApp {
+export type LambdaSmartApp = {
 	/**
 	 * A list of AWS ARNs referencing a Lambda function.
 	 */
 	functions: string[]
 }
 
-export interface WebhookSmartApp {
+export type WebhookSmartApp = {
 	/**
 	 * A URL that should be invoked during execution.
 	 */
@@ -42,7 +34,7 @@ export interface WebhookSmartApp {
 	/**
 	 * The registration status of a target url.
 	 */
-	targetStatus?: AppTargetStatus
+	targetStatus?: SmartAppTargetStatus
 
 	/**
 	 * The public half of an RSA key pair. Useful for verifying a Webhook
@@ -59,16 +51,25 @@ export interface WebhookSmartApp {
 	signatureType?: SignatureType
 }
 
-export interface ApiOnlySubscription {
+export type ApiOnlySubscription = {
 	targetUrl: string
-	targetStatus: AppTargetStatus
+	targetStatus: SmartAppTargetStatus
 }
 
-export interface ApiOnlyApp {
+export type ApiOnlySmartApp = {
 	subscription?: ApiOnlySubscription
+
+	/**
+	 * Link to the apps privacy policy. Url scheme must be https.
+	 *
+	 * This field is required for business plans.
+	 *
+	 * Must be <= 2048
+	 */
+	privacyPolicyUrl?: string
 }
 
-export interface ApiOnlyAppRequest {
+export type ApiOnlySmartAppRequest = Omit<ApiOnlySmartApp, 'subscription'> & {
 	/**
 	 * Optional target url to receive events. Url scheme must be https.
 	 *
@@ -77,14 +78,14 @@ export interface ApiOnlyAppRequest {
 	targetUrl?: string
 }
 
-export interface AppUISettings {
+export type SmartAppUISettings = {
 	dashboardCardsEnabled: boolean
 	preInstallDashboardCardsEnabled: boolean
 	pluginId?: string
 	pluginUri?: string
 }
 
-export interface AppBase {
+export type SmartAppBase = {
 	/**
 	 * A user defined unique identifier for an app.  It is alpha-numeric, may
 	 * contain dashes, underscores, periods, and be less then 250 characters
@@ -95,7 +96,7 @@ export interface AppBase {
 	/**
 	 * Denotes the type of app.
 	 */
-	appType: AppType
+	appType: ViewSmartAppType
 
 	/**
 	 * An App maybe associated to many classifications.  A classification
@@ -107,7 +108,7 @@ export interface AppBase {
 	 * DEVICE - Denotes an integration that should display under the "Device" tab in mobile clients.
 	 * CONNECTED_SERVICE - Denotes an integration that should display under the "Connected Services" menu in mobile clients.
 	 */
-	classifications: AppClassification[]
+	classifications: SmartAppClassification[]
 
 	/**
 	 * A default display name for an app.
@@ -120,7 +121,9 @@ export interface AppBase {
 	description: string
 }
 
-export interface AppUpdateRequest extends AppBase {
+export type SmartAppUpdateRequest = Omit<SmartAppBase, 'appName' | 'appType'> & {
+	appType: SmartAppType
+
 	/**
 	 * Inform the installation systems that a particular app can only be
 	 * installed once within a user's account.
@@ -133,31 +136,18 @@ export interface AppUpdateRequest extends AppBase {
 	iconImage?: IconImage
 
 	/**
-	 * Details related to a Lambda Smart App implementation.
-	 * This model should only be specified for apps of type LAMBDA_SMART_APP.
-	 */
-	lambdaSmartApp?: LambdaSmartApp
-
-	/**
-	 * Details related to a Webhook Smart App implementation.
-	 * This model should only be specified for apps of type WEBHOOK_SMART_APP.
-	 */
-	webhookSmartApp?: WebhookSmartApp
-
-	/**
 	 * Details related to an ApiOnly Smart App implementation.
 	 * This model should only be specified for apps of type API_ONLY.
 	 */
-	apiOnly?: ApiOnlyAppRequest
+	apiOnly?: ApiOnlySmartAppRequest
 
 	/**
 	 * A collection of settings to drive user interface in SmartThings clients.
-	 * Currently, only applicable for LAMBDA_SMART_APP and WEBHOOK_SMART_APP app types.
 	 */
-	ui?: AppUISettings
+	ui?: SmartAppUISettings
 }
 
-export interface AppCreateRequest extends AppUpdateRequest {
+export type SmartAppCreateRequest = SmartAppUpdateRequest & {
 	/**
 	 * A globally unique, developer-defined identifier for an app. It is
 	 * alpha-numeric, may contain dashes, underscores, periods, and must
@@ -174,10 +164,10 @@ export interface AppCreateRequest extends AppUpdateRequest {
 	/**
 	 * App OAuth settings.
 	 */
-	oauth?: Partial<AppOAuthRequest>
+	oauth?: Partial<SmartAppOAuthRequest>
 }
 
-export interface PagedApp extends AppBase {
+export type PagedSmartApp = SmartAppBase & {
 	/**
 	 * A globally unique identifier for an app.
 	 */
@@ -204,12 +194,11 @@ export interface PagedApp extends AppBase {
 	lastUpdatedDate: string
 }
 
-export interface AppResponse extends PagedApp {
+export type SmartAppResponse = PagedSmartApp & {
 	/**
-	 * Denotes the principal type to be used with the app.
-	 * Default is LOCATION.
+	 * Denotes the principal type used with the app.
 	 */
-	principalType: PrincipalType
+	principalType: ViewPrincipalType
 
 	/**
 	 * Inform the installation systems that a particular app can only be
@@ -225,17 +214,17 @@ export interface AppResponse extends PagedApp {
 
 	lambdaSmartApp?: LambdaSmartApp
 	webhookSmartApp?: WebhookSmartApp
-	apiOnly?: ApiOnlyApp
-	ui: AppUISettings
+	apiOnly?: ApiOnlySmartApp
+	ui: SmartAppUISettings
 }
 
-export interface AppCreationResponse {
-	app: AppResponse
+export type SmartAppCreationResponse = {
+	app: SmartAppResponse
 	oauthClientId: string
 	oauthClientSecret: string
 }
 
-export interface GenerateAppOAuthRequest {
+export type GenerateSmartAppOAuthRequest = {
 	/**
 	 * A name given to the OAuth Client.
 	 */
@@ -248,44 +237,58 @@ export interface GenerateAppOAuthRequest {
 	scope: string[]
 }
 
-export interface AppOAuthRequest extends GenerateAppOAuthRequest {
+export type SmartAppOAuthRequest = GenerateSmartAppOAuthRequest & {
 	/**
-	 * A list of redirect URIs.
+	 * A list of redirect URIs. Maximum of 10 URIs.
 	 */
 	redirectUris: string[]
+
+	/**
+	 * A list of CORS domains. Maximum of 10 domains.
+	 */
+	corsDomains?: string[]
 }
 
-export type AppOAuthResponse = AppOAuthRequest
+export type SmartAppOAuthResponse = SmartAppOAuthRequest
 
-export interface GenerateAppOAuthResponse {
-	oauthClientDetails: AppOAuthResponse
+export type GenerateSmartAppOAuthResponse = {
+	oauthClientDetails: SmartAppOAuthResponse
 	oauthClientId: string
 	oauthClientSecret: string
 }
 
-export interface AppSettingsRequest {
+export type SmartAppSettingsRequest = {
 	settings?: { [key: string]: string }
 }
 
-export type AppSettingsResponse = Required<AppSettingsRequest>
+export type SmartAppSettingsResponse = Required<SmartAppSettingsRequest>
 
-export interface AppListOptions {
-	appType?: AppType
-	classification?: AppClassification | AppClassification[]
+export type SmartAppListOptions = {
+	/**
+	 * account/organization id
+	 *
+	 * If not specified, Smart Apps for your default organization will be displayed.
+	 */
+	accountId?: string
+	appType?: ViewSmartAppType
+	classification?: SmartAppClassification | SmartAppClassification[]
 	tag?: { [key: string]: string }
 }
 
-export class AppsEndpoint extends Endpoint {
+export class SmartAppsEndpoint extends Endpoint {
 
 	constructor(config: EndpointClientConfig) {
-		super(new EndpointClient('apps', config))
+		super(new EndpointClient('smartapps', config))
 	}
 
 	/**
 	 * Returns a list of all apps belonging to the principal (i.e. the user)
 	 */
-	public async list(options: AppListOptions = {}): Promise<PagedApp[]> {
+	public async list(options: SmartAppListOptions = {}): Promise<PagedSmartApp[]> {
 		const params: HttpClientParams = {}
+		if ('accountId' in options && options.accountId) {
+			params.accountId = options.accountId
+		}
 		if ('appType' in options && options.appType) {
 			params.appType = options.appType
 		}
@@ -297,38 +300,38 @@ export class AppsEndpoint extends Endpoint {
 				params[`tag:${key}`] = options.tag[key]
 			}
 		}
-		return this.client.getPagedItems<PagedApp>(undefined, params)
+		return this.client.getPagedItems<PagedSmartApp>(undefined, params)
 	}
 
 	/**
 	 * Returns a specific app
+	 *
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public get(id: string): Promise<AppResponse> {
+	public get(id: string): Promise<SmartAppResponse> {
 		return this.client.get(id)
 	}
 
 	/**
-	 * Create a new app. For WEBHOOK_SMART_APPs the default SignatureType is ST_PADLOCK.
+	 * Create a new app.
+	 *
 	 * @param data the app definition
 	 */
-	public create(data: AppCreateRequest): Promise<AppCreationResponse> {
-		// TODO -- use of query params might be temporary
+	public create(data: SmartAppCreateRequest, accountId?: string): Promise<SmartAppCreationResponse> {
 		const params: HttpClientParams = {}
-		if (data.webhookSmartApp) {
-			params.requireConfirmation = 'true'
-			params.signatureType = data.webhookSmartApp.signatureType || 'ST_PADLOCK'
+		if (accountId) {
+			params.accountId = accountId
 		}
-
 		return this.client.post(undefined, data, params)
 	}
 
 	/**
 	 * Update an existing app
+	 *
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data the new app definition
 	 */
-	public update(id: string, data: AppUpdateRequest): Promise<AppResponse> {
+	public update(id: string, data: SmartAppUpdateRequest): Promise<SmartAppResponse> {
 		return this.client.put(id, data)
 	}
 
@@ -336,7 +339,7 @@ export class AppsEndpoint extends Endpoint {
 	 * Get the settings of an app. Settings are string name/value pairs for optional use by the app developer.
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public getSettings(id: string): Promise<AppSettingsResponse> {
+	public getSettings(id: string): Promise<SmartAppSettingsResponse> {
 		return this.client.get(`${id}/settings`)
 	}
 
@@ -345,28 +348,17 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data the new app settings
 	 */
-	public updateSettings(id: string, data: AppSettingsRequest): Promise<AppSettingsResponse> {
+	public updateSettings(id: string, data: SmartAppSettingsRequest): Promise<SmartAppSettingsResponse> {
 		return this.client.put(`${id}/settings`, data)
 	}
 
 	/**
-	 * Update the signature type of an app. The signature type determines what mechanism is used to verify
-	 * the identity of endpoint apps
-	 * @param id either the appId UUID or the appName unique name
-	 * @param signatureType the new signature type
-	 */
-	public async updateSignatureType(id: string, signatureType: SignatureType): SuccessResponse {
-		await this.client.put(`${id}/signature-type`, { signatureType })
-		return Promise.resolve()
-	}
-
-	/**
-	 * Pings the targetUrl of the app to verify its existence. Endpoint apps and API Access apps must be registed
+	 * Pings the targetUrl of the app to verify its existence. API Access apps must be registered
 	 * in order to receive events from SmartThings.
 	 * @param id either the appId UUID or the appName unique name
 	 */
 	public async register(id: string): SuccessResponse {
-		await this.client.put(`${id}/register`)
+		await this.client.put(`${id}/register`, {})
 		return Promise.resolve()
 	}
 
@@ -374,7 +366,7 @@ export class AppsEndpoint extends Endpoint {
 	 * Returns the OAuth information for this app, including the name, scopes, and redirect URLs, if any
 	 * @param id either the appId UUID or the appName unique name
 	 */
-	public getOauth(id: string): Promise<AppOAuthResponse> {
+	public getOauth(id: string): Promise<SmartAppOAuthResponse> {
 		return this.client.get(`${id}/oauth`)
 	}
 
@@ -384,7 +376,7 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data new OAuth definition
 	 */
-	public updateOauth(id: string, data: AppOAuthRequest): Promise<AppOAuthResponse> {
+	public updateOauth(id: string, data: SmartAppOAuthRequest): Promise<SmartAppOAuthResponse> {
 		return this.client.put(`${id}/oauth`, data)
 	}
 
@@ -394,7 +386,7 @@ export class AppsEndpoint extends Endpoint {
 	 * @param id either the appId UUID or the appName unique name
 	 * @param data new OAuth definition
 	 */
-	public regenerateOauth(id: string, data: GenerateAppOAuthRequest): Promise<GenerateAppOAuthResponse> {
+	public regenerateOauth(id: string, data: GenerateSmartAppOAuthRequest): Promise<GenerateSmartAppOAuthResponse> {
 		return this.client.post(`${id}/oauth/generate`, data)
 	}
 

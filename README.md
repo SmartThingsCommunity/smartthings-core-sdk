@@ -115,8 +115,6 @@ and retry the original request.
 
 ### Endpoints
 
-* apps -- A SmartApp can be an AWS lambda function or WebHook endpoint. Like to code interface [here](src/endpoint/apps.ts#L267), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Apps)
-
 * capabilities - Operations to read standard Capability definitions as well as create and modify custom Capabilities.  Link to code interface [here](src/endpoint/capabilities.ts#L763), link to wiki page [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Capabilities).
 
 * deviceProfiles - A Device Profile contains the Components, Capabilities, and metadata (ID, name, ownership, etc.) that define a SmartThings Device. Link to code interface [here](src/endpoint/deviceprofiles.ts#L93), link to wiki page [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Device-Profiles)
@@ -148,5 +146,7 @@ and retry the original request.
 * schema - Operations for ST Schema connectors and installed instances, along with operations to list the Devices owned by each installed instance. Link to code interface [here](src/endpoint/schema.ts#L244), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Schema)
 
 * services - Operations to query for and subscribe to location service data, currently consisting of current weather conditions, weather forecast, and air quality data.  Link to code interface [here](src/endpoint/services.ts#L499), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Services)
+
+* smartapps -- A SmartApp can be an AWS lambda function or WebHook endpoint. Like to code interface [here](src/endpoint/smartapps.ts#L267), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/SmartApps)
 
 * subscriptions -  Operations for subscribing to events, for use in SmartApps and API Access apps.  Link to code interface [here](src/endpoint/subscriptions.ts#L213), link to wiki page description [here](https://github.com/SmartThingsCommunity/smartthings-core-sdk/wiki/Subscriptions)

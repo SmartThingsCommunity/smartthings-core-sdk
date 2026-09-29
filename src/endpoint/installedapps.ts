@@ -1,6 +1,6 @@
 import { Endpoint } from '../endpoint'
 import { EndpointClient, EndpointClientConfig, HttpClientParams } from '../endpoint-client'
-import { Count, Owner, PrincipalType, Status, SuccessStatusValue } from '../types'
+import { Count, Owner, Status, SuccessStatusValue, ViewPrincipalType } from '../types'
 
 
 export interface StringConfig {
@@ -183,7 +183,7 @@ export interface InstalledApp {
 	/**
 	 * Denotes the principal type to be used with the app.  Default is LOCATION.
 	 */
-	principalType: PrincipalType
+	principalType: ViewPrincipalType
 	/**
 	 * Inform the installation systems that the associated app can only be
 	 * installed once within a user's account.
