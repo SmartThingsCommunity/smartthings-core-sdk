@@ -76,7 +76,10 @@ export class VirtualDevicesEndpoint extends Endpoint {
 	 * Creates a virtual device from a standard prototype.
 	 */
 	public createStandard(definition: VirtualDeviceStandardCreateRequest): Promise<Device> {
-		return this.client.post<Device>('prototypes', definition)
+		// Recent versions of axios silently strip keys named `prototype` (along with `constructor` and `__proto__`)
+		// from object request bodies. This endpoint requires a `prototype` field so the body is serialized here,
+		// before axios has a chance to merge it.
+		return this.client.post<Device>('prototypes', JSON.stringify(definition))
 	}
 
 	/**

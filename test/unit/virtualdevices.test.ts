@@ -129,7 +129,8 @@ describe('VirtualDevicesEndpoint', () => {
 				prototype: 'SWITCH',
 			}
 
-			const expectedData = deviceCreate
+			// serialized up front so axios can't strip the `prototype` key
+			const expectedData = JSON.stringify(deviceCreate)
 
 			expect(await virtualDevicesEndpoint.createStandard(deviceCreate)).toBe(device)
 

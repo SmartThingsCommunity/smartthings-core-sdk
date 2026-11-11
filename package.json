@@ -20,7 +20,7 @@
 	],
 	"dependencies": {
 		"async-mutex": "^0.5.0",
-		"axios": "1.19.0",
+		"axios": "1.21.1",
 		"http-signature": "^1.4.0",
 		"qs": "^6.15.3",
 		"sshpk": "^1.18.0"
