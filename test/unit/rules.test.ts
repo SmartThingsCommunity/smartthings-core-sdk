@@ -86,4 +86,26 @@ describe('RulesEndpoint', () => {
 		expect(postSpy).toHaveBeenCalledTimes(1)
 		expect(postSpy).toHaveBeenCalledWith('execute/id-of-rule-to-execute', undefined, { locationId: 'final-location-id' })
 	})
+
+	test('enable', async () => {
+		putSpy.mockResolvedValueOnce(undefined)
+
+		await rulesEndpoint.enable('id-of-rule-to-enable', 'input-location-id')
+
+		expect(putSpy).toHaveBeenCalledTimes(1)
+		expect(putSpy).toHaveBeenCalledWith('id-of-rule-to-enable/status/enable', undefined, { locationId: 'final-location-id' })
+		expect(locationIdMock).toHaveBeenCalledTimes(1)
+		expect(locationIdMock).toHaveBeenCalledWith('input-location-id')
+	})
+
+	test('disable', async () => {
+		putSpy.mockResolvedValueOnce(undefined)
+
+		await rulesEndpoint.disable('id-of-rule-to-disable', 'input-location-id')
+
+		expect(putSpy).toHaveBeenCalledTimes(1)
+		expect(putSpy).toHaveBeenCalledWith('id-of-rule-to-disable/status/disable', undefined, { locationId: 'final-location-id' })
+		expect(locationIdMock).toHaveBeenCalledTimes(1)
+		expect(locationIdMock).toHaveBeenCalledWith('input-location-id')
+	})
 })
