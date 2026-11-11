@@ -1,5 +1,11 @@
 ## [5.1.2](https://github.com/SmartThingsCommunity/smartthings-core-sdk/compare/v5.1.1...v5.1.2) (2022-10-05)
 
+## 9.0.1
+
+### Patch Changes
+
+- [#281](https://github.com/SmartThingsCommunity/smartthings-core-sdk/pull/281) [`3ce17dc`](https://github.com/SmartThingsCommunity/smartthings-core-sdk/commit/3ce17dcf22c5be2e77b86e75f1e067c981834e9d) Thanks [@rossiam](https://github.com/rossiam)! - Manually serialize data for `virtualDevices.createStandard`. (Recent axios versions strip the `prototype` field from request bodies.)
+
 ## 9.0.0
 
 ### Major Changes
